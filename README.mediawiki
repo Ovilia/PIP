@@ -1,0 +1,7 @@
+== PIP Image Processor ==
+
+=== About ===
+
+Digital Image Processing course project.
+
+Written in C# with .Net. 
