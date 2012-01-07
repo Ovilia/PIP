@@ -5,6 +5,13 @@ namespace PIP
 {
   class MainForm : Form
   {
+    [STAThread]
+    public static void Main()
+    {
+      MainForm mainForm = new MainForm();
+      Application.Run(mainForm);
+    }
+
     private WindowManager windowManager;
 
     private ToolStripMenuItem filesToolStripMenuItem;
@@ -13,6 +20,11 @@ namespace PIP
     private ToolStripMenuItem helpToolStripMenuItem;
     private ToolStripMenuItem aboutToolStripMenuItem;
     private ToolStripMenuItem histogramWindowToolStripMenuItem;
+    private ToolStripMenuItem openToolStripMenuItem;
+    private ToolStripMenuItem saveToolStripMenuItem;
+    private ToolStripSeparator toolStripSeparator1;
+    private ToolStripMenuItem exitToolStripMenuItem;
+    private OpenFileDialog openFileDialog;
     private MenuStrip menuStrip;
   
     /// <summary>
@@ -28,21 +40,20 @@ namespace PIP
       windowManager.showAllWindows();
     }
 
-    public static void Main()
-    {
-      MainForm mainForm = new MainForm();
-      Application.Run(mainForm);
-    }
-
     private void InitializeComponent()
     {
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.filesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+      this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.histogramWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
       this.menuStrip.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -61,9 +72,40 @@ namespace PIP
       // 
       // filesToolStripMenuItem
       // 
+      this.filesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.exitToolStripMenuItem});
       this.filesToolStripMenuItem.Name = "filesToolStripMenuItem";
       this.filesToolStripMenuItem.Size = new System.Drawing.Size(45, 21);
       this.filesToolStripMenuItem.Text = "Files";
+      // 
+      // openToolStripMenuItem
+      // 
+      this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+      this.openToolStripMenuItem.Text = "Open";
+      this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+      // 
+      // saveToolStripMenuItem
+      // 
+      this.saveToolStripMenuItem.Enabled = false;
+      this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+      this.saveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+      this.saveToolStripMenuItem.Text = "Save";
+      // 
+      // toolStripSeparator1
+      // 
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(105, 6);
+      // 
+      // exitToolStripMenuItem
+      // 
+      this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+      this.exitToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+      this.exitToolStripMenuItem.Text = "Exit";
+      this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
       // 
       // editToolStripMenuItem
       // 
@@ -101,12 +143,17 @@ namespace PIP
       this.aboutToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
       this.aboutToolStripMenuItem.Text = "About";
       // 
+      // openFileDialog
+      // 
+      this.openFileDialog.Filter = "Image Files(*.jpg; *.jpeg; *.gif; *.bmp)|*.png; *.jpg; *.jpeg; *.gif; *.bmp";
+      this.openFileDialog.Title = "Open an image file";
+      // 
       // MainForm
       // 
       this.AutoSize = true;
       this.ClientSize = new System.Drawing.Size(284, 262);
       this.Controls.Add(this.menuStrip);
-      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
       this.MainMenuStrip = this.menuStrip;
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
@@ -127,6 +174,22 @@ namespace PIP
       else
       {
         windowManager.removeWindow(typeof(HistogramWindow));
+      }
+    }
+
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      this.Dispose();
+    }
+
+    private void openToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      DialogResult dialogResult = openFileDialog.ShowDialog();
+      if (dialogResult == DialogResult.OK)
+      {
+        string fileName = openFileDialog.FileName;
+        ImageWindow imageWindow = new ImageWindow(fileName);
+        windowManager.addImageWindow(imageWindow);
       }
     }
 

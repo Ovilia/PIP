@@ -51,6 +51,10 @@ namespace PIP
       {
         return new HistogramWindow();
       }
+      else if (windowType == typeof(ImageWindow))
+      {
+        return new ImageWindow();
+      }
       else
       {
         return null;
@@ -58,7 +62,7 @@ namespace PIP
     }
 
     /// <summary>
-    /// Add window to windowList
+    /// Add window to windowList, each type has only one instance in windowList
     /// </summary>
     /// <param name="windowType">Type of window to be added</param>
     public void addWindow(Type windowType)
@@ -72,6 +76,19 @@ namespace PIP
       {
         windowList.Add(window);
         window.Show();
+      }
+    }
+
+    /// <summary>
+    /// Add ImageWindow to windowList, multi-ImageWindow supported
+    /// </summary>
+    /// <param name="imageWindow">ImageWindow to be added</param>
+    public void addImageWindow(ImageWindow imageWindow)
+    {
+      if (imageWindow != null)
+      {
+        windowList.Add(imageWindow);
+        imageWindow.Show();
       }
     }
 
