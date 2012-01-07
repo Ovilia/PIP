@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace PIP
@@ -14,6 +15,9 @@ namespace PIP
     public HistogramWindow()
     {
       InitializeComponent();
+
+      Bitmap bitmap = MainForm.windowManager.getFocusedImageWindow().ImageBitmap;
+
     }
 
     private void InitializeComponent()

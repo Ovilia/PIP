@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace PIP
@@ -12,7 +13,7 @@ namespace PIP
       Application.Run(mainForm);
     }
 
-    private WindowManager windowManager;
+    public static WindowManager windowManager;
 
     private ToolStripMenuItem filesToolStripMenuItem;
     private ToolStripMenuItem editToolStripMenuItem;
@@ -25,6 +26,7 @@ namespace PIP
     private ToolStripSeparator toolStripSeparator1;
     private ToolStripMenuItem exitToolStripMenuItem;
     private OpenFileDialog openFileDialog;
+    private ToolStripMenuItem grayScaleWindowToolStripMenuItem;
     private MenuStrip menuStrip;
   
     /// <summary>
@@ -51,6 +53,7 @@ namespace PIP
       this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.histogramWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.grayScaleWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -116,18 +119,29 @@ namespace PIP
       // windowToolStripMenuItem
       // 
       this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.histogramWindowToolStripMenuItem});
+            this.histogramWindowToolStripMenuItem,
+            this.grayScaleWindowToolStripMenuItem});
       this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
       this.windowToolStripMenuItem.Size = new System.Drawing.Size(67, 21);
       this.windowToolStripMenuItem.Text = "Window";
+      this.windowToolStripMenuItem.Click += new System.EventHandler(this.windowToolStripMenuItem_Click);
       // 
       // histogramWindowToolStripMenuItem
       // 
       this.histogramWindowToolStripMenuItem.CheckOnClick = true;
+      this.histogramWindowToolStripMenuItem.Enabled = false;
       this.histogramWindowToolStripMenuItem.Name = "histogramWindowToolStripMenuItem";
       this.histogramWindowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
       this.histogramWindowToolStripMenuItem.Text = "Histogram window";
       this.histogramWindowToolStripMenuItem.Click += new System.EventHandler(this.histogramWindowToolStripMenuItem_Click);
+      // 
+      // grayScaleWindowToolStripMenuItem
+      // 
+      this.grayScaleWindowToolStripMenuItem.Enabled = false;
+      this.grayScaleWindowToolStripMenuItem.Name = "grayScaleWindowToolStripMenuItem";
+      this.grayScaleWindowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+      this.grayScaleWindowToolStripMenuItem.Text = "Gray scale window";
+      this.grayScaleWindowToolStripMenuItem.Click += new System.EventHandler(this.grayScaleWindowToolStripMenuItem_Click);
       // 
       // helpToolStripMenuItem
       // 
@@ -190,6 +204,29 @@ namespace PIP
         string fileName = openFileDialog.FileName;
         ImageWindow imageWindow = new ImageWindow(fileName);
         windowManager.addImageWindow(imageWindow);
+      }
+    }
+
+    private void grayScaleWindowToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      Bitmap bitmap = windowManager.getFocusedImageWindow().ImageBitmap;
+      ImageProcessor imageProcesser = new ImageProcessor(bitmap);
+      ImageWindow window = new ImageWindow(imageProcesser.getGrayScaleBitmap());
+      window.Text = "Gray scale image";
+      windowManager.addImageWindow(window);
+    }
+
+    private void windowToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (windowManager.isImageWindowEmpty() != true)
+      {
+        this.histogramWindowToolStripMenuItem.Enabled = true;
+        this.grayScaleWindowToolStripMenuItem.Enabled = true;
+      }
+      else
+      {
+        this.histogramWindowToolStripMenuItem.Enabled = false;
+        this.grayScaleWindowToolStripMenuItem.Enabled = false;
       }
     }
 

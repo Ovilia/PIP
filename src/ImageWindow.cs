@@ -7,8 +7,29 @@ namespace PIP
   class ImageWindow : Form
   {
     private Bitmap imageBitmap;
+    public Bitmap ImageBitmap
+    {
+      get
+      {
+        return imageBitmap;
+      }
+    }
+
     private PictureBox pictureBox;
+
     private string imageFileName;
+    public string ImageFileName
+    {
+      get
+      {
+        return imageFileName;
+      }
+    }
+
+    /// <summary>
+    /// Only one ImageWindow is focused in imageWindowList
+    /// </summary>
+    public bool isFocused{get;set;}
 
 
     /// <summary>
@@ -17,6 +38,7 @@ namespace PIP
     public ImageWindow()
     {
       InitializeComponent();
+      isFocused = true;
     }
 
     /// <summary>
@@ -26,7 +48,20 @@ namespace PIP
     public ImageWindow(string imageFileName)
     {
       InitializeComponent();
+      isFocused = true;
       loadImage(imageFileName);
+    }
+
+    /// <summary>
+    /// Constructor with given bitmap
+    /// </summary>
+    /// <param name="bitmap">Bitmap of the image</param>
+    public ImageWindow(Bitmap bitmap)
+    {
+      InitializeComponent();
+      isFocused = true;
+      imageBitmap = bitmap;
+      this.pictureBox.Image = imageBitmap;
     }
 
     /// <summary>
@@ -45,6 +80,7 @@ namespace PIP
         imageBitmap = new Bitmap(imageFileName);
         this.pictureBox.Image = imageBitmap;
         this.Text = imageFileName;
+        LogSystem.getInstance().writeLog(LogSystem.ActionType.OPEN_FILE);
         return true;
       }
       catch (Exception)
@@ -90,6 +126,7 @@ namespace PIP
       this.Name = "ImageWindow";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Image window";
+      this.GotFocus += new System.EventHandler(this.ImageWindow_GotFocus);
       this.Resize += new System.EventHandler(this.ImageWindow_Resize);
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
       this.ResumeLayout(false);
@@ -99,6 +136,11 @@ namespace PIP
     private void ImageWindow_Resize(object sender, EventArgs e)
     {
       this.pictureBox.Size = this.ClientSize;
+    }
+
+    private void ImageWindow_GotFocus(object sender, EventArgs e)
+    {
+      MainForm.windowManager.focusImageWindow(this);
     }
   }
 }

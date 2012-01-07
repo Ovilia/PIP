@@ -10,6 +10,11 @@ namespace PIP
     /// </summary>
     private System.Collections.ArrayList windowList;
 
+    /// <summary>
+    /// List of ImageWindow
+    /// </summary>
+    private System.Collections.ArrayList imageWindowList;
+
 
     /// <summary>
     /// Construtor
@@ -17,6 +22,7 @@ namespace PIP
     public WindowManager()
     {
       windowList = new System.Collections.ArrayList();
+      imageWindowList = new System.Collections.ArrayList();
     }
     
     /// <summary>
@@ -41,6 +47,38 @@ namespace PIP
     }
 
     /// <summary>
+    /// If windowList is empty
+    /// </summary>
+    /// <returns>True if windowList is empty</returns>
+    public bool isWindowEmpty()
+    {
+      if (windowList.Count > 0)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// If imageWindowList is empty
+    /// </summary>
+    /// <returns>True if imageWindowList is empty</returns>
+    public bool isImageWindowEmpty()
+    {
+      if (imageWindowList.Count > 0)
+      {
+        return false;
+      }
+      else
+      {
+        return true;
+      }
+    }
+
+    /// <summary>
     /// Create window of given type
     /// </summary>
     /// <param name="windowType">Type of window</param>
@@ -50,10 +88,6 @@ namespace PIP
       if (windowType == typeof(HistogramWindow))
       {
         return new HistogramWindow();
-      }
-      else if (windowType == typeof(ImageWindow))
-      {
-        return new ImageWindow();
       }
       else
       {
@@ -87,9 +121,59 @@ namespace PIP
     {
       if (imageWindow != null)
       {
-        windowList.Add(imageWindow);
+        imageWindowList.Add(imageWindow);
         imageWindow.Show();
       }
+    }
+
+    /// <summary>
+    /// Focus the given ImageWindow,
+    /// set [+] before the focused ImageWindow
+    /// </summary>
+    /// <param name="imageWindow">ImageWindow to be focused</param>
+    public void focusImageWindow(ImageWindow imageWindow)
+    {
+      if (imageWindow == null || imageWindowList == null)
+      {
+        return;
+      }
+      foreach (ImageWindow window in imageWindowList)
+      {
+        if (window.Text.IndexOf("[+]") == 0)
+        {
+          // delete the first [+]
+          window.Text = window.Text.Substring(3);
+        }
+        if (window == imageWindow)
+        {
+          window.isFocused = true;
+          window.Text = "[+]" + window.Text;
+        }
+        else
+        {
+          window.isFocused = false;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Return the focused ImageWindow
+    /// </summary>
+    /// <returns>Focused ImageWindow</returns>
+    public ImageWindow getFocusedImageWindow()
+    {
+      if (imageWindowList == null)
+      {
+        return null;
+      }
+      foreach (ImageWindow window in imageWindowList)
+      {
+        if (window.isFocused == true)
+        {
+          return window;
+        }
+      }
+      return null;
     }
 
     /// <summary>
@@ -109,10 +193,28 @@ namespace PIP
         {
           windowList.Remove(window);
           window.Dispose();
+          Console.WriteLine("removeWindow");
           return true;
         }
       }
       return false;
+    }
+
+    /// <summary>
+    /// Remove window from imageWindowList
+    /// </summary>
+    /// <param name="imageWindow">ImageWindow to be removed</param>
+    /// <returns>True if removed</returns>
+    public bool removeImageWindow(ImageWindow imageWindow)
+    {
+      if (imageWindow == null || imageWindowList == null)
+      {
+        return false;
+      }
+      imageWindowList.Remove(imageWindow);
+      imageWindow.Dispose();
+      Console.WriteLine("removeImageWindow");
+      return true;
     }
 
     /// <summary>
@@ -125,5 +227,6 @@ namespace PIP
         window.Show();
       }
     }
+
   }
 }
