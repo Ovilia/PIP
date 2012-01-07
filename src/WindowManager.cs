@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace PIP
 {
@@ -17,20 +18,58 @@ namespace PIP
     {
       windowList = new System.Collections.ArrayList();
     }
+    
+    /// <summary>
+    /// If windowList contains window of given type
+    /// </summary>
+    /// <param name="windowType">Type of window</param>
+    /// <returns>If windowList contains window</returns>
+    public bool hasWindow(Type windowType)
+    {
+      if (windowType == null || windowList == null)
+      {
+        return false;
+      }
+      foreach (Form window in windowList)
+      {
+        if (window.GetType() == windowType)
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Create window of given type
+    /// </summary>
+    /// <param name="windowType">Type of window</param>
+    /// <returns>Window created</returns>
+    public Form createWindow(Type windowType)
+    {
+      if (windowType == typeof(HistogramWindow))
+      {
+        return new HistogramWindow();
+      }
+      else
+      {
+        return null;
+      }
+    }
 
     /// <summary>
     /// Add window to windowList
     /// </summary>
-    /// <param name="window">Window to be added</param>
-    public void addWindow(Window window)
+    /// <param name="windowType">Type of window to be added</param>
+    public void addWindow(Type windowType)
     {
-      if (window == null) {
+      if (windowType == null || hasWindow(windowType))
+      {
         return;
       }
-      if (windowList == null) {
-        windowList = new System.Collections.ArrayList();
-      }
-      if (!windowList.Contains(window)) {
+      Form window = createWindow(windowType);
+      if (window != null)
+      {
         windowList.Add(window);
         window.Show();
       }
@@ -40,15 +79,33 @@ namespace PIP
     /// Remove window from windowList
     /// </summary>
     /// <param name="window">Window to be removed</param>
-    public void removeWindow(Window window)
+    /// <returns>True if windowList contains window of given type</returns>
+    public bool removeWindow(Type windowType)
     {
-      if (window == null) {
-        return;
+      if (windowType == null || windowList == null)
+      {
+        return false;
       }
-      if (windowList != null) {
-        if (windowList.Contains(window)) {
+      foreach (Form window in windowList)
+      {
+        if (window.GetType() == windowType)
+        {
           windowList.Remove(window);
+          window.Dispose();
+          return true;
         }
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Show all windows in windowList
+    /// </summary>
+    public void showAllWindows()
+    {
+      foreach (Form window in windowList)
+      {
+        window.Show();
       }
     }
   }

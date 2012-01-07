@@ -12,7 +12,7 @@ namespace PIP
     private ToolStripMenuItem windowToolStripMenuItem;
     private ToolStripMenuItem helpToolStripMenuItem;
     private ToolStripMenuItem aboutToolStripMenuItem;
-    private ToolStripMenuItem testWindowToolStripMenuItem;
+    private ToolStripMenuItem histogramWindowToolStripMenuItem;
     private MenuStrip menuStrip;
   
     /// <summary>
@@ -20,12 +20,12 @@ namespace PIP
     /// </summary>
     public MainForm()
     {
-      windowManager = new WindowManager();
-
-      Text = "PIP Image Processor";
-      this.AutoSize = true;
-
       InitializeComponent();
+      this.Height = 0;
+      this.Width = SystemInformation.VirtualScreen.Width;
+
+      windowManager = new WindowManager();
+      windowManager.showAllWindows();
     }
 
     public static void Main()
@@ -40,9 +40,9 @@ namespace PIP
       this.filesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.histogramWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.testWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.menuStrip.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -74,10 +74,18 @@ namespace PIP
       // windowToolStripMenuItem
       // 
       this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.testWindowToolStripMenuItem});
+            this.histogramWindowToolStripMenuItem});
       this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
       this.windowToolStripMenuItem.Size = new System.Drawing.Size(67, 21);
       this.windowToolStripMenuItem.Text = "Window";
+      // 
+      // histogramWindowToolStripMenuItem
+      // 
+      this.histogramWindowToolStripMenuItem.CheckOnClick = true;
+      this.histogramWindowToolStripMenuItem.Name = "histogramWindowToolStripMenuItem";
+      this.histogramWindowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+      this.histogramWindowToolStripMenuItem.Text = "Histogram window";
+      this.histogramWindowToolStripMenuItem.Click += new System.EventHandler(this.histogramWindowToolStripMenuItem_Click);
       // 
       // helpToolStripMenuItem
       // 
@@ -93,29 +101,33 @@ namespace PIP
       this.aboutToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
       this.aboutToolStripMenuItem.Text = "About";
       // 
-      // testWindowToolStripMenuItem
-      // 
-      this.testWindowToolStripMenuItem.Name = "testWindowToolStripMenuItem";
-      this.testWindowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-      this.testWindowToolStripMenuItem.Text = "test window";
-      this.testWindowToolStripMenuItem.Click += new System.EventHandler(this.testWindowToolStripMenuItem_Click);
-      // 
       // MainForm
       // 
+      this.AutoSize = true;
       this.ClientSize = new System.Drawing.Size(284, 262);
       this.Controls.Add(this.menuStrip);
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
       this.MainMenuStrip = this.menuStrip;
       this.Name = "MainForm";
+      this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+      this.Text = "PIP Image Processor";
       this.menuStrip.ResumeLayout(false);
       this.menuStrip.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 
     }
-
-    private void testWindowToolStripMenuItem_Click(object sender, EventArgs e)
+    
+    private void histogramWindowToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      windowManager.addWindow(new Window());
+      if (this.histogramWindowToolStripMenuItem.Checked)
+      {
+        windowManager.addWindow(typeof(HistogramWindow));
+      }
+      else
+      {
+        windowManager.removeWindow(typeof(HistogramWindow));
+      }
     }
 
   }
