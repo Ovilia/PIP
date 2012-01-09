@@ -209,8 +209,7 @@ namespace PIP
 
     private void grayScaleWindowToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      Bitmap bitmap = windowManager.getFocusedImageWindow().ImageBitmap;
-      ImageProcessor imageProcesser = new ImageProcessor(bitmap);
+      ImageProcessor imageProcesser = windowManager.getFocusedImageWindow().imageProcessor;
       ImageWindow window = new ImageWindow(imageProcesser.getGrayScaleBitmap());
       window.Text = "Gray scale image";
       windowManager.addImageWindow(window);
@@ -227,6 +226,9 @@ namespace PIP
       {
         this.histogramWindowToolStripMenuItem.Enabled = false;
         this.grayScaleWindowToolStripMenuItem.Enabled = false;
+        this.histogramWindowToolStripMenuItem.Checked = false;
+        this.grayScaleWindowToolStripMenuItem.Checked = false;
+        windowManager.disposeAllWindows();
       }
     }
 

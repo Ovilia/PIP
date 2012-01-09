@@ -47,6 +47,26 @@ namespace PIP
     }
 
     /// <summary>
+    /// Get histogram if exist in windowList
+    /// </summary>
+    /// <returns>Histogram window</returns>
+    public HistogramWindow getHistogramWindow()
+    {
+      if (windowList == null)
+      {
+        return null;
+      }
+      for (int i = 0; i < windowList.Count; ++i)
+      {
+        if (windowList[i].GetType() == typeof(HistogramWindow))
+        {
+          return (HistogramWindow)windowList[i];
+        }
+      }
+      return null;
+    }
+
+    /// <summary>
     /// If windowList is empty
     /// </summary>
     /// <returns>True if windowList is empty</returns>
@@ -101,15 +121,23 @@ namespace PIP
     /// <param name="windowType">Type of window to be added</param>
     public void addWindow(Type windowType)
     {
-      if (windowType == null || hasWindow(windowType))
+      if (windowType == null)
       {
         return;
       }
-      Form window = createWindow(windowType);
-      if (window != null)
+      foreach (Form window in windowList)
       {
-        windowList.Add(window);
-        window.Show();
+        if (window.GetType() == windowType)
+        {
+          window.Show();
+          return;
+        }
+      }
+      Form newWindow = createWindow(windowType);
+      if (newWindow != null)
+      {
+        windowList.Add(newWindow);
+        newWindow.Show();
       }
     }
 
@@ -139,18 +167,29 @@ namespace PIP
       }
       foreach (ImageWindow window in imageWindowList)
       {
-        if (window.Text.IndexOf("[+]") == 0)
-        {
-          // delete the first [+]
-          window.Text = window.Text.Substring(3);
-        }
         if (window == imageWindow)
         {
+          // do nothing if was focused
+          if (window.isFocused)
+          {
+            return;
+          }
           window.isFocused = true;
           window.Text = "[+]" + window.Text;
+          // change histogram to current image
+          HistogramWindow histogramWindow = getHistogramWindow();
+          if (histogramWindow != null && histogramWindow.Visible)
+          {
+            histogramWindow.setRgbChecked(false);
+            histogramWindow.updateImage();
+          }
         }
         else
         {
+          if (window.isFocused)
+          {
+            window.Text = window.Text.Substring(3);
+          }
           window.isFocused = false;
         }
       }
@@ -193,7 +232,6 @@ namespace PIP
         {
           windowList.Remove(window);
           window.Dispose();
-          Console.WriteLine("removeWindow");
           return true;
         }
       }
@@ -213,7 +251,6 @@ namespace PIP
       }
       imageWindowList.Remove(imageWindow);
       imageWindow.Dispose();
-      Console.WriteLine("removeImageWindow");
       return true;
     }
 
@@ -228,5 +265,16 @@ namespace PIP
       }
     }
 
+    /// <summary>
+    /// Dispose all windows in windowList
+    /// </summary>
+    public void disposeAllWindows()
+    {
+      Console.Write("Dispose");
+      foreach (Form window in windowList)
+      {
+        window.Dispose();
+      }
+    }
   }
 }

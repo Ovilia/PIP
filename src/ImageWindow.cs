@@ -6,14 +6,7 @@ namespace PIP
 {
   class ImageWindow : Form
   {
-    private Bitmap imageBitmap;
-    public Bitmap ImageBitmap
-    {
-      get
-      {
-        return imageBitmap;
-      }
-    }
+    public ImageProcessor imageProcessor;
 
     private PictureBox pictureBox;
 
@@ -29,7 +22,7 @@ namespace PIP
     /// <summary>
     /// Only one ImageWindow is focused in imageWindowList
     /// </summary>
-    public bool isFocused{get;set;}
+    public bool isFocused {get;set;}
 
 
     /// <summary>
@@ -38,7 +31,7 @@ namespace PIP
     public ImageWindow()
     {
       InitializeComponent();
-      isFocused = true;
+      MainForm.windowManager.focusImageWindow(this);
     }
 
     /// <summary>
@@ -48,8 +41,8 @@ namespace PIP
     public ImageWindow(string imageFileName)
     {
       InitializeComponent();
-      isFocused = true;
       loadImage(imageFileName);
+      MainForm.windowManager.focusImageWindow(this);
     }
 
     /// <summary>
@@ -59,9 +52,9 @@ namespace PIP
     public ImageWindow(Bitmap bitmap)
     {
       InitializeComponent();
-      isFocused = true;
-      imageBitmap = bitmap;
-      this.pictureBox.Image = imageBitmap;
+      this.pictureBox.Image = bitmap;
+      imageProcessor = new ImageProcessor(bitmap);
+      MainForm.windowManager.focusImageWindow(this);
     }
 
     /// <summary>
@@ -77,9 +70,10 @@ namespace PIP
       }
       try
       {
-        imageBitmap = new Bitmap(imageFileName);
+        Bitmap imageBitmap = new Bitmap(imageFileName);
         this.pictureBox.Image = imageBitmap;
         this.Text = imageFileName;
+        imageProcessor = new ImageProcessor(imageBitmap);
         LogSystem.getInstance().writeLog(LogSystem.ActionType.OPEN_FILE);
         return true;
       }
@@ -126,6 +120,7 @@ namespace PIP
       this.Name = "ImageWindow";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Image window";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImageWindow_FormClosing);
       this.GotFocus += new System.EventHandler(this.ImageWindow_GotFocus);
       this.Resize += new System.EventHandler(this.ImageWindow_Resize);
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
@@ -141,6 +136,11 @@ namespace PIP
     private void ImageWindow_GotFocus(object sender, EventArgs e)
     {
       MainForm.windowManager.focusImageWindow(this);
+    }
+
+    private void ImageWindow_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      MainForm.windowManager.removeImageWindow(this);
     }
   }
 }
