@@ -87,6 +87,33 @@ namespace PIP
     }
 
     /// <summary>
+    /// Update pictureBox of ImageWindow
+    /// </summary>
+    /// <param name="imageType">Type of image</param>
+    public void updateImage(ImageProcessor.ImageType imageType)
+    {
+      switch (imageType)
+      {
+        case ImageProcessor.ImageType.ORIGIN_IMAGE:
+          pictureBox.Image = imageProcessor.getBitmap();
+          break;
+
+        case ImageProcessor.ImageType.BINARY_IMAGE:
+          pictureBox.Image = imageProcessor.getBinaryBitmap(
+            MainForm.windowManager.getHistogramWindow().getThresholdValue());
+          break;
+
+        case ImageProcessor.ImageType.GRAY_IMAGE:
+          pictureBox.Image = imageProcessor.getGrayScaleBitmap();
+          break;
+
+        default:
+          pictureBox.Image = imageProcessor.getBitmap();
+          break;
+      }
+    }
+
+    /// <summary>
     /// Load image with given name,
     /// call loadImage()
     /// </summary>

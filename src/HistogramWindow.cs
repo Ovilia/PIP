@@ -17,14 +17,18 @@ namespace PIP
     private System.Windows.Forms.DataVisualization.Charting.Series blueSeries;
     private System.Windows.Forms.DataVisualization.Charting.Series thresholdSeries;
     private CheckBox rgbCheckBox;
-
-    private float[] histogram;
-    private float[,] rgbHistogram;
-
-    private float maxHistogram;
     private CheckBox logCheckBox;
-    private float maxRGBHistogram;
+    private Label thresholdLabel_128;
+    private Label thresholdLabel_255;
+    private Label thresholdLabel_0;
+    private Label thresholdLabel_172;
+    private Label thresholdLabel_64;
 
+    private int[] histogram;
+    private int[,] rgbHistogram;
+
+    private int maxHistogram;
+    private int maxRGBHistogram;
 
     public HistogramWindow()
     {
@@ -39,6 +43,15 @@ namespace PIP
     {
       histogram = MainForm.windowManager.getFocusedImageWindow().imageProcessor.getHistogram();
       maxHistogram = MainForm.windowManager.getFocusedImageWindow().imageProcessor.getMaxHistogram();
+    }
+
+    /// <summary>
+    /// Get threshold value
+    /// </summary>
+    /// <returns>Threshold value</returns>
+    public int getThresholdValue()
+    {
+      return thresholdTrackBar.Value;
     }
 
     /// <summary>
@@ -70,6 +83,9 @@ namespace PIP
       this.histogramChart.Series.Add(histogramSeries);
       this.histogramChart.ChartAreas[0].AxisY.Maximum = maxHistogram;
       this.histogramChart.ChartAreas[0].AxisY.Title = "Gray Histogram";
+      this.histogramChart.ChartAreas[0].AxisX.Maximum = ImageProcessor.RANGE_OF_8BITS - 1;
+      this.histogramChart.ChartAreas[0].AxisX.Minimum = 0;
+      this.histogramChart.ChartAreas[0].AxisX.Interval = ImageProcessor.RANGE_OF_8BITS / 8;
 
       updateThresholdSeries();
     }
@@ -100,9 +116,9 @@ namespace PIP
 
         for (int i = 0; i < ImageProcessor.RANGE_OF_8BITS; ++i)
         {
-          redSeries.Points.Add(rgbHistogram[i, 0]);
-          greenSeries.Points.Add(rgbHistogram[i, 1]);
-          blueSeries.Points.Add(rgbHistogram[i, 2]);
+          redSeries.Points.AddXY(i, rgbHistogram[i, 0]);
+          greenSeries.Points.AddXY(i, rgbHistogram[i, 1]);
+          blueSeries.Points.AddXY(i, rgbHistogram[i, 2]);
         }
       }
 
@@ -117,6 +133,9 @@ namespace PIP
       this.histogramChart.ChartAreas[0].AxisY2.Title = "RGB histogram";
     }
 
+    /// <summary>
+    /// Update threshold series
+    /// </summary>
     public void updateThresholdSeries()
     {
       if (thresholdSeries == null)
@@ -127,9 +146,6 @@ namespace PIP
         thresholdSeries.BorderWidth = 2;
         thresholdSeries.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
         this.histogramChart.Series.Add(thresholdSeries);
-        this.histogramChart.ChartAreas[0].AxisX.Maximum = ImageProcessor.RANGE_OF_8BITS;
-        this.histogramChart.ChartAreas[0].AxisX.Minimum = 0;
-        this.histogramChart.ChartAreas[0].AxisX.Interval = ImageProcessor.RANGE_OF_8BITS / 8;
       }
       else
       {
@@ -139,7 +155,12 @@ namespace PIP
       }
       thresholdSeries.Points.AddXY(thresholdTrackBar.Value, 0);
       thresholdSeries.Points.AddXY(thresholdTrackBar.Value, maxHistogram);
-      this.histogramChart.ChartAreas[0].AxisY2.Maximum = maxRGBHistogram;
+    }
+
+    public void updateBinaryBitmap()
+    {
+      ImageWindow imageWindow = MainForm.windowManager.getFocusedImageWindow();
+      imageWindow.updateImage(ImageProcessor.ImageType.BINARY_IMAGE);
     }
 
     /// <summary>
@@ -176,6 +197,11 @@ namespace PIP
       System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
       System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
       this.splitContainer = new System.Windows.Forms.SplitContainer();
+      this.thresholdLabel_172 = new System.Windows.Forms.Label();
+      this.thresholdLabel_64 = new System.Windows.Forms.Label();
+      this.thresholdLabel_128 = new System.Windows.Forms.Label();
+      this.thresholdLabel_255 = new System.Windows.Forms.Label();
+      this.thresholdLabel_0 = new System.Windows.Forms.Label();
       this.logCheckBox = new System.Windows.Forms.CheckBox();
       this.rgbCheckBox = new System.Windows.Forms.CheckBox();
       this.thresholdTextBox = new System.Windows.Forms.TextBox();
@@ -193,12 +219,18 @@ namespace PIP
       // splitContainer
       // 
       this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.splitContainer.IsSplitterFixed = true;
       this.splitContainer.Location = new System.Drawing.Point(0, 0);
       this.splitContainer.Name = "splitContainer";
       this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
       // 
       // splitContainer.Panel1
       // 
+      this.splitContainer.Panel1.Controls.Add(this.thresholdLabel_172);
+      this.splitContainer.Panel1.Controls.Add(this.thresholdLabel_64);
+      this.splitContainer.Panel1.Controls.Add(this.thresholdLabel_128);
+      this.splitContainer.Panel1.Controls.Add(this.thresholdLabel_255);
+      this.splitContainer.Panel1.Controls.Add(this.thresholdLabel_0);
       this.splitContainer.Panel1.Controls.Add(this.logCheckBox);
       this.splitContainer.Panel1.Controls.Add(this.rgbCheckBox);
       this.splitContainer.Panel1.Controls.Add(this.thresholdTextBox);
@@ -208,14 +240,59 @@ namespace PIP
       // splitContainer.Panel2
       // 
       this.splitContainer.Panel2.Controls.Add(this.histogramChart);
-      this.splitContainer.Size = new System.Drawing.Size(694, 324);
-      this.splitContainer.SplitterDistance = 40;
+      this.splitContainer.Size = new System.Drawing.Size(694, 388);
+      this.splitContainer.SplitterDistance = 47;
       this.splitContainer.TabIndex = 0;
+      // 
+      // thresholdLabel_172
+      // 
+      this.thresholdLabel_172.AutoSize = true;
+      this.thresholdLabel_172.Location = new System.Drawing.Point(375, 33);
+      this.thresholdLabel_172.Name = "thresholdLabel_172";
+      this.thresholdLabel_172.Size = new System.Drawing.Size(23, 12);
+      this.thresholdLabel_172.TabIndex = 9;
+      this.thresholdLabel_172.Text = "172";
+      // 
+      // thresholdLabel_64
+      // 
+      this.thresholdLabel_64.AutoSize = true;
+      this.thresholdLabel_64.Location = new System.Drawing.Point(243, 33);
+      this.thresholdLabel_64.Name = "thresholdLabel_64";
+      this.thresholdLabel_64.Size = new System.Drawing.Size(17, 12);
+      this.thresholdLabel_64.TabIndex = 8;
+      this.thresholdLabel_64.Text = "64";
+      // 
+      // thresholdLabel_128
+      // 
+      this.thresholdLabel_128.AutoSize = true;
+      this.thresholdLabel_128.Location = new System.Drawing.Point(308, 33);
+      this.thresholdLabel_128.Name = "thresholdLabel_128";
+      this.thresholdLabel_128.Size = new System.Drawing.Size(23, 12);
+      this.thresholdLabel_128.TabIndex = 7;
+      this.thresholdLabel_128.Text = "128";
+      // 
+      // thresholdLabel_255
+      // 
+      this.thresholdLabel_255.AutoSize = true;
+      this.thresholdLabel_255.Location = new System.Drawing.Point(441, 33);
+      this.thresholdLabel_255.Name = "thresholdLabel_255";
+      this.thresholdLabel_255.Size = new System.Drawing.Size(23, 12);
+      this.thresholdLabel_255.TabIndex = 6;
+      this.thresholdLabel_255.Text = "255";
+      // 
+      // thresholdLabel_0
+      // 
+      this.thresholdLabel_0.AutoSize = true;
+      this.thresholdLabel_0.Location = new System.Drawing.Point(178, 33);
+      this.thresholdLabel_0.Name = "thresholdLabel_0";
+      this.thresholdLabel_0.Size = new System.Drawing.Size(11, 12);
+      this.thresholdLabel_0.TabIndex = 5;
+      this.thresholdLabel_0.Text = "0";
       // 
       // logCheckBox
       // 
       this.logCheckBox.AutoSize = true;
-      this.logCheckBox.Location = new System.Drawing.Point(472, 14);
+      this.logCheckBox.Location = new System.Drawing.Point(472, 13);
       this.logCheckBox.Name = "logCheckBox";
       this.logCheckBox.Size = new System.Drawing.Size(102, 16);
       this.logCheckBox.TabIndex = 4;
@@ -227,7 +304,7 @@ namespace PIP
       // rgbCheckBox
       // 
       this.rgbCheckBox.AutoSize = true;
-      this.rgbCheckBox.Location = new System.Drawing.Point(580, 14);
+      this.rgbCheckBox.Location = new System.Drawing.Point(580, 13);
       this.rgbCheckBox.Name = "rgbCheckBox";
       this.rgbCheckBox.Size = new System.Drawing.Size(102, 16);
       this.rgbCheckBox.TabIndex = 3;
@@ -265,6 +342,7 @@ namespace PIP
       this.thresholdTrackBar.TabIndex = 0;
       this.thresholdTrackBar.TickFrequency = 32;
       this.thresholdTrackBar.Scroll += new System.EventHandler(this.thresholdTrackBar_Scroll);
+      this.thresholdTrackBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.thresholdTrackBar_MouseUp);
       // 
       // histogramChart
       // 
@@ -275,13 +353,13 @@ namespace PIP
       this.histogramChart.Location = new System.Drawing.Point(0, 3);
       this.histogramChart.Name = "histogramChart";
       this.histogramChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Pastel;
-      this.histogramChart.Size = new System.Drawing.Size(694, 277);
+      this.histogramChart.Size = new System.Drawing.Size(694, 334);
       this.histogramChart.TabIndex = 0;
       this.histogramChart.Text = "Histogram Chart";
       // 
       // HistogramWindow
       // 
-      this.ClientSize = new System.Drawing.Size(694, 324);
+      this.ClientSize = new System.Drawing.Size(694, 388);
       this.Controls.Add(this.splitContainer);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
       this.Name = "HistogramWindow";
@@ -305,7 +383,16 @@ namespace PIP
 
     private void thresholdTextBox_TextChanged(object sender, EventArgs e)
     {
-      int value = int.Parse(thresholdTextBox.Text);
+      int value;
+      try
+      {
+        value = int.Parse(thresholdTextBox.Text);
+      }
+      catch (Exception)
+      {
+        value = 0;
+        thresholdTextBox.Text = "0";
+      }
       if (value > 255 || value < 0)
       {
         value = 0;
@@ -332,6 +419,10 @@ namespace PIP
       //updateLogAxis(logCheckBox.Checked);
     }
 
+    private void thresholdTrackBar_MouseUp(object sender, MouseEventArgs e)
+    {
+      updateBinaryBitmap();
+    }
 
   }
 }

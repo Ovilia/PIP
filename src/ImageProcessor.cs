@@ -10,10 +10,19 @@ namespace PIP
 
     private Bitmap bitmap;
     private Bitmap grayScaleBitmap;
-    private float[] histogram;
-    private float[,] rgbHistogram;
-    private float maxHistogram;
-    private float maxRgbHistogram;
+    private int[] histogram;
+    private int[,] rgbHistogram;
+    private int maxHistogram;
+    private int maxRgbHistogram;
+
+    private int thresholdValue;
+    private Bitmap binaryBitmap;
+
+    public enum ImageType{
+      ORIGIN_IMAGE = 0,
+      GRAY_IMAGE,
+      BINARY_IMAGE
+    }
 
 
     /// <summary>
@@ -57,6 +66,15 @@ namespace PIP
     }
 
     /// <summary>
+    /// Get bitmap of original image
+    /// </summary>
+    /// <returns>Bitmap</returns>
+    public Bitmap getBitmap()
+    {
+      return bitmap;
+    }
+
+    /// <summary>
     /// Get gray scale bitmap
     /// </summary>
     /// <returns>Gray scale bitmap</returns>
@@ -67,7 +85,7 @@ namespace PIP
         return grayScaleBitmap;
       }
       grayScaleBitmap = new Bitmap(bitmap.Width, bitmap.Height);
-      /*
+      
       for (int i = 0; i < bitmap.Width; ++i)
       {
         for (int j = 0; j < bitmap.Height; ++j)
@@ -79,8 +97,8 @@ namespace PIP
           grayScaleBitmap.SetPixel(i, j, grayColor);
         }
       }
-      */
-      Graphics g = Graphics.FromImage(grayScaleBitmap);
+      
+      /*Graphics g = Graphics.FromImage(grayScaleBitmap);
       ColorMatrix colorMatrix = new ColorMatrix(
         new float[][]
         {
@@ -95,7 +113,7 @@ namespace PIP
       g.DrawImage(bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height),
         0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, attributes);
       g.Dispose();
-    
+    */
       return grayScaleBitmap;
     }
 
@@ -103,13 +121,13 @@ namespace PIP
     /// Get histogram array
     /// </summary>
     /// <returns>Histogram array</returns>
-    public float[] getHistogram()
+    public int[] getHistogram()
     {
       if (histogram != null)
       {
         return histogram;
       }
-      histogram = new float[RANGE_OF_8BITS];
+      histogram = new int[RANGE_OF_8BITS];
       Bitmap grayScaleBitmap = getGrayScaleBitmap();
       for (int i = 0; i < grayScaleBitmap.Width; ++i)
       {
@@ -120,10 +138,9 @@ namespace PIP
       }
 
       maxHistogram = -1;
-      float imageSize = (float)(grayScaleBitmap.Height * grayScaleBitmap.Width);
+      int imageSize = grayScaleBitmap.Height * grayScaleBitmap.Width;
       for (int i = 0; i < RANGE_OF_8BITS; ++i)
       {
-        histogram[i] /= imageSize;
         if (histogram[i] > maxHistogram)
         {
           maxHistogram = histogram[i];
@@ -136,13 +153,13 @@ namespace PIP
     /// Get RGB hitogram array
     /// </summary>
     /// <returns>RGB hitogram array</returns>
-    public float[,] getRgbHistogram()
+    public int[,] getRgbHistogram()
     {
       if (rgbHistogram != null)
       {
         return rgbHistogram;
       }
-      rgbHistogram = new float[RANGE_OF_8BITS, 3];
+      rgbHistogram = new int[RANGE_OF_8BITS, 3];
       for (int i = 0; i < bitmap.Width; ++i)
       {
         for (int j = 0; j < bitmap.Height; ++j)
@@ -154,12 +171,11 @@ namespace PIP
       }
 
       maxRgbHistogram = -1;
-      float imageSize = (float)(bitmap.Height * bitmap.Width);
+      int imageSize = bitmap.Height * bitmap.Width;
       for (int i = 0; i < RANGE_OF_8BITS; ++i)
       {
         for (int j = 0; j < 3; ++j)
         {
-          rgbHistogram[i, j] /= imageSize;
           if (rgbHistogram[i, j] > maxRgbHistogram)
           {
             maxRgbHistogram = rgbHistogram[i, j];
@@ -173,7 +189,7 @@ namespace PIP
     /// Get max histogram value
     /// </summary>
     /// <returns>Max histogram value</returns>
-    public float getMaxHistogram()
+    public int getMaxHistogram()
     {
       if (maxHistogram < 0)
       {
@@ -186,13 +202,58 @@ namespace PIP
     /// Get max RGB histogram value
     /// </summary>
     /// <returns>Max RGB histogram value</returns>
-    public float getMaxRgbHistogram()
+    public int getMaxRgbHistogram()
     {
       if (maxRgbHistogram < 0)
       {
         getRgbHistogram();
       }
       return maxRgbHistogram;
+    }
+
+    /// <summary>
+    /// Get binary bitmap with given threshold value,
+    /// pixels with equal or less value than threshold value will be set 
+    /// to be 0 and those with more value to be 255
+    /// </summary>
+    /// <param name="thresholdValue">Threshold value, -1 for former value</param>
+    /// <returns></returns>
+    public Bitmap getBinaryBitmap(int thresholdValue = -1)
+    {
+      if (binaryBitmap != null && thresholdValue == -1)
+      {
+        return binaryBitmap;
+      }
+
+      // If no former threshold value exist, set it to be 0
+      if (thresholdValue == -1)
+      {
+        thresholdValue = 0;
+      }
+      this.thresholdValue = thresholdValue;
+
+      binaryBitmap = new Bitmap(bitmap);
+      Bitmap grayScaleBitmap = getGrayScaleBitmap();
+
+      // Set pixels with value less than threshold value to be 0,
+      // and more with 255
+      for (int i = 0; i < grayScaleBitmap.Width; ++i)
+      {
+        for (int j = 0; j < grayScaleBitmap.Height; ++j)
+        {
+          Color color = grayScaleBitmap.GetPixel(i, j);
+          if (color.R <= thresholdValue)
+          {
+            color = Color.Black;
+          }
+          else
+          {
+            color = Color.White;
+          }
+          binaryBitmap.SetPixel(i, j, color);
+        }
+      }
+      return binaryBitmap;
     }
   }
 }
