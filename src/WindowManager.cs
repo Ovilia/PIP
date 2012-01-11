@@ -181,7 +181,7 @@ namespace PIP
           if (histogramWindow != null && histogramWindow.Visible)
           {
             histogramWindow.setRgbChecked(false);
-            histogramWindow.updateImage();
+            histogramWindow.updateGraySeries();
           }
         }
         else

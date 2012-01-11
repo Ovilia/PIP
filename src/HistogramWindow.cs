@@ -15,6 +15,7 @@ namespace PIP
     private System.Windows.Forms.DataVisualization.Charting.Series redSeries;
     private System.Windows.Forms.DataVisualization.Charting.Series greenSeries;
     private System.Windows.Forms.DataVisualization.Charting.Series blueSeries;
+    private System.Windows.Forms.DataVisualization.Charting.Series thresholdSeries;
     private CheckBox rgbCheckBox;
 
     private float[] histogram;
@@ -28,7 +29,7 @@ namespace PIP
     public HistogramWindow()
     {
       InitializeComponent();
-      updateImage();
+      updateGraySeries();
     }
 
     /// <summary>
@@ -52,7 +53,7 @@ namespace PIP
     /// <summary>
     /// Redraw histogram chart
     /// </summary>
-    public void updateImage()
+    public void updateGraySeries()
     {
       initHistogram();
 
@@ -69,12 +70,14 @@ namespace PIP
       this.histogramChart.Series.Add(histogramSeries);
       this.histogramChart.ChartAreas[0].AxisY.Maximum = maxHistogram;
       this.histogramChart.ChartAreas[0].AxisY.Title = "Gray Histogram";
+
+      updateThresholdSeries();
     }
 
     /// <summary>
     /// Redraw RGB Histogram
     /// </summary>
-    public void updateRgbImage()
+    public void updateRgbSeries()
     {
       if (redSeries == null || greenSeries == null || blueSeries == null)
       {
@@ -114,6 +117,31 @@ namespace PIP
       this.histogramChart.ChartAreas[0].AxisY2.Title = "RGB histogram";
     }
 
+    public void updateThresholdSeries()
+    {
+      if (thresholdSeries == null)
+      {
+        thresholdSeries = new System.Windows.Forms.DataVisualization.Charting.Series();
+        thresholdSeries.Name = "Threshold";
+        thresholdSeries.Color = Color.DarkOrange;
+        thresholdSeries.BorderWidth = 2;
+        thresholdSeries.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+        this.histogramChart.Series.Add(thresholdSeries);
+        this.histogramChart.ChartAreas[0].AxisX.Maximum = ImageProcessor.RANGE_OF_8BITS;
+        this.histogramChart.ChartAreas[0].AxisX.Minimum = 0;
+        this.histogramChart.ChartAreas[0].AxisX.Interval = ImageProcessor.RANGE_OF_8BITS / 8;
+      }
+      else
+      {
+        // Remove former threshold value
+        thresholdSeries.Points.RemoveAt(0);
+        thresholdSeries.Points.RemoveAt(0);
+      }
+      thresholdSeries.Points.AddXY(thresholdTrackBar.Value, 0);
+      thresholdSeries.Points.AddXY(thresholdTrackBar.Value, maxHistogram);
+      this.histogramChart.ChartAreas[0].AxisY2.Maximum = maxRGBHistogram;
+    }
+
     /// <summary>
     /// Update histogram or RGB histogram using or not using log
     /// </summary>
@@ -127,7 +155,7 @@ namespace PIP
     /// <summary>
     /// Remove RGB Histogram
     /// </summary>
-    public void removeRgbImage()
+    public void removeRgbSeries()
     {
       this.histogramChart.Series.Remove(redSeries);
       this.histogramChart.Series.Remove(greenSeries);
@@ -193,6 +221,7 @@ namespace PIP
       this.logCheckBox.TabIndex = 4;
       this.logCheckBox.Text = "With log axis";
       this.logCheckBox.UseVisualStyleBackColor = true;
+      this.logCheckBox.Visible = false;
       this.logCheckBox.CheckedChanged += new System.EventHandler(this.logCheckBox_CheckedChanged);
       // 
       // rgbCheckBox
@@ -228,6 +257,7 @@ namespace PIP
       // thresholdTrackBar
       // 
       this.thresholdTrackBar.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
+      this.thresholdTrackBar.Cursor = System.Windows.Forms.Cursors.Arrow;
       this.thresholdTrackBar.Location = new System.Drawing.Point(169, 3);
       this.thresholdTrackBar.Maximum = 255;
       this.thresholdTrackBar.Name = "thresholdTrackBar";
@@ -270,6 +300,7 @@ namespace PIP
     private void thresholdTrackBar_Scroll(object sender, EventArgs e)
     {
       thresholdTextBox.Text = thresholdTrackBar.Value.ToString();
+      updateThresholdSeries();
     }
 
     private void thresholdTextBox_TextChanged(object sender, EventArgs e)
@@ -281,17 +312,18 @@ namespace PIP
         thresholdTextBox.Text = "0";
       }
       thresholdTrackBar.Value = value;
+      updateThresholdSeries();
     }
 
     private void rgbCheckBox_CheckedChanged(object sender, EventArgs e)
     {
       if (rgbCheckBox.Checked)
       {
-        updateRgbImage();
+        updateRgbSeries();
       }
       else
       {
-        removeRgbImage();
+        removeRgbSeries();
       }
     }
 
