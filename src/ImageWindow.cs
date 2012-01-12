@@ -90,7 +90,7 @@ namespace PIP
     /// Update pictureBox of ImageWindow
     /// </summary>
     /// <param name="imageType">Type of image</param>
-    public void updateImage(ImageProcessor.ImageType imageType)
+    public void updateImage(ImageProcessor.ImageType imageType, bool isRedraw = true)
     {
       switch (imageType)
       {
@@ -99,8 +99,15 @@ namespace PIP
           break;
 
         case ImageProcessor.ImageType.BINARY_IMAGE:
-          pictureBox.Image = imageProcessor.getBinaryBitmap(
-            MainForm.windowManager.getHistogramWindow().getThresholdValue());
+          if (isRedraw)
+          {
+            pictureBox.Image = imageProcessor.getBinaryBitmap(
+              MainForm.windowManager.getHistogramWindow().getThresholdValue());
+          }
+          else
+          {
+            pictureBox.Image = imageProcessor.getBinaryBitmap();
+          }
           break;
 
         case ImageProcessor.ImageType.GRAY_IMAGE:

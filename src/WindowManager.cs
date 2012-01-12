@@ -180,8 +180,7 @@ namespace PIP
           HistogramWindow histogramWindow = getHistogramWindow();
           if (histogramWindow != null && histogramWindow.Visible)
           {
-            histogramWindow.setRgbChecked(false);
-            histogramWindow.updateGraySeries();
+            histogramWindow.updateImage();
           }
         }
         else

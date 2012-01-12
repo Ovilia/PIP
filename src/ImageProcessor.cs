@@ -16,6 +16,9 @@ namespace PIP
     private int maxRgbHistogram;
 
     private int thresholdValue;
+    private int otsuThresholdValue;
+    private int entropyThresholdValue;
+
     private Bitmap binaryBitmap;
 
     public enum ImageType{
@@ -34,6 +37,8 @@ namespace PIP
       this.bitmap = bitmap;
       maxHistogram = -1;
       maxRgbHistogram = -1;
+      otsuThresholdValue = -1;
+      entropyThresholdValue = -1;
     }
 
     /// <summary>
@@ -85,7 +90,7 @@ namespace PIP
         return grayScaleBitmap;
       }
       grayScaleBitmap = new Bitmap(bitmap.Width, bitmap.Height);
-      
+      /*
       for (int i = 0; i < bitmap.Width; ++i)
       {
         for (int j = 0; j < bitmap.Height; ++j)
@@ -97,8 +102,8 @@ namespace PIP
           grayScaleBitmap.SetPixel(i, j, grayColor);
         }
       }
-      
-      /*Graphics g = Graphics.FromImage(grayScaleBitmap);
+      */
+      Graphics g = Graphics.FromImage(grayScaleBitmap);
       ColorMatrix colorMatrix = new ColorMatrix(
         new float[][]
         {
@@ -113,7 +118,7 @@ namespace PIP
       g.DrawImage(bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height),
         0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, attributes);
       g.Dispose();
-    */
+    
       return grayScaleBitmap;
     }
 
@@ -212,6 +217,107 @@ namespace PIP
     }
 
     /// <summary>
+    /// Get threshold value calculated by Otsu Algorithm
+    /// </summary>
+    /// <returns>Threshold value</returns>
+    public int getOtsuThresholdValue()
+    {
+      if (otsuThresholdValue != -1)
+      {
+        return otsuThresholdValue;
+      }
+      // Make sure histogram is calculate
+      getHistogram();
+
+      // Calculate when threshold value = 0,
+      // then calculate on the base of former outcome
+
+      // Sum of pixels with index below thresholdValue 
+      int belowSum = 0;
+      // Average of pixels below thresholdValue
+      int belowAverage = 0;
+
+      // Sum of pixels with index upper than thresholdValue 
+      int upperSum = 0;
+      // Sum of pixels multiplies index value below thresholdValue 
+      int upperWeighted = 0;
+      for (int i = 0; i < RANGE_OF_8BITS; ++i)
+      {
+        upperSum += histogram[i];
+        upperWeighted += histogram[i] * i;
+      }
+      // Average of pixels upper than thresholdValue
+      int upperAverage;
+      if (upperSum == 0)
+      {
+        upperAverage = 0;
+      }
+      else
+      {
+        upperAverage = upperWeighted / upperSum;
+      }
+
+      // Max variance between two parts
+      int maxVarianceBetween = belowSum * upperSum
+        * (belowAverage - upperAverage) * (belowAverage - upperAverage);
+      otsuThresholdValue = 0;
+
+      // Loop threshold value to get max variance between two parts
+      for (int thresholdValue = 0; thresholdValue < RANGE_OF_8BITS - 1; ++thresholdValue)
+      {
+        belowSum += histogram[thresholdValue];
+        upperSum -= histogram[thresholdValue];
+
+        if (belowSum == 0)
+        {
+          belowAverage = 0;
+        }
+        else
+        {
+          belowAverage = (belowAverage * (belowSum - histogram[thresholdValue])
+            + histogram[thresholdValue] * thresholdValue) / belowSum;
+        }
+        if (upperSum == 0)
+        {
+          upperAverage = 0;
+        }
+        else
+        {
+          upperAverage = (upperAverage * (upperSum + histogram[thresholdValue])
+            - histogram[thresholdValue] * thresholdValue) / upperSum;
+        }
+
+        // Variance between below and upper part
+        int variaceBetween = belowSum * upperSum
+          * (belowAverage - upperAverage) * (belowAverage - upperAverage);
+
+        // Update threshold value if variance between two parts are
+        // larger than maxVarianceBetween
+        if (variaceBetween > maxVarianceBetween)
+        {
+          maxVarianceBetween = variaceBetween;
+          otsuThresholdValue = thresholdValue + 1;
+        }
+      }
+      return otsuThresholdValue;
+    }
+
+    /// <summary>
+    /// Get threshold value calculated by Entropy Algorithm
+    /// </summary>
+    /// <returns>Threshold value</returns>
+    public int getEntropyThresholdValue()
+    {
+      if (entropyThresholdValue != -1)
+      {
+        return entropyThresholdValue;
+      }
+      //TODO
+      entropyThresholdValue = 200;
+      return entropyThresholdValue;
+    }
+
+    /// <summary>
     /// Get binary bitmap with given threshold value,
     /// pixels with equal or less value than threshold value will be set 
     /// to be 0 and those with more value to be 255
@@ -244,13 +350,12 @@ namespace PIP
           Color color = grayScaleBitmap.GetPixel(i, j);
           if (color.R <= thresholdValue)
           {
-            color = Color.Black;
+            binaryBitmap.SetPixel(i, j, Color.Black);
           }
           else
           {
-            color = Color.White;
+            binaryBitmap.SetPixel(i, j, Color.White);
           }
-          binaryBitmap.SetPixel(i, j, color);
         }
       }
       return binaryBitmap;
