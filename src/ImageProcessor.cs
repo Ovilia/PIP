@@ -11,7 +11,11 @@ namespace PIP
     private Bitmap bitmap;
     private Bitmap grayScaleBitmap;
     private int[] histogram;
+    private int[] accumulatedHistogram;
     private int[,] rgbHistogram;
+
+    private int weightedHistogram;
+
     private int maxHistogram;
     private int maxRgbHistogram;
 
@@ -35,10 +39,12 @@ namespace PIP
     public ImageProcessor(Bitmap bitmap)
     {
       this.bitmap = bitmap;
+      // -1 is the default flag to notify the uninitialized variables
       maxHistogram = -1;
       maxRgbHistogram = -1;
       otsuThresholdValue = -1;
       entropyThresholdValue = -1;
+      weightedHistogram = -1;
     }
 
     /// <summary>
@@ -133,8 +139,9 @@ namespace PIP
         return histogram;
       }
       histogram = new int[RANGE_OF_8BITS];
+      accumulatedHistogram = new int[RANGE_OF_8BITS];
+
       Bitmap grayScaleBitmap = getGrayScaleBitmap();
-      //Bitmap grayScaleBitmap = bitmap;
       for (int i = 0; i < grayScaleBitmap.Width; ++i)
       {
         for (int j = 0; j < grayScaleBitmap.Height; ++j)
@@ -143,16 +150,51 @@ namespace PIP
         }
       }
 
-      maxHistogram = -1;
-      int imageSize = grayScaleBitmap.Height * grayScaleBitmap.Width;
-      for (int i = 0; i < RANGE_OF_8BITS; ++i)
+      maxHistogram = histogram[0];
+      accumulatedHistogram[0] = histogram[0];
+      for (int i = 1; i < RANGE_OF_8BITS; ++i)
       {
         if (histogram[i] > maxHistogram)
         {
           maxHistogram = histogram[i];
         }
+        accumulatedHistogram[i] = accumulatedHistogram[i - 1] + histogram[i];
       }
       return histogram;
+    }
+
+    /// <summary>
+    /// Get accumulated histogram value
+    /// </summary>
+    /// <returns>Accumulated histogram value</returns>
+    public int[] getAccumulatedHistogram()
+    {
+      if (accumulatedHistogram == null)
+      {
+        getHistogram();
+      }
+      return accumulatedHistogram;
+    }
+
+    /// <summary>
+    /// Get sum(i * histogram[i]) of histogram array
+    /// </summary>
+    /// <returns>Weighted sum of histogram array</returns>
+    int getWeightedHistogram()
+    {
+      if (weightedHistogram != -1)
+      {
+        return weightedHistogram;
+      }
+      // Make sure histogram is calculate
+      getHistogram();
+
+      weightedHistogram = 0;
+      for (int i = 0; i < RANGE_OF_8BITS; ++i)
+      {
+        weightedHistogram += i * histogram[i];
+      }
+      return weightedHistogram;
     }
 
     /// <summary>
@@ -235,20 +277,16 @@ namespace PIP
 
       // Sum of pixels with index below thresholdValue 
       int belowSum = 0;
+      // Sum of pixels with index upper than threshold value 
+      int upperSum = accumulatedHistogram[RANGE_OF_8BITS - 1];
+
       // Sum of pixels multiplies index value below thresholdValue 
       int belowWeighted = 0;
+      // Sum of pixels multiplies index value below threshold value 
+      int upperWeighted = getWeightedHistogram();
+
       // Average of pixels below thresholdValue
       double belowAverage = 0;
-
-      // Sum of pixels with index upper than thresholdValue 
-      int upperSum = 0;
-      // Sum of pixels multiplies index value below thresholdValue 
-      int upperWeighted = 0;
-      for (int i = 0; i < RANGE_OF_8BITS; ++i)
-      {
-        upperSum += histogram[i];
-        upperWeighted += histogram[i] * i;
-      }
       // Average of pixels upper than thresholdValue
       double upperAverage;
       if (upperSum == 0)
@@ -289,7 +327,6 @@ namespace PIP
         // Variance between below and upper part
         double variaceBetween = (double)belowSum * upperSum
           * (belowAverage - upperAverage) * (belowAverage - upperAverage);
-        //Console.WriteLine(variaceBetween);
 
         // Update threshold value if variance between two parts are
         // larger than maxVarianceBetween
@@ -312,8 +349,53 @@ namespace PIP
       {
         return entropyThresholdValue;
       }
-      //TODO
-      entropyThresholdValue = 200;
+      // Make sure histogram is calculate
+      getHistogram();
+
+      // Sum of pixels with index below threshold value 
+      int belowSum = 0;
+      // Sum of pixels with index upper than threshold value 
+      int upperSum = accumulatedHistogram[RANGE_OF_8BITS - 1];
+
+      // Sum of x * log(x) with index below thresholdValue
+      double belowSumXLogX = 0;
+      // Sum of x * log(x) with index upper than threshold value
+      double upperSumXLogX = 0;
+      for (int i = 0; i < RANGE_OF_8BITS; ++i)
+      {
+        if (histogram[i] != 0)
+        {
+          // Log on base e
+          upperSumXLogX += histogram[i] * Math.Log((double)histogram[i]);
+        }
+      }
+
+      double maxEntropy = 0;
+
+      for (int thresholdValue = 0; thresholdValue < RANGE_OF_8BITS; ++thresholdValue)
+      {
+        if (histogram[thresholdValue] == 0)
+        {
+          continue;
+        }
+
+        belowSum += histogram[thresholdValue];
+        upperSum -= histogram[thresholdValue];
+
+        double xLogX = histogram[thresholdValue] * Math.Log(histogram[thresholdValue]);
+        belowSumXLogX += xLogX;
+        upperSumXLogX -= xLogX;
+
+        double belowEntropy = Math.Log(belowSum) - belowSumXLogX / belowSum;
+        double upperEntropy = Math.Log(upperSum) - upperSumXLogX / upperSum;
+        double entropy = belowEntropy + upperEntropy;
+
+        if (entropy > maxEntropy)
+        {
+          entropyThresholdValue = thresholdValue;
+          maxEntropy = entropy;
+        }
+      }
       return entropyThresholdValue;
     }
 
