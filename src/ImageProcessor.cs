@@ -352,11 +352,6 @@ namespace PIP
       // Make sure histogram is calculate
       getHistogram();
 
-      // Sum of pixels with index below threshold value 
-      int belowSum = 0;
-      // Sum of pixels with index upper than threshold value 
-      int upperSum = accumulatedHistogram[RANGE_OF_8BITS - 1];
-
       // Sum of x * log(x) with index below thresholdValue
       double belowSumXLogX = 0;
       // Sum of x * log(x) with index upper than threshold value
@@ -379,15 +374,21 @@ namespace PIP
           continue;
         }
 
-        belowSum += histogram[thresholdValue];
-        upperSum -= histogram[thresholdValue];
+        int upperSum = accumulatedHistogram[RANGE_OF_8BITS - 1]
+                       - accumulatedHistogram[thresholdValue];
+        if (upperSum == 0)
+        {
+          break;
+        }
 
         double xLogX = histogram[thresholdValue] * Math.Log(histogram[thresholdValue]);
         belowSumXLogX += xLogX;
         upperSumXLogX -= xLogX;
 
-        double belowEntropy = Math.Log(belowSum) - belowSumXLogX / belowSum;
-        double upperEntropy = Math.Log(upperSum) - upperSumXLogX / upperSum;
+        double belowEntropy = Math.Log(accumulatedHistogram[thresholdValue])
+                              - belowSumXLogX / accumulatedHistogram[thresholdValue];
+        double upperEntropy = Math.Log(upperSum)
+                              - upperSumXLogX / upperSum;
         double entropy = belowEntropy + upperEntropy;
 
         if (entropy > maxEntropy)
