@@ -134,6 +134,7 @@ namespace PIP
       }
       histogram = new int[RANGE_OF_8BITS];
       Bitmap grayScaleBitmap = getGrayScaleBitmap();
+      //Bitmap grayScaleBitmap = bitmap;
       for (int i = 0; i < grayScaleBitmap.Width; ++i)
       {
         for (int j = 0; j < grayScaleBitmap.Height; ++j)
@@ -234,8 +235,10 @@ namespace PIP
 
       // Sum of pixels with index below thresholdValue 
       int belowSum = 0;
+      // Sum of pixels multiplies index value below thresholdValue 
+      int belowWeighted = 0;
       // Average of pixels below thresholdValue
-      int belowAverage = 0;
+      double belowAverage = 0;
 
       // Sum of pixels with index upper than thresholdValue 
       int upperSum = 0;
@@ -247,56 +250,53 @@ namespace PIP
         upperWeighted += histogram[i] * i;
       }
       // Average of pixels upper than thresholdValue
-      int upperAverage;
+      double upperAverage;
       if (upperSum == 0)
       {
         upperAverage = 0;
       }
       else
       {
-        upperAverage = upperWeighted / upperSum;
+        upperAverage = (double)upperWeighted / upperSum;
       }
 
       // Max variance between two parts
-      int maxVarianceBetween = belowSum * upperSum
+      double maxVarianceBetween = belowSum * upperSum
         * (belowAverage - upperAverage) * (belowAverage - upperAverage);
       otsuThresholdValue = 0;
 
       // Loop threshold value to get max variance between two parts
-      for (int thresholdValue = 0; thresholdValue < RANGE_OF_8BITS - 1; ++thresholdValue)
+      for (int thresholdValue = 0; thresholdValue < RANGE_OF_8BITS; ++thresholdValue)
       {
         belowSum += histogram[thresholdValue];
         upperSum -= histogram[thresholdValue];
 
         if (belowSum == 0)
         {
-          belowAverage = 0;
-        }
-        else
-        {
-          belowAverage = (belowAverage * (belowSum - histogram[thresholdValue])
-            + histogram[thresholdValue] * thresholdValue) / belowSum;
+          continue;
         }
         if (upperSum == 0)
         {
-          upperAverage = 0;
-        }
-        else
-        {
-          upperAverage = (upperAverage * (upperSum + histogram[thresholdValue])
-            - histogram[thresholdValue] * thresholdValue) / upperSum;
+          break;
         }
 
+        belowWeighted += histogram[thresholdValue] * thresholdValue;
+        upperWeighted -= histogram[thresholdValue] * thresholdValue;
+
+        belowAverage = (double)belowWeighted / belowSum;
+        upperAverage = (double)upperWeighted / upperSum;
+
         // Variance between below and upper part
-        int variaceBetween = belowSum * upperSum
+        double variaceBetween = (double)belowSum * upperSum
           * (belowAverage - upperAverage) * (belowAverage - upperAverage);
+        //Console.WriteLine(variaceBetween);
 
         // Update threshold value if variance between two parts are
         // larger than maxVarianceBetween
         if (variaceBetween > maxVarianceBetween)
         {
           maxVarianceBetween = variaceBetween;
-          otsuThresholdValue = thresholdValue + 1;
+          otsuThresholdValue = thresholdValue;
         }
       }
       return otsuThresholdValue;
