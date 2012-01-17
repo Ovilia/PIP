@@ -228,7 +228,7 @@ namespace PIP
         this.grayScaleWindowToolStripMenuItem.Enabled = false;
         this.histogramWindowToolStripMenuItem.Checked = false;
         this.grayScaleWindowToolStripMenuItem.Checked = false;
-        windowManager.disposeAll();
+        windowManager.disposeAllWindows();
       }
     }
 

@@ -21,7 +21,7 @@ namespace PIP
     }
     
     /// <summary>
-    /// Get histogram if exist in windowList
+    /// Get histogram window
     /// </summary>
     /// <returns>Histogram window</returns>
     public HistogramWindow getHistogramWindow()
@@ -31,28 +31,6 @@ namespace PIP
         histogramWindow = new HistogramWindow();
       }
       return histogramWindow;
-    }
-
-    /// <summary>
-    /// Show all initialized windows
-    /// </summary>
-    public void showAll()
-    {
-      if (histogramWindow != null)
-      {
-        histogramWindow.Show();
-      }
-    }
-
-    /// <summary>
-    /// Dispose all initialized windows
-    /// </summary>
-    public void disposeAll()
-    {
-      if (histogramWindow != null)
-      {
-        histogramWindow.Dispose();
-      }
     }
 
     /// <summary>
@@ -168,6 +146,17 @@ namespace PIP
       if (histogramWindow != null)
       {
         histogramWindow.Show();
+      }
+    }
+
+    /// <summary>
+    /// Dispose all initialized windows
+    /// </summary>
+    public void disposeAllWindows()
+    {
+      if (histogramWindow != null)
+      {
+        histogramWindow.Dispose();
       }
     }
   }

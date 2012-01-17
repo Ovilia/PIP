@@ -309,10 +309,10 @@ namespace PIP
       this.customRadioButton.Checked = true;
       this.customRadioButton.Location = new System.Drawing.Point(12, 66);
       this.customRadioButton.Name = "customRadioButton";
-      this.customRadioButton.Size = new System.Drawing.Size(95, 16);
+      this.customRadioButton.Size = new System.Drawing.Size(107, 16);
       this.customRadioButton.TabIndex = 10;
       this.customRadioButton.TabStop = true;
-      this.customRadioButton.Text = "Custom value";
+      this.customRadioButton.Text = "Customed value";
       this.customRadioButton.UseVisualStyleBackColor = true;
       // 
       // entropyRadioButton
