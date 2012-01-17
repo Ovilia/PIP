@@ -183,11 +183,11 @@ namespace PIP
     {
       if (this.histogramWindowToolStripMenuItem.Checked)
       {
-        windowManager.addWindow(typeof(HistogramWindow));
+        windowManager.getHistogramWindow().Show();
       }
       else
       {
-        windowManager.removeWindow(typeof(HistogramWindow));
+        windowManager.getHistogramWindow().Dispose();
       }
     }
 
@@ -228,7 +228,7 @@ namespace PIP
         this.grayScaleWindowToolStripMenuItem.Enabled = false;
         this.histogramWindowToolStripMenuItem.Checked = false;
         this.grayScaleWindowToolStripMenuItem.Checked = false;
-        windowManager.disposeAllWindows();
+        windowManager.disposeAll();
       }
     }
 
