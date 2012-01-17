@@ -6,6 +6,8 @@ namespace PIP
   class WindowManager
   {
     private HistogramWindow histogramWindow;
+    private FilterWindow filterWindow;
+
     /// <summary>
     /// List of ImageWindow
     /// </summary>
@@ -31,6 +33,19 @@ namespace PIP
         histogramWindow = new HistogramWindow();
       }
       return histogramWindow;
+    }
+
+    /// <summary>
+    /// Get Convolution and Image Filter window
+    /// </summary>
+    /// <returns>Convolution and Image Filter window</returns>
+    public FilterWindow getFilterWindow()
+    {
+      if (filterWindow == null)
+      {
+        filterWindow = new FilterWindow();
+      }
+      return filterWindow;
     }
 
     /// <summary>
@@ -147,6 +162,10 @@ namespace PIP
       {
         histogramWindow.Show();
       }
+      if (filterWindow != null)
+      {
+        filterWindow.Show();
+      }
     }
 
     /// <summary>
@@ -157,6 +176,10 @@ namespace PIP
       if (histogramWindow != null)
       {
         histogramWindow.Dispose();
+      }
+      if (filterWindow != null)
+      {
+        filterWindow.Dispose();
       }
     }
   }

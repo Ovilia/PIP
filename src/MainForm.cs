@@ -27,6 +27,7 @@ namespace PIP
     private ToolStripMenuItem exitToolStripMenuItem;
     private OpenFileDialog openFileDialog;
     private ToolStripMenuItem grayScaleWindowToolStripMenuItem;
+    private ToolStripMenuItem convolutionAndImageFilterWindowToolStripMenuItem;
     private MenuStrip menuStrip;
   
     /// <summary>
@@ -53,6 +54,7 @@ namespace PIP
       this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.histogramWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.convolutionAndImageFilterWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.grayScaleWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -120,6 +122,7 @@ namespace PIP
       // 
       this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.histogramWindowToolStripMenuItem,
+            this.convolutionAndImageFilterWindowToolStripMenuItem,
             this.grayScaleWindowToolStripMenuItem});
       this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
       this.windowToolStripMenuItem.Size = new System.Drawing.Size(67, 21);
@@ -131,15 +134,24 @@ namespace PIP
       this.histogramWindowToolStripMenuItem.CheckOnClick = true;
       this.histogramWindowToolStripMenuItem.Enabled = false;
       this.histogramWindowToolStripMenuItem.Name = "histogramWindowToolStripMenuItem";
-      this.histogramWindowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+      this.histogramWindowToolStripMenuItem.Size = new System.Drawing.Size(289, 22);
       this.histogramWindowToolStripMenuItem.Text = "Histogram window";
       this.histogramWindowToolStripMenuItem.Click += new System.EventHandler(this.histogramWindowToolStripMenuItem_Click);
+      // 
+      // convolutionAndImageFilterWindowToolStripMenuItem
+      // 
+      this.convolutionAndImageFilterWindowToolStripMenuItem.CheckOnClick = true;
+      this.convolutionAndImageFilterWindowToolStripMenuItem.Enabled = false;
+      this.convolutionAndImageFilterWindowToolStripMenuItem.Name = "convolutionAndImageFilterWindowToolStripMenuItem";
+      this.convolutionAndImageFilterWindowToolStripMenuItem.Size = new System.Drawing.Size(289, 22);
+      this.convolutionAndImageFilterWindowToolStripMenuItem.Text = "Convolution and image filter window";
+      this.convolutionAndImageFilterWindowToolStripMenuItem.Click += new System.EventHandler(this.convolutionAndImageFilterWindowToolStripMenuItem_Click);
       // 
       // grayScaleWindowToolStripMenuItem
       // 
       this.grayScaleWindowToolStripMenuItem.Enabled = false;
       this.grayScaleWindowToolStripMenuItem.Name = "grayScaleWindowToolStripMenuItem";
-      this.grayScaleWindowToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+      this.grayScaleWindowToolStripMenuItem.Size = new System.Drawing.Size(289, 22);
       this.grayScaleWindowToolStripMenuItem.Text = "Gray scale window";
       this.grayScaleWindowToolStripMenuItem.Click += new System.EventHandler(this.grayScaleWindowToolStripMenuItem_Click);
       // 
@@ -181,14 +193,8 @@ namespace PIP
     
     private void histogramWindowToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      if (this.histogramWindowToolStripMenuItem.Checked)
-      {
-        windowManager.getHistogramWindow().Show();
-      }
-      else
-      {
-        windowManager.getHistogramWindow().Dispose();
-      }
+      windowManager.getHistogramWindow().Visible =
+        histogramWindowToolStripMenuItem.Checked;
     }
 
     private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -221,15 +227,28 @@ namespace PIP
       {
         this.histogramWindowToolStripMenuItem.Enabled = true;
         this.grayScaleWindowToolStripMenuItem.Enabled = true;
+        this.convolutionAndImageFilterWindowToolStripMenuItem.Enabled = true;
+        histogramWindowToolStripMenuItem.Checked =
+          windowManager.getHistogramWindow().Visible;
+        convolutionAndImageFilterWindowToolStripMenuItem.Checked =
+          windowManager.getFilterWindow().Visible;
       }
       else
       {
         this.histogramWindowToolStripMenuItem.Enabled = false;
         this.grayScaleWindowToolStripMenuItem.Enabled = false;
+        this.convolutionAndImageFilterWindowToolStripMenuItem.Enabled = false;
         this.histogramWindowToolStripMenuItem.Checked = false;
         this.grayScaleWindowToolStripMenuItem.Checked = false;
+        this.convolutionAndImageFilterWindowToolStripMenuItem.Checked = false;
         windowManager.disposeAllWindows();
       }
+    }
+
+    private void convolutionAndImageFilterWindowToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      windowManager.getFilterWindow().Visible = 
+        convolutionAndImageFilterWindowToolStripMenuItem.Checked;
     }
 
   }

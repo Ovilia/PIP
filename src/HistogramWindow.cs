@@ -418,6 +418,7 @@ namespace PIP
       this.Controls.Add(this.splitContainer);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
       this.Name = "HistogramWindow";
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Histogram Window";
       this.splitContainer.Panel1.ResumeLayout(false);
       this.splitContainer.Panel1.PerformLayout();
@@ -521,6 +522,5 @@ namespace PIP
           ImageProcessor.ImageType.BINARY_IMAGE, false);
       }
     }
-
   }
 }
