@@ -250,6 +250,5 @@ namespace PIP
       windowManager.getFilterWindow().Visible = 
         convolutionAndImageFilterWindowToolStripMenuItem.Checked;
     }
-
   }
 }

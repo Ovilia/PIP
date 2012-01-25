@@ -5,6 +5,9 @@ namespace PIP
 {
   class FilterWindow : Form
   {
+    RobertsOperator robertsOperator;
+    PrewittOperator prewittOperator;
+
     private Label filterLabel;
     private Label convolutionLabel;
     private RadioButton sobelButton;
@@ -16,6 +19,7 @@ namespace PIP
     private TextBox textBox1;
     private Label ratioLabel;
     private GroupBox groupBox;
+
   
     public FilterWindow()
     {
@@ -135,6 +139,7 @@ namespace PIP
       this.prewittButton.TabStop = true;
       this.prewittButton.Text = "Prewitt operator";
       this.prewittButton.UseVisualStyleBackColor = true;
+      this.prewittButton.CheckedChanged += new System.EventHandler(this.prewittButton_CheckedChanged);
       // 
       // robertsRadioButton
       // 
@@ -146,6 +151,7 @@ namespace PIP
       this.robertsRadioButton.TabStop = true;
       this.robertsRadioButton.Text = "Roberts operator";
       this.robertsRadioButton.UseVisualStyleBackColor = true;
+      this.robertsRadioButton.CheckedChanged += new System.EventHandler(this.robertsRadioButton_CheckedChanged);
       // 
       // applyButton
       // 
@@ -169,6 +175,34 @@ namespace PIP
       this.groupBox.PerformLayout();
       this.ResumeLayout(false);
 
+    }
+
+    private void robertsRadioButton_CheckedChanged(object sender, EventArgs e)
+    {
+      if (robertsRadioButton.Checked)
+      {
+        if (robertsOperator == null)
+        {
+          robertsOperator = new RobertsOperator(
+            MainForm.windowManager.getFocusedImageWindow().imageProcessor);
+        }
+        MainForm.windowManager.addImageWindow(
+          new ImageWindow(robertsOperator.FilteredBitmap));
+      }
+    }
+
+    private void prewittButton_CheckedChanged(object sender, EventArgs e)
+    {
+      if (prewittButton.Checked)
+      {
+        if (prewittOperator == null)
+        {
+          prewittOperator = new PrewittOperator(
+            MainForm.windowManager.getFocusedImageWindow().imageProcessor);
+        }
+        MainForm.windowManager.addImageWindow(
+          new ImageWindow(prewittOperator.FilteredBitmap));
+      }
     }
   }
 }

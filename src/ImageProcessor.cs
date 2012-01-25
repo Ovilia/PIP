@@ -38,13 +38,7 @@ namespace PIP
     /// <param name="bitmap">Bitmap of the image to be processed</param>
     public ImageProcessor(Bitmap bitmap)
     {
-      this.bitmap = bitmap;
-      // -1 is the default flag to notify the uninitialized variables
-      maxHistogram = -1;
-      maxRgbHistogram = -1;
-      otsuThresholdValue = -1;
-      entropyThresholdValue = -1;
-      weightedHistogram = -1;
+      setBitmap(bitmap);
     }
 
     /// <summary>
@@ -83,6 +77,25 @@ namespace PIP
     public Bitmap getBitmap()
     {
       return bitmap;
+    }
+
+    /// <summary>
+    /// Set bitmap of original image,
+    /// histogram and other value is set to be uninitialized
+    /// </summary>
+    /// <param name="bitmap"></param>
+    public void setBitmap(Bitmap bitmap)
+    {
+      if (bitmap != this.bitmap)
+      {
+        this.bitmap = bitmap;
+        // -1 is the default flag to notify the uninitialized variables
+        maxHistogram = -1;
+        maxRgbHistogram = -1;
+        otsuThresholdValue = -1;
+        entropyThresholdValue = -1;
+        weightedHistogram = -1;
+      }
     }
 
     /// <summary>

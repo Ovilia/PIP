@@ -90,6 +90,7 @@ namespace PIP
     /// Update pictureBox of ImageWindow
     /// </summary>
     /// <param name="imageType">Type of image</param>
+    /// <param name="isRedraw">True if need recalculate binary image</param>
     public void updateImage(ImageProcessor.ImageType imageType, bool isRedraw = true)
     {
       switch (imageType)
