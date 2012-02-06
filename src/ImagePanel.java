@@ -2,15 +2,14 @@ package pip;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Hashtable;
 import javax.swing.BorderFactory;
-import javax.swing.BoundedRangeModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JSlider;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
@@ -35,7 +34,7 @@ public class ImagePanel extends JPanel {
 
         slider = new JSlider();
         slider.setMinimum(0);
-        slider.setMaximum(500);
+        slider.setMaximum(200);
         Hashtable<Integer, JLabel> table = new Hashtable<Integer, JLabel>();
         int length = slider.getMaximum();
         for (int i = 0; i <= length; i += 50) {
@@ -45,8 +44,14 @@ public class ImagePanel extends JPanel {
         slider.setPaintLabels(true);
         slider.setValue(100);
         slider.addChangeListener(new SliderListener());
-        this.add(slider, BorderLayout.NORTH);
-        this.setComponentZOrder(slider, 0);
+        
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new FlowLayout());
+        JLabel label = new JLabel("Image scale: ");
+        northPanel.add(label);
+        northPanel.add(slider);
+        
+        this.add(northPanel, BorderLayout.NORTH);
         
         resizeImage(image.getWidth(), image.getHeight());
     }

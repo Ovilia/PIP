@@ -120,7 +120,7 @@ public class HistogramPanel extends JPanel {
 
         northPanel.add(slider);
 
-        JButton thresholdButton = new JButton("Update binary image");
+        JButton thresholdButton = new JButton("Show binary image");
         thresholdButton.addActionListener(new ThresholdListener());
         northPanel.add(thresholdButton);
 
