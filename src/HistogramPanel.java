@@ -113,18 +113,18 @@ public class HistogramPanel extends JPanel {
         slider.setPaintLabels(true);
         slider.addChangeListener(new SliderListener());
 
-        JPanel southPanel = new JPanel();
-        southPanel.setLayout(new FlowLayout());
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new FlowLayout());
         thresholdLabel = new JLabel("Threshold value: " + thresholdValue);
-        southPanel.add(thresholdLabel);
+        northPanel.add(thresholdLabel);
 
-        southPanel.add(slider);
+        northPanel.add(slider);
 
         JButton thresholdButton = new JButton("Update binary image");
         thresholdButton.addActionListener(new ThresholdListener());
-        southPanel.add(thresholdButton);
+        northPanel.add(thresholdButton);
 
-        this.add(southPanel, BorderLayout.SOUTH);
+        this.add(northPanel, BorderLayout.NORTH);
     }
 
     /**
