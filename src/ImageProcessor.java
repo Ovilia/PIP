@@ -45,6 +45,7 @@ public class ImageProcessor {
         // other parameters will be set to recalculated
         grayScaleImage = null;
         histogram = null;
+        rgbHistogram = null;
     }
 
     public BufferedImage getGrayScaleImage(RenderingHints hints) {
@@ -85,7 +86,27 @@ public class ImageProcessor {
         return histogram;
     }
     
+    public int[][] getRgbHistogram() {
+        if (rgbHistogram == null) {
+            // make sure gray scale is calculated
+            getGrayScaleImage(null);
+            rgbHistogram = new int[RANGE_OF_8BITS][3];
+            int width = grayScaleImage.getWidth();
+            int height = grayScaleImage.getHeight();
+            for (int i = 0; i < width; ++i) {
+                for (int j = 0; j < height; ++j) {
+                    Color color = new Color(bufferedImage.getRGB(i, j));
+                    rgbHistogram[color.getRed()][0]++;
+                    rgbHistogram[color.getGreen()][1]++;
+                    rgbHistogram[color.getBlue()][2]++;
+                }
+            }
+        }
+        return rgbHistogram;
+    }
+    
     private BufferedImage bufferedImage;
     private BufferedImage grayScaleImage;
     private int[] histogram;
+    private int[][] rgbHistogram;
 }

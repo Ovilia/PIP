@@ -10,20 +10,20 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="jToolBar" alignment="0" pref="753" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="10" pref="10" max="10" attributes="0"/>
                   <Component id="tabbedPane" pref="733" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
+              <Component id="jToolBar" alignment="0" pref="753" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Component id="jToolBar" min="-2" pref="36" max="-2" attributes="0"/>
+                  <Component id="jToolBar" min="-2" pref="60" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="tabbedPane" pref="374" max="32767" attributes="0"/>
+                  <Component id="tabbedPane" pref="350" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -44,9 +44,9 @@
                   <action class="pip.PIPView" id="openImage" methodName="openImage"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" resourceKey="openToolButton.icon"/>
-                <Property name="text" type="java.lang.String" resourceKey="openToolButton.text"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="label" type="java.lang.String" resourceKey="openToolButton.label"/>
                 <Property name="name" type="java.lang.String" value="openToolButton" noResource="true"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
@@ -54,7 +54,7 @@
             <Component class="javax.swing.JToggleButton" name="grayScaleToolButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="pip.PIPView" id="grayScal" methodName="grayScal"/>
+                  <action class="pip.PIPView" id="grayScale" methodName="grayScale"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" resourceKey="grayScaleToolButton.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="grayScaleToolButton.text"/>
@@ -72,10 +72,10 @@
                   <action class="pip.PIPView" id="histogram" methodName="histogram"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" resourceKey="histogramToolButton.icon"/>
-                <Property name="text" type="java.lang.String" resourceKey="histogramToolButton.text"/>
                 <Property name="enabled" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="label" type="java.lang.String" resourceKey="histogramToolButton.label"/>
                 <Property name="name" type="java.lang.String" value="histogramToolButton" noResource="true"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
@@ -143,7 +143,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="grayScaleMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="pip.PIPView" id="grayScal" methodName="grayScal"/>
+                  <action class="pip.PIPView" id="grayScale" methodName="grayScale"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" resourceKey="grayScaleMenuItem.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="grayScaleMenuItem.text"/>

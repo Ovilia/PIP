@@ -168,14 +168,14 @@ public class PIPView extends FrameView {
         openToolButton.setAction(actionMap.get("openImage")); // NOI18N
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(pip.PIPApp.class).getContext().getResourceMap(PIPView.class);
         openToolButton.setIcon(resourceMap.getIcon("openToolButton.icon")); // NOI18N
-        openToolButton.setText(resourceMap.getString("openToolButton.text")); // NOI18N
         openToolButton.setFocusable(false);
         openToolButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        openToolButton.setLabel(resourceMap.getString("openToolButton.label")); // NOI18N
         openToolButton.setName("openToolButton"); // NOI18N
         openToolButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar.add(openToolButton);
 
-        grayScaleToolButton.setAction(actionMap.get("grayScal")); // NOI18N
+        grayScaleToolButton.setAction(actionMap.get("grayScale")); // NOI18N
         grayScaleToolButton.setIcon(resourceMap.getIcon("grayScaleToolButton.icon")); // NOI18N
         grayScaleToolButton.setText(resourceMap.getString("grayScaleToolButton.text")); // NOI18N
         grayScaleToolButton.setToolTipText(resourceMap.getString("grayScaleToolButton.toolTipText")); // NOI18N
@@ -188,10 +188,10 @@ public class PIPView extends FrameView {
 
         histogramToolButton.setAction(actionMap.get("histogram")); // NOI18N
         histogramToolButton.setIcon(resourceMap.getIcon("histogramToolButton.icon")); // NOI18N
-        histogramToolButton.setText(resourceMap.getString("histogramToolButton.text")); // NOI18N
         histogramToolButton.setEnabled(false);
         histogramToolButton.setFocusable(false);
         histogramToolButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        histogramToolButton.setLabel(resourceMap.getString("histogramToolButton.label")); // NOI18N
         histogramToolButton.setName("histogramToolButton"); // NOI18N
         histogramToolButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar.add(histogramToolButton);
@@ -202,18 +202,18 @@ public class PIPView extends FrameView {
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE)
                 .addContainerGap())
+            .addComponent(jToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(jToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -237,7 +237,7 @@ public class PIPView extends FrameView {
         imageMenu.setText(resourceMap.getString("imageMenu.text")); // NOI18N
         imageMenu.setName("imageMenu"); // NOI18N
 
-        grayScaleMenuItem.setAction(actionMap.get("grayScal")); // NOI18N
+        grayScaleMenuItem.setAction(actionMap.get("grayScale")); // NOI18N
         grayScaleMenuItem.setIcon(resourceMap.getIcon("grayScaleMenuItem.icon")); // NOI18N
         grayScaleMenuItem.setText(resourceMap.getString("grayScaleMenuItem.text")); // NOI18N
         grayScaleMenuItem.setEnabled(false);
@@ -353,6 +353,8 @@ public class PIPView extends FrameView {
                 // Show UI
                 if (originPanel != null) {
                     tabbedPane.removeAll();
+                    grayScaleToolButton.setSelected(false);
+                    histogramToolButton.setSelected(false);
                 }
                 BufferedImage image = imageProcessor.getBufferedImage();
                 originPanel = new ImagePanel(image);
@@ -376,7 +378,7 @@ public class PIPView extends FrameView {
     }
 
     @Action
-    public Task grayScal() {
+    public Task grayScale() {
         return new GrayScaleTask(getApplication());
     }
 
@@ -408,20 +410,21 @@ public class PIPView extends FrameView {
 
     private class HistogramTask extends org.jdesktop.application.Task<Object, Void> {
         HistogramTask(org.jdesktop.application.Application app) {
-            // Runs on the EDT.  Copy GUI state that
-            // doInBackground() depends on from parameters
-            // to HistogramTask fields, here.
             super(app);
         }
         @Override protected Object doInBackground() {
-            // Your Task's code here.  This method runs
-            // on a background thread, so don't reference
-            // the Swing GUI from here.
-            return null;  // return your result
+            if (tabbedPane.indexOfComponent(histogramPanel) > 0) {
+                // tabbedPane contain histogram
+                tabbedPane.remove(histogramPanel);
+            } else {
+                // add to tabbedPane
+                histogramPanel = new HistogramPanel(imageProcessor);
+                tabbedPane.addTab("Histogram", histogramPanel);
+                tabbedPane.setSelectedComponent(histogramPanel);
+            }
+            return null;
         }
         @Override protected void succeeded(Object result) {
-            // Runs on the EDT.  Update the GUI based on
-            // the result computed by doInBackground().
         }
     }
 
@@ -453,7 +456,7 @@ public class PIPView extends FrameView {
     
     private ImagePanel originPanel;
     private ImagePanel grayScalePanel;
-    private JPanel histogramPanel;
+    private HistogramPanel histogramPanel;
     
     private String fileName;
     private ImageProcessor imageProcessor;
