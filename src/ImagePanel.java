@@ -45,7 +45,7 @@ public class ImagePanel extends JPanel {
         slider.setPaintLabels(true);
         slider.setValue(100);
         slider.addChangeListener(new SliderListener());
-        this.add(slider, BorderLayout.SOUTH);
+        this.add(slider, BorderLayout.NORTH);
         this.setComponentZOrder(slider, 0);
         
         resizeImage(image.getWidth(), image.getHeight());

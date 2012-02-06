@@ -15,12 +15,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import javax.swing.GroupLayout;
 import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
@@ -33,6 +33,22 @@ public class PIPView extends FrameView {
         super(app);
 
         initComponents();
+
+        tabbedPane = new JTabbedPane();
+        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+        mainPanelLayout.setHorizontalGroup(
+                mainPanelLayout.createParallelGroup(
+                javax.swing.GroupLayout.Alignment.LEADING).addComponent(jToolBar, javax.swing.GroupLayout.DEFAULT_SIZE,
+                753, Short.MAX_VALUE).addGroup(mainPanelLayout.createSequentialGroup().addGap(10, 10, 10).addComponent(tabbedPane,
+                javax.swing.GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE).addContainerGap()));
+        mainPanelLayout.setVerticalGroup(
+                mainPanelLayout.createParallelGroup(
+                javax.swing.GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addComponent(jToolBar, javax.swing.GroupLayout.PREFERRED_SIZE,
+                60, javax.swing.GroupLayout.PREFERRED_SIZE).addPreferredGap(
+                javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(
+                tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 350,
+                Short.MAX_VALUE).addContainerGap()));
 
         // status bar initialization - message timeout, idle icon and busy animation, etc
         ResourceMap resourceMap = getResourceMap();
@@ -91,6 +107,7 @@ public class PIPView extends FrameView {
             }
         });
         PIPApp.getApplication().getMainFrame().addMouseListener(new MouseListener() {
+
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 // TODO Auto-generated method stub
@@ -142,7 +159,6 @@ public class PIPView extends FrameView {
         openToolButton = new javax.swing.JButton();
         grayScaleToolButton = new javax.swing.JToggleButton();
         histogramToolButton = new javax.swing.JToggleButton();
-        tabbedPane = new javax.swing.JTabbedPane();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
@@ -196,25 +212,17 @@ public class PIPView extends FrameView {
         histogramToolButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar.add(histogramToolButton);
 
-        tabbedPane.setName("tabbedPane"); // NOI18N
-
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE)
-                .addContainerGap())
             .addComponent(jToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addComponent(jToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(366, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -332,9 +340,9 @@ public class PIPView extends FrameView {
     }
 
     private class OpenImageTask extends org.jdesktop.application.Task<Object, Void> {
-        
-        int fileChooserVal;
-        
+
+        private int fileChooserVal;
+
         OpenImageTask(org.jdesktop.application.Application app) {
             super(app);
             fileChooserVal = fileChooser.showOpenDialog(null);
@@ -383,10 +391,13 @@ public class PIPView extends FrameView {
     }
 
     private class GrayScaleTask extends org.jdesktop.application.Task<Object, Void> {
+
         GrayScaleTask(org.jdesktop.application.Application app) {
             super(app);
         }
-        @Override protected Object doInBackground() {
+
+        @Override
+        protected Object doInBackground() {
             if (tabbedPane.indexOfComponent(grayScalePanel) > 0) {
                 // tabbedPane contain gray scale
                 tabbedPane.remove(grayScalePanel);
@@ -399,7 +410,9 @@ public class PIPView extends FrameView {
             }
             return null;
         }
-        @Override protected void succeeded(Object result) {
+
+        @Override
+        protected void succeeded(Object result) {
         }
     }
 
@@ -409,10 +422,13 @@ public class PIPView extends FrameView {
     }
 
     private class HistogramTask extends org.jdesktop.application.Task<Object, Void> {
+
         HistogramTask(org.jdesktop.application.Application app) {
             super(app);
         }
-        @Override protected Object doInBackground() {
+
+        @Override
+        protected Object doInBackground() {
             if (tabbedPane.indexOfComponent(histogramPanel) > 0) {
                 // tabbedPane contain histogram
                 tabbedPane.remove(histogramPanel);
@@ -424,11 +440,28 @@ public class PIPView extends FrameView {
             }
             return null;
         }
-        @Override protected void succeeded(Object result) {
+
+        @Override
+        protected void succeeded(Object result) {
         }
     }
 
+    public static class ThresholdListener implements ActionListener {
 
+        public void actionPerformed(ActionEvent e) {
+            if (tabbedPane.indexOfTabComponent(thresholdPanel) > 0) {
+                // tabbedPane contain thresholdPanel
+                tabbedPane.remove(thresholdPanel);
+            } else {
+                // add to tabbedPane
+                int threshold = HistogramPanel.getThresholdValue();
+                thresholdPanel = new ImagePanel(
+                        imageProcessor.getThresholdImage(threshold));
+                tabbedPane.addTab("Binary image", thresholdPanel);
+                tabbedPane.setSelectedComponent(thresholdPanel);
+            }
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JMenuItem grayScaleMenuItem;
@@ -445,7 +478,6 @@ public class PIPView extends FrameView {
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
-    private javax.swing.JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
     private final Timer messageTimer;
     private final Timer busyIconTimer;
@@ -453,11 +485,11 @@ public class PIPView extends FrameView {
     private final Icon[] busyIcons = new Icon[15];
     private int busyIconIndex = 0;
     private JDialog aboutBox;
-    
+    private static JTabbedPane tabbedPane;
     private ImagePanel originPanel;
     private ImagePanel grayScalePanel;
     private HistogramPanel histogramPanel;
-    
+    private static JPanel thresholdPanel;
     private String fileName;
-    private ImageProcessor imageProcessor;
+    private static ImageProcessor imageProcessor;
 }

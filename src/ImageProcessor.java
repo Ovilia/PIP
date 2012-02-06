@@ -54,7 +54,7 @@ public class ImageProcessor {
             int width = bufferedImage.getWidth();
             int height = bufferedImage.getHeight();
             grayScaleImage = new BufferedImage(
-                    width, height, BufferedImage.TYPE_BYTE_GRAY);
+                    width, height, bufferedImage.getType());
 
             if (hints == null) {
                 Graphics2D g2 = grayScaleImage.createGraphics();
@@ -68,7 +68,7 @@ public class ImageProcessor {
         }
         return grayScaleImage;
     }
-    
+
     public int[] getHistogram() {
         if (histogram == null) {
             // make sure gray scale is calculated
@@ -85,7 +85,7 @@ public class ImageProcessor {
         }
         return histogram;
     }
-    
+
     public int[][] getRgbHistogram() {
         if (rgbHistogram == null) {
             // make sure gray scale is calculated
@@ -104,7 +104,28 @@ public class ImageProcessor {
         }
         return rgbHistogram;
     }
-    
+
+    public BufferedImage getThresholdImage(int threshold) {
+        // make sure gray scale is calculated
+        getGrayScaleImage(null);
+        int width = grayScaleImage.getWidth();
+        int height = grayScaleImage.getHeight();
+        BufferedImage thresholdImage = new BufferedImage(
+                width, height, grayScaleImage.getType());
+        for (int i = 0; i < width; ++i) {
+            for (int j = 0; j < height; ++j) {
+                int gray = (new Color(grayScaleImage.getRGB(i, j))).getRed();
+                Color color;
+                if (gray >= threshold) {
+                    color = Color.WHITE;
+                } else {
+                    color = Color.BLACK;
+                }
+                thresholdImage.setRGB(i, j, color.getRGB());
+            }
+        }
+        return thresholdImage;
+    }
     private BufferedImage bufferedImage;
     private BufferedImage grayScaleImage;
     private int[] histogram;
