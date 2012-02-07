@@ -89,33 +89,6 @@ public class PIPView extends FrameView {
                 }
             }
         });
-        PIPApp.getApplication().getMainFrame().addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseClicked(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void mouseExited(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void mousePressed(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent arg0) {
-                PIPApp.getApplication().getMainFrame().revalidate();
-            }
-        });
     }
 
     @Action
@@ -240,13 +213,11 @@ public class PIPView extends FrameView {
         grayScaleMenuItem.setAction(actionMap.get("grayScale")); // NOI18N
         grayScaleMenuItem.setIcon(resourceMap.getIcon("grayScaleMenuItem.icon")); // NOI18N
         grayScaleMenuItem.setText(resourceMap.getString("grayScaleMenuItem.text")); // NOI18N
-        grayScaleMenuItem.setEnabled(false);
         grayScaleMenuItem.setName("grayScaleMenuItem"); // NOI18N
         imageMenu.add(grayScaleMenuItem);
 
         histogramMenuItem.setAction(actionMap.get("histogram")); // NOI18N
         histogramMenuItem.setText(resourceMap.getString("histogramMenuItem.text")); // NOI18N
-        histogramMenuItem.setEnabled(false);
         histogramMenuItem.setName("histogramMenuItem"); // NOI18N
         imageMenu.add(histogramMenuItem);
 
@@ -313,7 +284,7 @@ public class PIPView extends FrameView {
     /**
      * @return the imageProcessor
      */
-    public ImageProcessor getImageProcessor() {
+    public static ImageProcessor getImageProcessor() {
         return imageProcessor;
     }
 
@@ -337,6 +308,7 @@ public class PIPView extends FrameView {
 
         OpenImageTask(org.jdesktop.application.Application app) {
             super(app);
+            // get path of the image
             fileChooserVal = fileChooser.showOpenDialog(null);
             if (fileChooserVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
@@ -371,6 +343,7 @@ public class PIPView extends FrameView {
         @Override
         protected void succeeded(Object result) {
             if (fileChooserVal == JFileChooser.APPROVE_OPTION) {
+                // enable image processing
                 grayScaleToolButton.setEnabled(true);
                 grayScaleMenuItem.setEnabled(true);
                 histogramToolButton.setEnabled(true);
@@ -439,19 +412,7 @@ public class PIPView extends FrameView {
         protected void succeeded(Object result) {
         }
     }
-
-    public static class ThresholdListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            int threshold = HistogramPanel.getThresholdValue();
-            JFrame frame = new JFrame("Binary image with threshold value " + 
-                    threshold);
-            ImagePanel binaryPanel = new ImagePanel(
-                    imageProcessor.getThresholdImage(threshold));
-            frame.add(binaryPanel);
-            frame.setSize(600, 400);
-            frame.show();
-        }
-    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JMenuItem grayScaleMenuItem;

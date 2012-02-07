@@ -21,6 +21,7 @@ public class ImageProcessor {
     public ImageProcessor(String fileName) {
         try {
             bufferedImage = ImageIO.read(new File(fileName));
+            weightedHistogramSum = -1;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,8 +47,15 @@ public class ImageProcessor {
         grayScaleImage = null;
         histogram = null;
         rgbHistogram = null;
+        accHistogram = null;
+        weightedHistogramSum = -1;
     }
 
+    /**
+     * get gray scale image with given hints
+     * @param hints how to get gray scale image
+     * @return gray scale image
+     */
     public BufferedImage getGrayScaleImage(RenderingHints hints) {
         if (grayScaleImage == null) {
             // gray scall image not calculated yet
@@ -69,6 +77,9 @@ public class ImageProcessor {
         return grayScaleImage;
     }
 
+    /**
+     * @return histogram
+     */
     public int[] getHistogram() {
         if (histogram == null) {
             // make sure gray scale is calculated
@@ -86,6 +97,9 @@ public class ImageProcessor {
         return histogram;
     }
 
+    /**
+     * @return rgbHistogram
+     */
     public int[][] getRgbHistogram() {
         if (rgbHistogram == null) {
             // make sure gray scale is calculated
@@ -105,6 +119,11 @@ public class ImageProcessor {
         return rgbHistogram;
     }
 
+    /**
+     * get binary image with given threshold value
+     * @param threshold threshold value
+     * @return binary image
+     */
     public BufferedImage getThresholdImage(int threshold) {
         // make sure gray scale is calculated
         getGrayScaleImage(null);
@@ -126,8 +145,43 @@ public class ImageProcessor {
         }
         return thresholdImage;
     }
+
+    /**
+     * @return the accHistogram
+     */
+    public int[] getAccHistogram() {
+        // make sure histogram is calculated
+        getHistogram();
+        if (accHistogram == null) {
+            accHistogram = new int[histogram.length];
+            accHistogram[0] = histogram[0];
+            for (int i = 1; i < histogram.length; ++i) {
+                accHistogram[i] = accHistogram[i - 1] + histogram[i];
+            }
+        }
+        return accHistogram;
+    }
+
+    /**
+     * sum(i * histogram[i])
+     * @return the weightedHistogramSum
+     */
+    public int getWeightedHistogramSum() {
+        // calculate only if is not yet
+        if (weightedHistogramSum < 0) {
+            // make sure histogram is calculate
+            getHistogram();
+            weightedHistogramSum = 0;
+            for (int i = 0; i < histogram.length; ++i) {
+                weightedHistogramSum += i * histogram[i];
+            }
+        }
+        return weightedHistogramSum;
+    }
     private BufferedImage bufferedImage;
     private BufferedImage grayScaleImage;
     private int[] histogram;
     private int[][] rgbHistogram;
+    private int[] accHistogram; // accumulated histogram
+    private int weightedHistogramSum;
 }

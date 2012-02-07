@@ -25,6 +25,10 @@ public class ImagePanel extends JPanel {
     private JSlider slider;
     private JPanel centerPanel;
 
+    /**
+     * a JPanel that contains scalable image
+     * @param image origin image
+     */
     public ImagePanel(BufferedImage image) {
         this.image = image;
 
@@ -56,7 +60,13 @@ public class ImagePanel extends JPanel {
         resizeImage(image.getWidth(), image.getHeight());
     }
 
+    /**
+     * resize image with given width and height
+     * @param width new width of image
+     * @param height new height of image
+     */
     public void resizeImage(int width, int height) {
+        // zero size is not legal
         if (width <= 0) {
             width = 1;
         }
@@ -70,6 +80,13 @@ public class ImagePanel extends JPanel {
         this.revalidate();
     }
 
+    /**
+     * create a JLabel that contains image with given size
+     * @param w width of image
+     * @param h height of image
+     * @param image image to contain
+     * @return a JLabel that contain image
+     */
     private JLabel getLabel(int w, int h, BufferedImage image) {
         BufferedImage scaled = scale(image, w, h);
         JLabel label = new JLabel(new ImageIcon(scaled));
@@ -78,6 +95,13 @@ public class ImagePanel extends JPanel {
         return label;
     }
 
+    /**
+     * scale image with given width and height
+     * @param src source image
+     * @param w width
+     * @param h height
+     * @return scaled image
+     */
     private BufferedImage scale(BufferedImage src, int w, int h) {
         int type = BufferedImage.TYPE_INT_RGB;
         BufferedImage dst = new BufferedImage(w, h, type);
@@ -101,6 +125,9 @@ public class ImagePanel extends JPanel {
         return dst;
     }
 
+    /**
+     * listener for slider changes state
+     */
     class SliderListener implements ChangeListener {
         public void stateChanged(ChangeEvent changeEvent) {
             resizeImage(slider.getValue() * image.getWidth() / 100,
