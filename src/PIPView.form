@@ -80,6 +80,19 @@
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
             </Component>
+            <Component class="javax.swing.JToggleButton" name="filterToolButton">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="pip.PIPView" id="filter" methodName="filter"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="filterToolButton.text"/>
+                <Property name="enabled" type="boolean" value="false"/>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="name" type="java.lang.String" value="filterToolButton" noResource="true"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JTabbedPane" name="tabbedPane">
@@ -147,6 +160,7 @@
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" resourceKey="grayScaleMenuItem.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="grayScaleMenuItem.text"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="grayScaleMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
@@ -156,7 +170,18 @@
                   <action class="pip.PIPView" id="histogram" methodName="histogram"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="histogramMenuItem.text"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="histogramMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="filterMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="pip.PIPView" id="filter" methodName="filter"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="filterMenuItem.text"/>
+                <Property name="enabled" type="boolean" value="false"/>
+                <Property name="name" type="java.lang.String" value="filterMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
           </SubComponents>

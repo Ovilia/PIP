@@ -115,6 +115,7 @@ public class PIPView extends FrameView {
         openToolButton = new javax.swing.JButton();
         grayScaleToolButton = new javax.swing.JToggleButton();
         histogramToolButton = new javax.swing.JToggleButton();
+        filterToolButton = new javax.swing.JToggleButton();
         tabbedPane = new javax.swing.JTabbedPane();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
@@ -123,6 +124,7 @@ public class PIPView extends FrameView {
         imageMenu = new javax.swing.JMenu();
         grayScaleMenuItem = new javax.swing.JMenuItem();
         histogramMenuItem = new javax.swing.JMenuItem();
+        filterMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
@@ -169,6 +171,15 @@ public class PIPView extends FrameView {
         histogramToolButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar.add(histogramToolButton);
 
+        filterToolButton.setAction(actionMap.get("filter")); // NOI18N
+        filterToolButton.setText(resourceMap.getString("filterToolButton.text")); // NOI18N
+        filterToolButton.setEnabled(false);
+        filterToolButton.setFocusable(false);
+        filterToolButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        filterToolButton.setName("filterToolButton"); // NOI18N
+        filterToolButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar.add(filterToolButton);
+
         tabbedPane.setName("tabbedPane"); // NOI18N
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
@@ -213,13 +224,21 @@ public class PIPView extends FrameView {
         grayScaleMenuItem.setAction(actionMap.get("grayScale")); // NOI18N
         grayScaleMenuItem.setIcon(resourceMap.getIcon("grayScaleMenuItem.icon")); // NOI18N
         grayScaleMenuItem.setText(resourceMap.getString("grayScaleMenuItem.text")); // NOI18N
+        grayScaleMenuItem.setEnabled(false);
         grayScaleMenuItem.setName("grayScaleMenuItem"); // NOI18N
         imageMenu.add(grayScaleMenuItem);
 
         histogramMenuItem.setAction(actionMap.get("histogram")); // NOI18N
         histogramMenuItem.setText(resourceMap.getString("histogramMenuItem.text")); // NOI18N
+        histogramMenuItem.setEnabled(false);
         histogramMenuItem.setName("histogramMenuItem"); // NOI18N
         imageMenu.add(histogramMenuItem);
+
+        filterMenuItem.setAction(actionMap.get("filter")); // NOI18N
+        filterMenuItem.setText(resourceMap.getString("filterMenuItem.text")); // NOI18N
+        filterMenuItem.setEnabled(false);
+        filterMenuItem.setName("filterMenuItem"); // NOI18N
+        imageMenu.add(filterMenuItem);
 
         menuBar.add(imageMenu);
 
@@ -327,6 +346,7 @@ public class PIPView extends FrameView {
                     tabbedPane.removeAll();
                     grayScaleToolButton.setSelected(false);
                     histogramToolButton.setSelected(false);
+                    filterToolButton.setSelected(false);
                 }
                 BufferedImage image = imageProcessor.getBufferedImage();
                 originPanel = new ImagePanel(image);
@@ -348,6 +368,8 @@ public class PIPView extends FrameView {
                 grayScaleMenuItem.setEnabled(true);
                 histogramToolButton.setEnabled(true);
                 histogramMenuItem.setEnabled(true);
+                filterToolButton.setEnabled(true);
+                filterMenuItem.setEnabled(true);
             }
         }
     }
@@ -412,9 +434,37 @@ public class PIPView extends FrameView {
         protected void succeeded(Object result) {
         }
     }
+
+    @Action
+    public Task filter() {
+        return new FilterTask(getApplication());
+    }
+
+    private class FilterTask extends org.jdesktop.application.Task<Object, Void> {
+        FilterTask(org.jdesktop.application.Application app) {
+            super(app);
+        }
+        @Override protected Object doInBackground() {
+            if (tabbedPane.indexOfComponent(filterPanel) > 0) {
+                // tabbedPane contain filter
+                tabbedPane.remove(filterPanel);
+            } else {
+                // add to tabbedPane
+                filterPanel = new FilterPanel(imageProcessor);
+                tabbedPane.addTab("Filters", filterPanel);
+                tabbedPane.setSelectedComponent(filterPanel);
+            }
+            return null;  
+        }
+        @Override protected void succeeded(Object result) {
+        }
+    }
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFileChooser fileChooser;
+    private javax.swing.JMenuItem filterMenuItem;
+    private javax.swing.JToggleButton filterToolButton;
     private javax.swing.JMenuItem grayScaleMenuItem;
     private javax.swing.JToggleButton grayScaleToolButton;
     private javax.swing.JMenuItem histogramMenuItem;
@@ -440,6 +490,7 @@ public class PIPView extends FrameView {
     private ImagePanel originPanel;
     private ImagePanel grayScalePanel;
     private HistogramPanel histogramPanel;
+    private FilterPanel filterPanel;
     private String fileName;
     private static ImageProcessor imageProcessor;
 }

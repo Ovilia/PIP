@@ -328,7 +328,7 @@ public class HistogramPanel extends JPanel {
         }
     }
 
-    public class ButtonListener implements ActionListener {
+    private class ButtonListener implements ActionListener {
 
         public void actionPerformed(ActionEvent e) {
             if (otsuButton.isSelected()) {

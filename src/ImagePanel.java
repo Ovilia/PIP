@@ -48,16 +48,33 @@ public class ImagePanel extends JPanel {
         slider.setPaintLabels(true);
         slider.setValue(100);
         slider.addChangeListener(new SliderListener());
-        
+
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new FlowLayout());
         JLabel label = new JLabel("Image scale: ");
         northPanel.add(label);
         northPanel.add(slider);
-        
+
         this.add(northPanel, BorderLayout.NORTH);
-        
+
         resizeImage(image.getWidth(), image.getHeight());
+    }
+
+    /**
+     * set max size of the image
+     * @param width
+     * @param height 
+     */
+    public void setMaxSize(int width, int height) {
+        double radioWidth = (double) width / image.getWidth();
+        double radioHeight = (double) height / image.getHeight();
+        if (radioWidth < radioHeight) {
+            slider.setMaximum((int) (radioWidth * 100));
+            slider.setValue((int) (radioWidth * 100));
+        } else {
+            slider.setMaximum((int) (radioHeight * 100));
+            slider.setValue((int) (radioHeight * 100));
+        }
     }
 
     /**
@@ -129,6 +146,7 @@ public class ImagePanel extends JPanel {
      * listener for slider changes state
      */
     class SliderListener implements ChangeListener {
+
         public void stateChanged(ChangeEvent changeEvent) {
             resizeImage(slider.getValue() * image.getWidth() / 100,
                     slider.getValue() * image.getHeight() / 100);
