@@ -363,15 +363,23 @@ private void radioTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:even
             // set filter
             if (robertButton.isSelected()) {
                 RobertFilter filter = new RobertFilter(
-                        imageProcessor.getBufferedImage(), borderProcess);
+                        imageProcessor.getGrayScaleImage(null), borderProcess);
+                image = filter.getFilteredImage();
+            } else if (prewittButton.isSelected()) {
+                PrewittFilter filter = new PrewittFilter(
+                        imageProcessor.getGrayScaleImage(null), borderProcess);
+                image = filter.getFilteredImage();
+            } else if (sobelButton.isSelected()) {
+                SobelFilter filter = new SobelFilter(
+                        imageProcessor.getGrayScaleImage(null), borderProcess);
                 image = filter.getFilteredImage();
             }
 
             // show out come image
             if (image != null) {
                 imagePanel = new ImagePanel(image);
-                imagePanel.setMaxSize(rightPanel.getSize().width,
-                        rightPanel.getSize().height);
+                imagePanel.setMaxSize(rightPanel.getSize().width - 20,
+                        rightPanel.getSize().height - 20);
                 rightPanel.removeAll();
                 rightPanel.add(imagePanel);
             }
