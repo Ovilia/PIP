@@ -75,8 +75,10 @@ public class FilterPanel extends javax.swing.JPanel {
         filterLabel = new javax.swing.JLabel();
         radioLabel = new javax.swing.JLabel();
         radioText = new javax.swing.JTextField();
+        sigmaLabel = new javax.swing.JLabel();
+        sigmaSlider = new javax.swing.JSlider();
         applyButton = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
+        leftDownPanel = new javax.swing.JPanel();
         blackButton = new javax.swing.JRadioButton();
         borderLabel = new javax.swing.JLabel();
         nearestButton = new javax.swing.JRadioButton();
@@ -131,15 +133,25 @@ public class FilterPanel extends javax.swing.JPanel {
             }
         });
 
+        sigmaLabel.setText(resourceMap.getString("sigmaLabel.text")); // NOI18N
+        sigmaLabel.setName("sigmaLabel"); // NOI18N
+
+        sigmaSlider.setMaximum(1000);
+        sigmaSlider.setValue(60);
+        sigmaSlider.setEnabled(false);
+        sigmaSlider.setName("sigmaSlider"); // NOI18N
+        sigmaSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                sigmaSliderStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout radioPanelLayout = new javax.swing.GroupLayout(radioPanel);
         radioPanel.setLayout(radioPanelLayout);
         radioPanelLayout.setHorizontalGroup(
             radioPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(radioPanelLayout.createSequentialGroup()
                 .addGroup(radioPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(radioPanelLayout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(gaussianButton))
                     .addGroup(radioPanelLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(robertButton))
@@ -151,23 +163,26 @@ public class FilterPanel extends javax.swing.JPanel {
                         .addComponent(operatorLabel))
                     .addGroup(radioPanelLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(filterLabel))
+                        .addComponent(prewittButton))
+                    .addGroup(radioPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(radioPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(radioPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(medianButton)
+                            .addComponent(filterLabel)
+                            .addComponent(gaussianButton)
                             .addGroup(radioPanelLayout.createSequentialGroup()
                                 .addComponent(radioLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(radioText, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(radioPanelLayout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(prewittButton)))
-                .addContainerGap(48, Short.MAX_VALUE))
-            .addGroup(radioPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
-                .addContainerGap())
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(radioText, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(medianButton)
+                            .addGroup(radioPanelLayout.createSequentialGroup()
+                                .addGap(21, 21, 21)
+                                .addGroup(radioPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(sigmaSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(sigmaLabel))))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         radioPanelLayout.setVerticalGroup(
             radioPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -180,19 +195,23 @@ public class FilterPanel extends javax.swing.JPanel {
                 .addComponent(prewittButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sobelButton)
-                .addGap(14, 14, 14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(filterLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(radioPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(radioLabel)
+                    .addComponent(radioText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(gaussianButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(medianButton)
+                .addComponent(sigmaLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(radioPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER, false)
-                    .addComponent(radioText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(radioLabel))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(sigmaSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(medianButton)
+                .addContainerGap())
         );
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(pip.PIPApp.class).getContext().getActionMap(FilterPanel.class, this);
@@ -200,8 +219,8 @@ public class FilterPanel extends javax.swing.JPanel {
         applyButton.setText(resourceMap.getString("applyButton.text")); // NOI18N
         applyButton.setName("applyButton"); // NOI18N
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-        jPanel1.setName("jPanel1"); // NOI18N
+        leftDownPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        leftDownPanel.setName("leftDownPanel"); // NOI18N
 
         blackButton.setText(resourceMap.getString("blackButton.text")); // NOI18N
         blackButton.setToolTipText(resourceMap.getString("blackButton.toolTipText")); // NOI18N
@@ -225,36 +244,36 @@ public class FilterPanel extends javax.swing.JPanel {
         periodicButton.setToolTipText(resourceMap.getString("periodicButton.toolTipText")); // NOI18N
         periodicButton.setName("periodicButton"); // NOI18N
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout leftDownPanelLayout = new javax.swing.GroupLayout(leftDownPanel);
+        leftDownPanel.setLayout(leftDownPanelLayout);
+        leftDownPanelLayout.setHorizontalGroup(
+            leftDownPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(leftDownPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(leftDownPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(borderLabel)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(leftDownPanelLayout.createSequentialGroup()
+                        .addGroup(leftDownPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(blackButton)
                             .addComponent(nearestButton))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(leftDownPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(periodicButton)
                             .addComponent(mirrorButton))))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        leftDownPanelLayout.setVerticalGroup(
+            leftDownPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(leftDownPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(borderLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(leftDownPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(leftDownPanelLayout.createSequentialGroup()
                         .addComponent(blackButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(nearestButton))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(leftDownPanelLayout.createSequentialGroup()
                         .addComponent(mirrorButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(periodicButton)))
@@ -265,24 +284,21 @@ public class FilterPanel extends javax.swing.JPanel {
         leftPanel.setLayout(leftPanelLayout);
         leftPanelLayout.setHorizontalGroup(
             leftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(leftPanelLayout.createSequentialGroup()
-                .addComponent(applyButton)
-                .addContainerGap())
-            .addGroup(leftPanelLayout.createSequentialGroup()
-                .addGroup(leftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(radioPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(radioPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(leftDownPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, leftPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(applyButton))
         );
         leftPanelLayout.setVerticalGroup(
             leftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(leftPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, leftPanelLayout.createSequentialGroup()
                 .addComponent(radioPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(leftDownPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(applyButton)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addGap(36, 36, 36))
         );
 
         rightPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -292,11 +308,11 @@ public class FilterPanel extends javax.swing.JPanel {
         rightPanel.setLayout(rightPanelLayout);
         rightPanelLayout.setHorizontalGroup(
             rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 510, Short.MAX_VALUE)
+            .addGap(0, 517, Short.MAX_VALUE)
         );
         rightPanelLayout.setVerticalGroup(
             rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 385, Short.MAX_VALUE)
+            .addGap(0, 455, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -305,8 +321,8 @@ public class FilterPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(leftPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(leftPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(rightPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -316,7 +332,7 @@ public class FilterPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(rightPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(leftPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(leftPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -332,6 +348,11 @@ private void radioTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:even
         radioText.setText("1");
     }
 }//GEN-LAST:event_radioTextKeyReleased
+
+private void sigmaSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sigmaSliderStateChanged
+    sigmaLabel.setText("Sigma: " + (sigmaSlider.getValue() / 100) + "."
+            + (sigmaSlider.getValue() % 100));
+}//GEN-LAST:event_sigmaSliderStateChanged
 
     @Action
     public Task filter() {
@@ -373,6 +394,20 @@ private void radioTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:even
                 SobelFilter filter = new SobelFilter(
                         imageProcessor.getGrayScaleImage(null), borderProcess);
                 image = filter.getFilteredImage();
+            } else if (gaussianButton.isSelected()) {
+                GaussianFilter filter = new GaussianFilter(
+                        imageProcessor.getGrayScaleImage(null), 
+                        Integer.parseInt(radioText.getText()),
+                        getSigma(),
+                        borderProcess);
+                image = filter.getFilteredImage();
+                
+            } else if (medianButton.isSelected()) {
+                MedianFilter filter = new MedianFilter(
+                        imageProcessor.getGrayScaleImage(null), 
+                        Integer.parseInt(radioText.getText()),
+                        borderProcess);
+                image = filter.getFilteredImage();
             }
 
             // show out come image
@@ -394,13 +429,23 @@ private void radioTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:even
     private class ButtonListener implements ActionListener {
 
         public void actionPerformed(ActionEvent e) {
-            if (medianButton.isSelected() || gaussianButton.isSelected()) {
+            if (medianButton.isSelected()) {
+                radioText.setEnabled(true);
+                sigmaSlider.setEnabled(false);
+            } else if (gaussianButton.isSelected()) {
+                sigmaSlider.setEnabled(true);
                 radioText.setEnabled(true);
             } else {
                 radioText.setEnabled(false);
+                sigmaSlider.setEnabled(false);
             }
         }
     }
+    
+    private double getSigma() {
+        return sigmaSlider.getValue() / 100.0;
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applyButton;
     private javax.swing.JRadioButton blackButton;
@@ -409,8 +454,8 @@ private void radioTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:even
     private javax.swing.ButtonGroup filterButtonGroup;
     private javax.swing.JLabel filterLabel;
     private javax.swing.JRadioButton gaussianButton;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPanel leftDownPanel;
     private javax.swing.JPanel leftPanel;
     private javax.swing.JRadioButton medianButton;
     private javax.swing.JRadioButton mirrorButton;
@@ -423,6 +468,8 @@ private void radioTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:even
     private javax.swing.JTextField radioText;
     private javax.swing.JPanel rightPanel;
     private javax.swing.JRadioButton robertButton;
+    private javax.swing.JLabel sigmaLabel;
+    private javax.swing.JSlider sigmaSlider;
     private javax.swing.JRadioButton sobelButton;
     // End of variables declaration//GEN-END:variables
     private ImagePanel imagePanel;
