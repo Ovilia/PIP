@@ -2,6 +2,16 @@
 
 === About ===
 
-Digital Image Processing course project.
+PIP stands for PIP Image Processor, which provides basic image processing interface for users.
 
-Written in C# with .Net. 
+It is a Digital Image Processing course project written in Java.
+
+
+=== What can PIP do ===
+# Gray scale of a colored image
+# Histogram of gray scale and RGB channel
+# Threshold value using Otsu and Entropy Algorithm and customed value
+# Border processing with black, nearest, mirror and periodic one
+# Robert, Prewitt and Sobel operator
+# Gaussian and Mean filter
+
