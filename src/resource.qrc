@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>images/filter.png</file>
+        <file>images/filter_small.png</file>
+        <file>images/gray.png</file>
+        <file>images/gray_small.png</file>
+        <file>images/histogram.png</file>
+        <file>images/histogram_small.png</file>
+        <file>images/open.png</file>
+        <file>images/open_small.png</file>
+    </qresource>
+</RCC>
