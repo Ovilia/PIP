@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTabWidget>
 
+#include "HistogramDialog.h"
 #include "ImageProcessor.h"
 #include "ImageWidget.h"
 
@@ -31,6 +32,8 @@ private:
     QTabWidget* tabWidget;
     ImageWidget* originWidget;
     ImageWidget* grayScaleWidget;
+
+    HistogramDialog* histogramDialog;
 
     // file location of image
     QString imagePath;

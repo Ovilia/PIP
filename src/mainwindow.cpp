@@ -2,7 +2,7 @@
 #include <QPixmap>
 
 #include "HistogramDialog.h"
-#include "ImageStrategy.h"
+#include "ImagePolicy.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tabWidget(0),
     originWidget(0),
     grayScaleWidget(0),
+    histogramDialog(0),
     imageProcessor(0),
     isFirstImage(true)
 {
@@ -24,6 +25,7 @@ MainWindow::~MainWindow()
     delete originWidget;
     delete grayScaleWidget;
     delete tabWidget;
+    delete histogramDialog;
     delete imageProcessor;
 }
 
@@ -82,7 +84,7 @@ void MainWindow::on_actionGray_Scale_triggered()
         if (!grayScaleWidget) {
             // calculate it if not exists
             QImage* grayScaleImage = imageProcessor->getGrayScaleImage(
-                        ImageStrategy::MATCH_LUMINANCE);
+                        ImagePolicy::MATCH_LUMINANCE);
             QPixmap pixmap = QPixmap::fromImage(*grayScaleImage);
             grayScaleWidget = new ImageWidget(pixmap, tabWidget);
         }
@@ -95,4 +97,6 @@ void MainWindow::on_actionGray_Scale_triggered()
 
 void MainWindow::on_actionHistogram_triggered()
 {
+    histogramDialog = new HistogramDialog(imageProcessor, this);
+    histogramDialog->show();
 }

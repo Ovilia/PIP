@@ -28,7 +28,7 @@
      <x>0</x>
      <y>0</y>
      <width>704</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -83,9 +83,6 @@
    </property>
   </action>
   <action name="actionHistogram">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>

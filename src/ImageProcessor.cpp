@@ -3,7 +3,7 @@
 #include <QPixmap>
 
 #include "ImageProcessor.h"
-#include "ImageStrategy.h"
+#include "ImagePolicy.h"
 
 ImageProcessor::ImageProcessor(QString fileName)
 {
@@ -35,14 +35,14 @@ QImage* ImageProcessor::getOriginImage()
 }
 
 inline uchar ImageProcessor::getGrayValue(
-        uchar* rgb, ImageStrategy::GrayScaleStrategy strategy)
+        uchar* rgb, ImagePolicy::GrayScalePolicy policy)
 {
-    switch(strategy) {
-    case ImageStrategy::GREEN_ONLY:
+    switch(policy) {
+    case ImagePolicy::GREEN_ONLY:
         return *(rgb + 1);
-    case ImageStrategy::MATCH_LUMINANCE:
-        return (*rgb) * 0.3 + *(rgb + 1) * 0.59 + *(rgb + 2) * 0.11;
-    case ImageStrategy::RGB_AVERAGE:
+    case ImagePolicy::MATCH_LUMINANCE:
+        return ((*rgb) * 28 + *(rgb + 1) * 151 + *(rgb + 2) * 77) >> 8;
+    case ImagePolicy::RGB_AVERAGE:
         return (*rgb + *(rgb + 1) + *(rgb + 2)) / 3;
     default:
         return 0;
@@ -50,8 +50,8 @@ inline uchar ImageProcessor::getGrayValue(
 }
 
 QImage* ImageProcessor::getGrayScaleImage(
-        ImageStrategy::GrayScaleStrategy strategy
-        = ImageStrategy::MATCH_LUMINANCE)
+        ImagePolicy::GrayScalePolicy policy
+        = ImagePolicy::MATCH_LUMINANCE)
 {
     // lazy calculation
     if (!grayScaleImage) {
@@ -69,7 +69,7 @@ QImage* ImageProcessor::getGrayScaleImage(
 
         for (int i = 0; i < size; ++i) {
             // calculate gray value according to strategy
-            uchar grayValue = getGrayValue(originPtr, strategy);
+            uchar grayValue = getGrayValue(originPtr, policy);
             // set rgb value to be grayValue
             for (int rgb = 0; rgb < 3; ++rgb) {
                 *(grayPtr + rgb) = grayValue;
@@ -130,9 +130,12 @@ int* ImageProcessor::getRgbHistogram()
         int size = originImage->size().width() *
                 originImage->size().height();
         for (int i = 0; i < size; ++i) {
-            rgbHistogram[*originPtr][0]++;
+            // blue
+            rgbHistogram[*originPtr][2]++;
+            // green
             rgbHistogram[*(originPtr + 1)][1]++;
-            rgbHistogram[*(originPtr + 2)][2]++;
+            // red
+            rgbHistogram[*(originPtr + 2)][0]++;
             // point to next pixel
             originPtr += 4;
         }

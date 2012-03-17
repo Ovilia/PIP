@@ -4,7 +4,7 @@
 #include <QImage>
 #include <QString>
 
-#include "ImageStrategy.h"
+#include "ImagePolicy.h"
 
 class ImageProcessor
 {
@@ -13,7 +13,7 @@ public:
     ~ImageProcessor();
 
     QImage* getOriginImage();
-    QImage* getGrayScaleImage(ImageStrategy::GrayScaleStrategy strategy);
+    QImage* getGrayScaleImage(ImagePolicy::GrayScalePolicy strategy);
     int* getHistogram();
     int* getRgbHistogram();
 
@@ -33,7 +33,7 @@ private:
     int rgbHistogram[RANGE_OF_8BITS][3];
 
     inline uchar getGrayValue(
-            uchar* rgb, ImageStrategy::GrayScaleStrategy strategy);
+            uchar* rgb, ImagePolicy::GrayScalePolicy strategy);
 };
 
 #endif // IMAGEPROCESSOR_H
