@@ -1,16 +1,21 @@
 #include <QFileDialog>
 #include <QPixmap>
 
+#include "HistogramDialog.h"
 #include "ImageStrategy.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    tabWidget(0),
+    originWidget(0),
+    grayScaleWidget(0),
+    imageProcessor(0),
+    isFirstImage(true)
 {
     ui->setupUi(this);
-    isFirstImage = true;
 }
 
 MainWindow::~MainWindow()
@@ -30,11 +35,16 @@ void MainWindow::on_actionOpen_triggered()
 
     // load the image and update UI
     if (!imagePath.isNull()) {
-        // init imageProcessor
-        imageProcessor = new ImageProcessor(imagePath);
+        // set imageProcessor
+        if (imageProcessor) {
+            imageProcessor->setImage(imagePath);
+        } else {
+            imageProcessor = new ImageProcessor(imagePath);
+        }
 
         if (isFirstImage) {
             tabWidget = new QTabWidget(this);
+            tabWidget->setTabsClosable(true);
         } else {
             // remove previous tabs
             int amt = tabWidget->count();
@@ -51,10 +61,15 @@ void MainWindow::on_actionOpen_triggered()
         if (isFirstImage) {
             // add tabWidget only if it is the first image opened
             ui->gridLayout->addWidget(tabWidget);
+            // enable UI components
+            ui->actionGray_Scale->setEnabled(true);
+            ui->actionHistogram->setEnabled(true);
+        } else {
+            // reset UI components
+            ui->actionGray_Scale->setChecked(false);
+            ui->actionHistogram->setChecked(false);
+            grayScaleWidget = 0;
         }
-        // enable UI components
-        ui->actionGray_Scale->setEnabled(true);
-        ui->actionHistogram->setEnabled(true);
 
         // isFirstImage is set to be false after first opening
         isFirstImage = false;
@@ -63,10 +78,21 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionGray_Scale_triggered()
 {
-    QImage* grayScaleImage = imageProcessor->getGrayScaleImage(
-                ImageStrategy::MATCH_LUMINANCE);
-    QPixmap pixmap = QPixmap::fromImage(*grayScaleImage);
-    grayScaleWidget = new ImageWidget(pixmap, tabWidget);
-    tabWidget->addTab(grayScaleWidget, "Gray Scale Image");
-    tabWidget->setCurrentWidget(grayScaleWidget);
+    if (ui->actionGray_Scale->isChecked()) {
+        if (!grayScaleWidget) {
+            // calculate it if not exists
+            QImage* grayScaleImage = imageProcessor->getGrayScaleImage(
+                        ImageStrategy::MATCH_LUMINANCE);
+            QPixmap pixmap = QPixmap::fromImage(*grayScaleImage);
+            grayScaleWidget = new ImageWidget(pixmap, tabWidget);
+        }
+        tabWidget->addTab(grayScaleWidget, "Gray Scale Image");
+        tabWidget->setCurrentWidget(grayScaleWidget);
+    } else {
+        tabWidget->removeTab(tabWidget->indexOf(grayScaleWidget));
+    }
+}
+
+void MainWindow::on_actionHistogram_triggered()
+{
 }

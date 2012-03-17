@@ -7,15 +7,26 @@
 
 ImageProcessor::ImageProcessor(QString fileName)
 {
-    this->fileName = fileName;
-    originImage = new QImage(fileName);
-    grayScaleImage = 0;
+    setImage(fileName);
 }
 
 ImageProcessor::~ImageProcessor()
 {
     delete originImage;
     delete grayScaleImage;
+}
+
+void ImageProcessor::setImage(QString fileName)
+{
+    this->fileName = fileName;
+    grayScaleImage = 0;
+    isHisCaled = false;
+    isRgbHisCaled = false;
+
+    originImage = new QImage(fileName);
+    if (originImage->format() != QImage::Format_RGB32) {
+        *originImage = originImage->convertToFormat(QImage::Format_RGB32);
+    }
 }
 
 QImage* ImageProcessor::getOriginImage()
@@ -39,7 +50,8 @@ inline uchar ImageProcessor::getGrayValue(
 }
 
 QImage* ImageProcessor::getGrayScaleImage(
-        ImageStrategy::GrayScaleStrategy strategy)
+        ImageStrategy::GrayScaleStrategy strategy
+        = ImageStrategy::MATCH_LUMINANCE)
 {
     // lazy calculation
     if (!grayScaleImage) {
@@ -70,4 +82,60 @@ QImage* ImageProcessor::getGrayScaleImage(
         }
     }
     return grayScaleImage;
+}
+
+int* ImageProcessor::getHistogram()
+{
+    // lazy calculation
+    if (!isHisCaled) {
+        // make sure gray scale image is calculated
+        getGrayScaleImage();
+        // init arrays
+        for (int i = 0; i < RANGE_OF_8BITS; ++i) {
+            histogram[i] = 0;
+        }
+
+        // pointer to pixels being processed which will not change
+        // pixels in grayImage
+        const uchar* grayPtr = grayScaleImage->bits();
+
+        int size = grayScaleImage->size().width() *
+                grayScaleImage->size().height();
+        for (int i = 0; i < size; ++i) {
+            histogram[*grayPtr]++;
+            // point to next pixel
+            grayPtr += 4;
+        }
+
+        isHisCaled = true;
+    }
+    return histogram;
+}
+
+int* ImageProcessor::getRgbHistogram()
+{
+    // lazy calculation
+    if (!isRgbHisCaled) {
+        // init arrays
+        for (int i = 0; i < RANGE_OF_8BITS; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                rgbHistogram[i][j] = 0;
+            }
+        }
+
+        // pointer to pixels being processed which will not change
+        // pixels in originImage
+        const uchar* originPtr = originImage->bits();
+
+        int size = originImage->size().width() *
+                originImage->size().height();
+        for (int i = 0; i < size; ++i) {
+            rgbHistogram[*originPtr][0]++;
+            rgbHistogram[*(originPtr + 1)][1]++;
+            rgbHistogram[*(originPtr + 2)][2]++;
+            // point to next pixel
+            originPtr += 4;
+        }
+    }
+    return *rgbHistogram;
 }
