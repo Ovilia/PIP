@@ -4,7 +4,7 @@
 
 PIP stands for PIP Image Processor, which provides basic image processing interface for users.
 
-It is a Digital Image Processing course project written in Java.
+It is a Digital Image Processing course project written in C++. (Previous versions contains C# and Java version, but C++ is currently used because it is required by DIP course.
 
 
 === What can PIP do ===
@@ -14,4 +14,9 @@ It is a Digital Image Processing course project written in Java.
 # Border processing with black, nearest, mirror and periodic one
 # Robert, Prewitt and Sobel operator
 # Gaussian and Mean filter
+
+
+=== How you can help ===
+
+Code review is a good way to improve my code and your skills. So it is highly appreciated if you read my code and gave suggestions.
 
