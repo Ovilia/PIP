@@ -3,6 +3,7 @@
 
 #include <QDialog>
 
+#include "HistogramPlot.h"
 #include "ImageProcessor.h"
 
 namespace Ui {
@@ -31,9 +32,10 @@ private slots:
     void on_higherSlider_sliderMoved(int position);
 
 private:
-    Ui::HistogramDialog *ui;
-
     ImageProcessor* imageProcessor;
+
+    Ui::HistogramDialog *ui;
+    HistogramPlot* histogramPlot;
 };
 
 #endif // HISTOGRAMDIALOG_H

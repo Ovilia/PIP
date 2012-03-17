@@ -13,7 +13,7 @@ public:
     ~ImageProcessor();
 
     QImage* getOriginImage();
-    QImage* getGrayScaleImage(ImagePolicy::GrayScalePolicy strategy);
+    QImage* getGrayScaleImage(ImagePolicy::GrayScalePolicy policy);
     int* getHistogram();
     int* getRgbHistogram();
 
@@ -33,7 +33,7 @@ private:
     int rgbHistogram[RANGE_OF_8BITS][3];
 
     inline uchar getGrayValue(
-            uchar* rgb, ImagePolicy::GrayScalePolicy strategy);
+            uchar* rgb, ImagePolicy::GrayScalePolicy policy);
 };
 
 #endif // IMAGEPROCESSOR_H

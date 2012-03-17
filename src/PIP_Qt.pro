@@ -14,13 +14,15 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     ImageWidget.cpp \
     ImageProcessor.cpp \
-    HistogramDialog.cpp
+    HistogramDialog.cpp \
+    HistogramPlot.cpp
 
 HEADERS  += mainwindow.h \
     ImageWidget.h \
     ImageProcessor.h \
     HistogramDialog.h \
-    ImagePolicy.h
+    ImagePolicy.h \
+    HistogramPlot.h \
 
 FORMS    += mainwindow.ui \
     ImageWidget.ui \
@@ -28,8 +30,5 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     resource.qrc
-
-
-
 
 
