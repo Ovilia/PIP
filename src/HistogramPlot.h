@@ -17,6 +17,11 @@ public:
     void addRgbDataset(int* dataset);
     void setThresholdValue(int lower, int higher);
 
+    void setGrayVisible(bool isVisible);
+    void setRedVisible(bool isVisible);
+    void setGreenVisible(bool isVisible);
+    void setBlueVisible(bool isVisible);
+
     void paintEvent(QPaintEvent *);
 
 private:
@@ -32,8 +37,7 @@ private:
     int higherThreshold;
 
     bool isGrayVisible;
-    bool isRgbVisible;
-    bool isThreVisible;
+    bool isRgbVisible[3];
 
     // margin from the most outside border to chart
     int borderMargin;
@@ -49,6 +53,8 @@ private:
     int barWidth;
     // height of bars, gray and rgb
     int barHeight[RANGE_OF_8BITS][4];
+    // line width of rgb
+    int rgbLineWidth;
 };
 
 #endif // HISTOGRAMPLOT_H

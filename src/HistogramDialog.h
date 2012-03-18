@@ -31,6 +31,18 @@ private slots:
 
     void on_higherSlider_sliderMoved(int position);
 
+    void on_redBox_clicked(bool checked);
+
+    void on_greenBox_clicked(bool checked);
+
+    void on_blueBox_clicked(bool checked);
+
+    void on_grayBox_clicked(bool checked);
+
+    void on_lowerSlider_valueChanged(int value);
+
+    void on_higherSlider_valueChanged(int value);
+
 private:
     ImageProcessor* imageProcessor;
 
