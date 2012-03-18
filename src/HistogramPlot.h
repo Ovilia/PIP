@@ -14,7 +14,8 @@ public:
     HistogramPlot(int* dataset);
     ~HistogramPlot();
 
-    void addRgbDataset(int* dataset);
+    void setGrayDataset(int* dataset);
+    void setRgbDataset(int* dataset);
     void setThresholdValue(int lower, int higher);
 
     void setGrayVisible(bool isVisible);
@@ -47,7 +48,7 @@ private:
     // width and height for bars
     int plotWidth;
     int plotHeight;
-    // width between bars
+    // gap between bars
     int barGap;
     // width of bars
     int barWidth;
@@ -55,6 +56,22 @@ private:
     int barHeight[RANGE_OF_8BITS][4];
     // line width of rgb
     int rgbLineWidth;
+    // margin from plot to axis
+    int axisMargin;
+    // width of axis
+    int axisWidth;
+    // axis stick length
+    int stickLength;
+    // margin from axis to label
+    int xLabelMargin, yLabelMargin;
+    // amount of labels
+    int xLabelAmt, yLabelAmt;
+    // magin form bottom of title to top of plot
+    int titleMargin;
+    // width of title
+    int titleWidth;
+    // height of title
+    int titleHeight;
 };
 
 #endif // HISTOGRAMPLOT_H

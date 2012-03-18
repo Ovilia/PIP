@@ -8,6 +8,7 @@
 ImageProcessor::ImageProcessor(QString fileName)
 {
     setImage(fileName);
+    grayScalePolicy = ImagePolicy::MATCH_LUMINANCE;
 }
 
 ImageProcessor::~ImageProcessor()
@@ -16,17 +17,34 @@ ImageProcessor::~ImageProcessor()
     delete grayScaleImage;
 }
 
-void ImageProcessor::setImage(QString fileName)
+void ImageProcessor::initialize()
 {
-    this->fileName = fileName;
     grayScaleImage = 0;
     isHisCaled = false;
     isRgbHisCaled = false;
+}
 
+void ImageProcessor::setImage(QString fileName)
+{
+    initialize();
+
+    this->fileName = fileName;
     originImage = new QImage(fileName);
     if (originImage->format() != QImage::Format_RGB32) {
         *originImage = originImage->convertToFormat(QImage::Format_RGB32);
     }
+}
+
+void ImageProcessor::setGrayScalePolicy(ImagePolicy::GrayScalePolicy policy)
+{
+    grayScalePolicy = policy;
+    grayScaleImage = 0;
+    isHisCaled = false;
+}
+
+ImagePolicy::GrayScalePolicy ImageProcessor::getGrayScalePolicy()
+{
+    return grayScalePolicy;
 }
 
 QImage* ImageProcessor::getOriginImage()
@@ -49,9 +67,7 @@ inline uchar ImageProcessor::getGrayValue(
     }
 }
 
-QImage* ImageProcessor::getGrayScaleImage(
-        ImagePolicy::GrayScalePolicy policy
-        = ImagePolicy::MATCH_LUMINANCE)
+QImage* ImageProcessor::getGrayScaleImage()
 {
     // lazy calculation
     if (!grayScaleImage) {
@@ -69,7 +85,7 @@ QImage* ImageProcessor::getGrayScaleImage(
 
         for (int i = 0; i < size; ++i) {
             // calculate gray value according to strategy
-            uchar grayValue = getGrayValue(originPtr, policy);
+            uchar grayValue = getGrayValue(originPtr, grayScalePolicy);
             // set rgb value to be grayValue
             for (int rgb = 0; rgb < 3; ++rgb) {
                 *(grayPtr + rgb) = grayValue;

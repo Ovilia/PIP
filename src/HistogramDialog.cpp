@@ -12,7 +12,7 @@ HistogramDialog::HistogramDialog(ImageProcessor* imageProcessor,
 {
     ui->setupUi(this);
     histogramPlot = new HistogramPlot(imageProcessor->getHistogram());
-    histogramPlot->addRgbDataset(imageProcessor->getRgbHistogram());
+    histogramPlot->setRgbDataset(imageProcessor->getRgbHistogram());
     ui->painterLayout->addWidget(histogramPlot);
     ui->rightWidget->repaint();
 }
@@ -96,4 +96,31 @@ void HistogramDialog::on_higherSlider_valueChanged(int value)
 {
     histogramPlot->setThresholdValue(ui->lowerSlider->value(), value);
     histogramPlot->repaint();
+}
+
+void HistogramDialog::on_luminanceButton_clicked(bool checked)
+{
+    if (checked) {
+        imageProcessor->setGrayScalePolicy(ImagePolicy::MATCH_LUMINANCE);
+        histogramPlot->setGrayDataset(imageProcessor->getHistogram());
+        histogramPlot->repaint();
+    }
+}
+
+void HistogramDialog::on_rgbButton_clicked(bool checked)
+{
+    if (checked) {
+        imageProcessor->setGrayScalePolicy(ImagePolicy::RGB_AVERAGE);
+        histogramPlot->setGrayDataset(imageProcessor->getHistogram());
+        histogramPlot->repaint();
+    }
+}
+
+void HistogramDialog::on_greenButton_clicked(bool checked)
+{
+    if (checked) {
+        imageProcessor->setGrayScalePolicy(ImagePolicy::GREEN_ONLY);
+        histogramPlot->setGrayDataset(imageProcessor->getHistogram());
+        histogramPlot->repaint();
+    }
 }

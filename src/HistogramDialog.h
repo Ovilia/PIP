@@ -43,6 +43,12 @@ private slots:
 
     void on_higherSlider_valueChanged(int value);
 
+    void on_luminanceButton_clicked(bool checked);
+
+    void on_rgbButton_clicked(bool checked);
+
+    void on_greenButton_clicked(bool checked);
+
 private:
     ImageProcessor* imageProcessor;
 
