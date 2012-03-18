@@ -64,34 +64,15 @@ void MainWindow::on_actionOpen_triggered()
             // add tabWidget only if it is the first image opened
             ui->gridLayout->addWidget(tabWidget);
             // enable UI components
-            ui->actionGray_Scale->setEnabled(true);
             ui->actionHistogram->setEnabled(true);
         } else {
             // reset UI components
-            ui->actionGray_Scale->setChecked(false);
             ui->actionHistogram->setChecked(false);
             grayScaleWidget = 0;
         }
 
         // isFirstImage is set to be false after first opening
         isFirstImage = false;
-    }
-}
-
-void MainWindow::on_actionGray_Scale_triggered()
-{
-    if (ui->actionGray_Scale->isChecked()) {
-        if (!grayScaleWidget) {
-            // calculate it if not exists
-            QImage* grayScaleImage = imageProcessor->getGrayScaleImage(
-                        ImagePolicy::MATCH_LUMINANCE);
-            QPixmap pixmap = QPixmap::fromImage(*grayScaleImage);
-            grayScaleWidget = new ImageWidget(pixmap, tabWidget);
-        }
-        tabWidget->addTab(grayScaleWidget, "Gray Scale Image");
-        tabWidget->setCurrentWidget(grayScaleWidget);
-    } else {
-        tabWidget->removeTab(tabWidget->indexOf(grayScaleWidget));
     }
 }
 

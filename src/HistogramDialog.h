@@ -4,6 +4,7 @@
 #include <QDialog>
 
 #include "HistogramPlot.h"
+#include "ImagePolicy.h"
 #include "ImageProcessor.h"
 
 namespace Ui {
@@ -18,6 +19,10 @@ public:
     explicit HistogramDialog(ImageProcessor* imageProcessor,
                              QWidget *parent = 0);
     ~HistogramDialog();
+
+    void changeThreshold(ImagePolicy::ThresholdPolicy policy,
+                         int lower = 0, int higher = 0);
+    void changeGrayScale(ImagePolicy::GrayScalePolicy policy);
 
 private slots:
 
@@ -38,10 +43,6 @@ private slots:
     void on_blueBox_clicked(bool checked);
 
     void on_grayBox_clicked(bool checked);
-
-    void on_lowerSlider_valueChanged(int value);
-
-    void on_higherSlider_valueChanged(int value);
 
     void on_luminanceButton_clicked(bool checked);
 

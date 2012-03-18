@@ -23,8 +23,6 @@ public:
 private slots:
     void on_actionOpen_triggered();
 
-    void on_actionGray_Scale_triggered();
-
     void on_actionHistogram_triggered();
 
 private:

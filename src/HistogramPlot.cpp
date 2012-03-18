@@ -3,8 +3,6 @@
 #include <Qpen>
 #include "HistogramPlot.h"
 
-#include <stdio.h>
-
 HistogramPlot::HistogramPlot(int* dataset) :
     hasSetRgb(false),
     lowerThreshold(0),

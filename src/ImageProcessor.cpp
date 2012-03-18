@@ -1,14 +1,26 @@
-#include <QtDebug>
+#include <QtCore/qmath.h>
 #include <QImage>
 #include <QPixmap>
 
 #include "ImageProcessor.h"
 #include "ImagePolicy.h"
 
-ImageProcessor::ImageProcessor(QString fileName)
+ImageProcessor::ImageProcessor(QString fileName) :
+    originImage(0),
+    grayScaleImage(0),
+    isHisCaled(false),
+    isRgbHisCaled(false),
+    weightedHisSum(0),
+    otsuThreshold(0),
+    entropyThreshold(0),
+    lowerThreshold(0),
+    higherThreshold(0),
+    isOtsuCaled(false),
+    isEntropyCaled(false),
+    grayScalePolicy(ImagePolicy::MATCH_LUMINANCE),
+    thresholdPolicy(ImagePolicy::OTSU)
 {
     setImage(fileName);
-    grayScalePolicy = ImagePolicy::MATCH_LUMINANCE;
 }
 
 ImageProcessor::~ImageProcessor()
@@ -17,16 +29,13 @@ ImageProcessor::~ImageProcessor()
     delete grayScaleImage;
 }
 
-void ImageProcessor::initialize()
+void ImageProcessor::setImage(QString fileName)
 {
     grayScaleImage = 0;
     isHisCaled = false;
     isRgbHisCaled = false;
-}
-
-void ImageProcessor::setImage(QString fileName)
-{
-    initialize();
+    isOtsuCaled = false;
+    isEntropyCaled = false;
 
     this->fileName = fileName;
     originImage = new QImage(fileName);
@@ -40,11 +49,184 @@ void ImageProcessor::setGrayScalePolicy(ImagePolicy::GrayScalePolicy policy)
     grayScalePolicy = policy;
     grayScaleImage = 0;
     isHisCaled = false;
+    isOtsuCaled = false;
+    isEntropyCaled = false;
 }
 
 ImagePolicy::GrayScalePolicy ImageProcessor::getGrayScalePolicy()
 {
     return grayScalePolicy;
+}
+
+void ImageProcessor::setThresholdPolicy(
+        ImagePolicy::ThresholdPolicy policy, int lower, int higher)
+{
+    thresholdPolicy = policy;
+    if (policy == ImagePolicy::COSTUMED) {
+        lowerThreshold = lower;
+        higherThreshold = higher;
+    }
+}
+
+ImagePolicy::ThresholdPolicy ImageProcessor::getThresholdPolicy()
+{
+    return thresholdPolicy;
+}
+
+int ImageProcessor::getLowerThreshold()
+{
+    switch (thresholdPolicy) {
+    case ImagePolicy::COSTUMED:
+        return lowerThreshold;
+    default:
+        return 0;
+    }
+}
+
+int ImageProcessor::getHigherThreshold()
+{
+    switch (thresholdPolicy) {
+    case ImagePolicy::OTSU:
+        return getOtsuThreshold();
+    case ImagePolicy::ENTROPY:
+        return getEntropyThreshold();
+    case ImagePolicy::COSTUMED:
+        return higherThreshold;
+    }
+    return 0;
+}
+
+int ImageProcessor::getOtsuThreshold()
+{
+    // lazy calculation
+    if (!isOtsuCaled) {
+        // Make sure histogram is calculate
+        getHistogram();
+
+        // Calculate when threshold value = 0,
+        // then calculate on the base of former outcome
+
+        // Sum of pixels with index below thresholdValue
+        int belowSum = 0;
+        // Sum of pixels with index upper than threshold value
+        int upperSum = accumulatedHistogram[RANGE_OF_8BITS - 1];
+
+        // Sum of pixels multiplies index value below thresholdValue
+        int belowWeighted = 0;
+        // Sum of pixels multiplies index value below threshold value
+        int upperWeighted = weightedHisSum;
+
+        // Average of pixels below thresholdValue
+        double belowAverage = 0;
+        // Average of pixels upper than thresholdValue
+        double upperAverage;
+        if (upperSum == 0)
+        {
+            upperAverage = 0;
+        }
+        else
+        {
+            upperAverage = (double)upperWeighted / upperSum;
+        }
+
+        // Max variance between two parts
+        double maxVarianceBetween = belowSum * upperSum
+                * (belowAverage - upperAverage) * (belowAverage - upperAverage);
+        otsuThreshold = 0;
+
+        // Loop threshold value to get max variance between two parts
+        for (int thresholdValue = 0; thresholdValue < RANGE_OF_8BITS; ++thresholdValue)
+        {
+            belowSum += histogram[thresholdValue];
+            upperSum -= histogram[thresholdValue];
+
+            if (belowSum == 0)
+            {
+                continue;
+            }
+            if (upperSum == 0)
+            {
+                break;
+            }
+
+            belowWeighted += histogram[thresholdValue] * thresholdValue;
+            upperWeighted -= histogram[thresholdValue] * thresholdValue;
+
+            belowAverage = (double)belowWeighted / belowSum;
+            upperAverage = (double)upperWeighted / upperSum;
+
+            // Variance between below and upper part
+            double variaceBetween = (double)belowSum * upperSum
+                    * (belowAverage - upperAverage) * (belowAverage - upperAverage);
+
+            // Update threshold value if variance between two parts are
+            // larger than maxVarianceBetween
+            if (variaceBetween > maxVarianceBetween)
+            {
+                maxVarianceBetween = variaceBetween;
+                otsuThreshold = thresholdValue;
+            }
+        }
+        isOtsuCaled = true;
+    }
+    return otsuThreshold;
+}
+
+int ImageProcessor::getEntropyThreshold()
+{
+    // lazy calculation
+    if (!isEntropyCaled) {
+        // Make sure histogram is calculate
+        getHistogram();
+
+        // Sum of x * log(x) with index below thresholdValue
+        double belowSumXLogX = 0;
+        // Sum of x * log(x) with index upper than threshold value
+        double upperSumXLogX = 0;
+        for (int i = 0; i < RANGE_OF_8BITS; ++i)
+        {
+            if (histogram[i] != 0)
+            {
+                // Log on base e
+                upperSumXLogX += histogram[i] * qLn((double)histogram[i]);
+            }
+        }
+
+        double maxEntropy = 0;
+
+        for (int thresholdValue = 0; thresholdValue < RANGE_OF_8BITS; ++thresholdValue)
+        {
+            if (histogram[thresholdValue] == 0)
+            {
+                continue;
+            }
+
+            int upperSum = accumulatedHistogram[RANGE_OF_8BITS - 1]
+                    - accumulatedHistogram[thresholdValue];
+            if (upperSum == 0)
+            {
+                break;
+            }
+
+            double xLogX = histogram[thresholdValue] * qLn(histogram[thresholdValue]);
+            belowSumXLogX += xLogX;
+            upperSumXLogX -= xLogX;
+
+            double belowEntropy = qLn(accumulatedHistogram[thresholdValue])
+                    - belowSumXLogX / accumulatedHistogram[thresholdValue];
+            double upperEntropy = qLn(upperSum)
+                    - upperSumXLogX / upperSum;
+            double entropy = belowEntropy + upperEntropy;
+
+            if (entropy > maxEntropy)
+            {
+                entropyThreshold = thresholdValue;
+                maxEntropy = entropy;
+            }
+        }
+        isEntropyCaled = true;
+    }
+    return entropyThreshold;
 }
 
 QImage* ImageProcessor::getOriginImage()
@@ -121,6 +303,15 @@ int* ImageProcessor::getHistogram()
             histogram[*grayPtr]++;
             // point to next pixel
             grayPtr += 4;
+        }
+
+        // calculate accumulated histogram and weighted sum
+        int sum = 0;
+        weightedHisSum = 0;
+        for (int i = 0; i < RANGE_OF_8BITS; ++i) {
+            sum += histogram[i];
+            accumulatedHistogram[i] = sum;
+            weightedHisSum += i * histogram[i];
         }
 
         isHisCaled = true;

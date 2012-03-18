@@ -43,7 +43,6 @@
     <property name="title">
      <string>Image</string>
     </property>
-    <addaction name="actionGray_Scale"/>
     <addaction name="actionHistogram"/>
    </widget>
    <addaction name="menuFile"/>
@@ -58,7 +57,6 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="separator"/>
-   <addaction name="actionGray_Scale"/>
    <addaction name="actionHistogram"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -95,21 +93,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+H</string>
-   </property>
-  </action>
-  <action name="actionGray_Scale">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="resource.qrc">
-     <normaloff>:/images/images/gray.png</normaloff>:/images/images/gray.png</iconset>
-   </property>
-   <property name="text">
-    <string>Gray Scale</string>
    </property>
   </action>
  </widget>

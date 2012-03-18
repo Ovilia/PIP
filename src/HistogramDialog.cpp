@@ -1,8 +1,8 @@
 #include "HistogramDialog.h"
 #include "HistogramPlot.h"
+#include "ImagePolicy.h"
 #include "ImageProcessor.h"
 #include "ui_HistogramDialog.h"
-#include <stdio.h>
 
 HistogramDialog::HistogramDialog(ImageProcessor* imageProcessor,
                                  QWidget *parent) :
@@ -11,35 +11,61 @@ HistogramDialog::HistogramDialog(ImageProcessor* imageProcessor,
     ui(new Ui::HistogramDialog)
 {
     ui->setupUi(this);
+
     histogramPlot = new HistogramPlot(imageProcessor->getHistogram());
     histogramPlot->setRgbDataset(imageProcessor->getRgbHistogram());
     ui->painterLayout->addWidget(histogramPlot);
     ui->rightWidget->repaint();
+
+    changeThreshold(ImagePolicy::OTSU);
 }
 
 HistogramDialog::~HistogramDialog()
 {
     delete ui;
+    delete histogramPlot;
+    // remeber not to delete imageProcessor here,
+    // because it is deleted by mainwindow
+}
+
+void HistogramDialog::changeThreshold(
+        ImagePolicy::ThresholdPolicy policy, int lower, int higher)
+{
+    // customed value set by parameter
+    if (policy == ImagePolicy::COSTUMED) {
+        imageProcessor->setThresholdPolicy(policy, lower, higher);
+    } else {
+        imageProcessor->setThresholdPolicy(policy);
+        lower = imageProcessor->getLowerThreshold();
+        higher = imageProcessor->getHigherThreshold();
+    }
+    ui->lowerSlider->setValue(lower);
+    ui->higherSlider->setValue(higher);
+    ui->lowerEdit->setText(QString::number(lower));
+    ui->higherEdit->setText(QString::number(higher));
+    histogramPlot->setThresholdValue(lower, higher);
+    histogramPlot->repaint();
 }
 
 void HistogramDialog::on_otsuButton_clicked()
 {
-    ui->lowerSlider->setValue(0);
-    // TODO: set high value here
+    changeThreshold(ImagePolicy::OTSU);
     ui->lowerSlider->setEnabled(false);
     ui->higherSlider->setEnabled(false);
 }
 
 void HistogramDialog::on_entropyButton_clicked()
 {
-    ui->lowerSlider->setValue(0);
-    // TODO: set high value here
+    changeThreshold(ImagePolicy::ENTROPY);
     ui->lowerSlider->setEnabled(false);
     ui->higherSlider->setEnabled(false);
 }
 
 void HistogramDialog::on_customedButton_clicked()
 {
+    changeThreshold(ImagePolicy::COSTUMED,
+                    ui->lowerSlider->value(),
+                    ui->higherSlider->value());
     ui->lowerSlider->setEnabled(true);
     ui->higherSlider->setEnabled(true);
 }
@@ -51,6 +77,8 @@ void HistogramDialog::on_lowerSlider_sliderMoved(int position)
         ui->higherSlider->setValue(position);
         ui->higherEdit->setText(QString::number(position));
     }
+    histogramPlot->setThresholdValue(position, ui->higherSlider->value());
+    histogramPlot->repaint();
 }
 
 void HistogramDialog::on_higherSlider_sliderMoved(int position)
@@ -60,6 +88,8 @@ void HistogramDialog::on_higherSlider_sliderMoved(int position)
         ui->lowerSlider->setValue(position);
         ui->lowerEdit->setText(QString::number(position));
     }
+    histogramPlot->setThresholdValue(ui->lowerSlider->value(), position);
+    histogramPlot->repaint();
 }
 
 void HistogramDialog::on_redBox_clicked(bool checked)
@@ -86,41 +116,34 @@ void HistogramDialog::on_grayBox_clicked(bool checked)
     histogramPlot->repaint();
 }
 
-void HistogramDialog::on_lowerSlider_valueChanged(int value)
+void HistogramDialog::changeGrayScale(ImagePolicy::GrayScalePolicy policy)
 {
-    histogramPlot->setThresholdValue(value, ui->higherSlider->value());
-    histogramPlot->repaint();
-}
+    // change gray scale policy
+    imageProcessor->setGrayScalePolicy(policy);
+    histogramPlot->setGrayDataset(imageProcessor->getHistogram());
 
-void HistogramDialog::on_higherSlider_valueChanged(int value)
-{
-    histogramPlot->setThresholdValue(ui->lowerSlider->value(), value);
-    histogramPlot->repaint();
+    // recompute threshold value
+    ui->otsuButton->setChecked(true);
+    changeThreshold(ImagePolicy::OTSU);
 }
 
 void HistogramDialog::on_luminanceButton_clicked(bool checked)
 {
     if (checked) {
-        imageProcessor->setGrayScalePolicy(ImagePolicy::MATCH_LUMINANCE);
-        histogramPlot->setGrayDataset(imageProcessor->getHistogram());
-        histogramPlot->repaint();
+        changeGrayScale(ImagePolicy::MATCH_LUMINANCE);
     }
 }
 
 void HistogramDialog::on_rgbButton_clicked(bool checked)
 {
     if (checked) {
-        imageProcessor->setGrayScalePolicy(ImagePolicy::RGB_AVERAGE);
-        histogramPlot->setGrayDataset(imageProcessor->getHistogram());
-        histogramPlot->repaint();
+        changeGrayScale(ImagePolicy::RGB_AVERAGE);
     }
 }
 
 void HistogramDialog::on_greenButton_clicked(bool checked)
 {
     if (checked) {
-        imageProcessor->setGrayScalePolicy(ImagePolicy::GREEN_ONLY);
-        histogramPlot->setGrayDataset(imageProcessor->getHistogram());
-        histogramPlot->repaint();
+        changeGrayScale(ImagePolicy::GREEN_ONLY);
     }
 }

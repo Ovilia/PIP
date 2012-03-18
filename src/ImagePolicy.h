@@ -9,6 +9,12 @@ public:
         RGB_AVERAGE,
         GREEN_ONLY
     };
+
+    enum ThresholdPolicy {
+        OTSU,
+        ENTROPY,
+        COSTUMED
+    };
 };
 
 #endif // IMAGESTRATEGY_H
