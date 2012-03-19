@@ -16,6 +16,8 @@ public:
     explicit ImageWidget(QPixmap pixmap, QWidget *parent = 0);
     ~ImageWidget();
 
+    void setPixmap(QPixmap pixmap);
+
 private:
     Ui::ImageWidget *ui;
     QPixmap pixmap;

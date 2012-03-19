@@ -250,6 +250,16 @@
            </layout>
           </widget>
          </item>
+         <item>
+          <widget class="QCheckBox" name="transparenBox">
+           <property name="text">
+            <string>Transparent window when changing value</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>

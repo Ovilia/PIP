@@ -14,6 +14,7 @@ public:
 
     QImage* getOriginImage();
     QImage* getGrayScaleImage();
+    QImage* getBinaryImage();
     int* getHistogram();
     int* getRgbHistogram();
 
@@ -38,6 +39,7 @@ private:
     QString fileName;
     QImage* originImage;
     QImage* grayScaleImage;
+    QImage* binaryImage;
 
     // if histogram is calculated
     bool isHisCaled, isRgbHisCaled;

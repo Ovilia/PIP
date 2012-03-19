@@ -20,6 +20,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void repaintBinary();
+
 private slots:
     void on_actionOpen_triggered();
 
@@ -29,9 +31,9 @@ private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
     ImageWidget* originWidget;
-    ImageWidget* grayScaleWidget;
+    ImageWidget* binaryWidget;
 
-    HistogramDialog* histogramDialog;
+    class HistogramDialog* histogramDialog;
 
     // file location of image
     QString imagePath;

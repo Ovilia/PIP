@@ -6,6 +6,7 @@
 #include "HistogramPlot.h"
 #include "ImagePolicy.h"
 #include "ImageProcessor.h"
+#include "MainWindow.h"
 
 namespace Ui {
     class HistogramDialog;
@@ -16,8 +17,10 @@ class HistogramDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit HistogramDialog(ImageProcessor* imageProcessor,
-                             QWidget *parent = 0);
+    explicit HistogramDialog(
+            class MainWindow* mainWindow,
+            ImageProcessor* imageProcessor,
+            QWidget *parent = 0);
     ~HistogramDialog();
 
     void changeThreshold(ImagePolicy::ThresholdPolicy policy,
@@ -50,7 +53,16 @@ private slots:
 
     void on_greenButton_clicked(bool checked);
 
+    void on_lowerSlider_sliderPressed();
+
+    void on_lowerSlider_sliderReleased();
+
+    void on_higherSlider_sliderPressed();
+
+    void on_higherSlider_sliderReleased();
+
 private:
+    class MainWindow* mainWindow;
     ImageProcessor* imageProcessor;
 
     Ui::HistogramDialog *ui;

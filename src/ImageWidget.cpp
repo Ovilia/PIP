@@ -14,3 +14,9 @@ ImageWidget::~ImageWidget()
 {
     delete ui;
 }
+
+void ImageWidget::setPixmap(QPixmap pixmap)
+{
+    this->pixmap = pixmap;
+    ui->imageLabel->setPixmap(pixmap);
+}

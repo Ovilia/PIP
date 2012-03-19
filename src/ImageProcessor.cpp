@@ -27,6 +27,7 @@ ImageProcessor::~ImageProcessor()
 {
     delete originImage;
     delete grayScaleImage;
+    delete binaryImage;
 }
 
 void ImageProcessor::setImage(QString fileName)
@@ -348,4 +349,34 @@ int* ImageProcessor::getRgbHistogram()
         }
     }
     return *rgbHistogram;
+}
+
+QImage* ImageProcessor::getBinaryImage()
+{
+    // make sure histogram is calculated
+    getHistogram();
+
+    int lower = getLowerThreshold();
+    int higher = getHigherThreshold();
+
+    int width = grayScaleImage->size().width();
+    int height = grayScaleImage->size().height();
+    binaryImage = new QImage(width, height, originImage->format());
+
+    const uchar* grayPtr = grayScaleImage->bits();
+    uchar* binaryPtr = binaryImage->bits();
+
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            // the middle part is black, the rest is white
+            if (*grayPtr <= lower || *grayPtr > higher) {
+                *binaryPtr = 255;
+                *(binaryPtr + 1) = 255;
+                *(binaryPtr + 2) = 255;
+            }
+            grayPtr += 4;
+            binaryPtr += 4;
+        }
+    }
+    return binaryImage;
 }

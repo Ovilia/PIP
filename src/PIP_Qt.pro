@@ -11,24 +11,32 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     ImageWidget.cpp \
     ImageProcessor.cpp \
     HistogramDialog.cpp \
-    HistogramPlot.cpp
+    HistogramPlot.cpp \
+    MainWindow.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     ImageWidget.h \
     ImageProcessor.h \
     HistogramDialog.h \
     ImagePolicy.h \
     HistogramPlot.h \
+    MainWindow.h
 
-FORMS    += mainwindow.ui \
+FORMS    += \
     ImageWidget.ui \
-    HistogramDialog.ui
+    HistogramDialog.ui \
+    MainWindow.ui
 
 RESOURCES += \
     resource.qrc
+
+
+
+
+
+
 
 

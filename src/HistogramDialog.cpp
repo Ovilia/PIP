@@ -4,9 +4,12 @@
 #include "ImageProcessor.h"
 #include "ui_HistogramDialog.h"
 
-HistogramDialog::HistogramDialog(ImageProcessor* imageProcessor,
-                                 QWidget *parent) :
+HistogramDialog::HistogramDialog(
+        MainWindow* mainWindow,
+        ImageProcessor* imageProcessor,
+        QWidget *parent) :
     QDialog(parent),
+    mainWindow(mainWindow),
     imageProcessor(imageProcessor),
     ui(new Ui::HistogramDialog)
 {
@@ -45,6 +48,9 @@ void HistogramDialog::changeThreshold(
     ui->higherEdit->setText(QString::number(higher));
     histogramPlot->setThresholdValue(lower, higher);
     histogramPlot->repaint();
+
+    // repaint binary image
+    mainWindow->repaintBinary();
 }
 
 void HistogramDialog::on_otsuButton_clicked()
@@ -77,8 +83,14 @@ void HistogramDialog::on_lowerSlider_sliderMoved(int position)
         ui->higherSlider->setValue(position);
         ui->higherEdit->setText(QString::number(position));
     }
-    histogramPlot->setThresholdValue(position, ui->higherSlider->value());
+    int lower = position;
+    int higher = ui->higherSlider->value();
+    imageProcessor->setThresholdPolicy(ImagePolicy::COSTUMED, lower, higher);
+    histogramPlot->setThresholdValue(lower, higher);
     histogramPlot->repaint();
+
+    // repaint binary image
+    mainWindow->repaintBinary();
 }
 
 void HistogramDialog::on_higherSlider_sliderMoved(int position)
@@ -88,8 +100,14 @@ void HistogramDialog::on_higherSlider_sliderMoved(int position)
         ui->lowerSlider->setValue(position);
         ui->lowerEdit->setText(QString::number(position));
     }
-    histogramPlot->setThresholdValue(ui->lowerSlider->value(), position);
+    int lower = ui->lowerSlider->value();
+    int higher = position;
+    imageProcessor->setThresholdPolicy(ImagePolicy::COSTUMED, lower, higher);
+    histogramPlot->setThresholdValue(lower, higher);
     histogramPlot->repaint();
+
+    // repaint binary image
+    mainWindow->repaintBinary();
 }
 
 void HistogramDialog::on_redBox_clicked(bool checked)
@@ -146,4 +164,28 @@ void HistogramDialog::on_greenButton_clicked(bool checked)
     if (checked) {
         changeGrayScale(ImagePolicy::GREEN_ONLY);
     }
+}
+
+void HistogramDialog::on_lowerSlider_sliderPressed()
+{
+    if (ui->transparenBox->isChecked()) {
+        setWindowOpacity(0.5);
+    }
+}
+
+void HistogramDialog::on_lowerSlider_sliderReleased()
+{
+    setWindowOpacity(1.0);
+}
+
+void HistogramDialog::on_higherSlider_sliderPressed()
+{
+    if (ui->transparenBox->isChecked()) {
+        setWindowOpacity(0.5);
+    }
+}
+
+void HistogramDialog::on_higherSlider_sliderReleased()
+{
+    setWindowOpacity(1.0);
 }

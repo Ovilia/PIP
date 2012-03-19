@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     tabWidget(0),
     originWidget(0),
-    grayScaleWidget(0),
+    binaryWidget(0),
     histogramDialog(0),
     imageProcessor(0),
     isFirstImage(true)
@@ -23,10 +23,17 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete originWidget;
-    delete grayScaleWidget;
+    delete binaryWidget;
     delete tabWidget;
     delete histogramDialog;
     delete imageProcessor;
+}
+
+void MainWindow::repaintBinary()
+{
+    QImage* binaryImage = imageProcessor->getBinaryImage();
+    binaryWidget->setPixmap(QPixmap::fromImage(*binaryImage));
+    binaryWidget->repaint();
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -68,7 +75,7 @@ void MainWindow::on_actionOpen_triggered()
         } else {
             // reset UI components
             ui->actionHistogram->setChecked(false);
-            grayScaleWidget = 0;
+            binaryWidget = 0;
         }
 
         // isFirstImage is set to be false after first opening
@@ -78,6 +85,12 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionHistogram_triggered()
 {
-    histogramDialog = new HistogramDialog(imageProcessor, this);
+    QImage* binaryImage = imageProcessor->getBinaryImage();
+    binaryWidget = new ImageWidget(
+                QPixmap::fromImage(*binaryImage), tabWidget);
+    tabWidget->addTab(binaryWidget, "Binary Image");
+    tabWidget->setCurrentWidget(binaryWidget);
+
+    histogramDialog = new HistogramDialog(this, imageProcessor);
     histogramDialog->show();
 }
