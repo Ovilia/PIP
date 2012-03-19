@@ -13,14 +13,17 @@ class ImageWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit ImageWidget(QPixmap pixmap, QWidget *parent = 0);
+    explicit ImageWidget(QImage* image, QWidget *parent = 0);
     ~ImageWidget();
 
-    void setPixmap(QPixmap pixmap);
+    void setImage(QImage* image);
+
+private slots:
+    void on_horizontalSlider_valueChanged(int value);
 
 private:
     Ui::ImageWidget *ui;
-    QPixmap pixmap;
+    QImage* image;
 };
 
 #endif // IMAGEWIDGET_H

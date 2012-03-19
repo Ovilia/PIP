@@ -20,19 +20,22 @@ HistogramDialog::HistogramDialog(
     ui->painterLayout->addWidget(histogramPlot);
     ui->rightWidget->repaint();
 
-    changeThreshold(ImagePolicy::OTSU);
+    changeThreshold(ImagePolicy::OTSU, false);
 }
 
 HistogramDialog::~HistogramDialog()
 {
     delete ui;
-    delete histogramPlot;
+    if (histogramPlot) {
+        delete histogramPlot;
+    }
     // remeber not to delete imageProcessor here,
     // because it is deleted by mainwindow
 }
 
 void HistogramDialog::changeThreshold(
-        ImagePolicy::ThresholdPolicy policy, int lower, int higher)
+        ImagePolicy::ThresholdPolicy policy,
+        bool repaintBinary, int lower, int higher)
 {
     // customed value set by parameter
     if (policy == ImagePolicy::COSTUMED) {
@@ -50,7 +53,9 @@ void HistogramDialog::changeThreshold(
     histogramPlot->repaint();
 
     // repaint binary image
-    mainWindow->repaintBinary();
+    if (repaintBinary) {
+        mainWindow->repaintBinary();
+    }
 }
 
 void HistogramDialog::on_otsuButton_clicked()
@@ -70,6 +75,7 @@ void HistogramDialog::on_entropyButton_clicked()
 void HistogramDialog::on_customedButton_clicked()
 {
     changeThreshold(ImagePolicy::COSTUMED,
+                    true,
                     ui->lowerSlider->value(),
                     ui->higherSlider->value());
     ui->lowerSlider->setEnabled(true);

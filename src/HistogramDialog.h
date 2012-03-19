@@ -24,6 +24,7 @@ public:
     ~HistogramDialog();
 
     void changeThreshold(ImagePolicy::ThresholdPolicy policy,
+                         bool repaintBinary = true,
                          int lower = 0, int higher = 0);
     void changeGrayScale(ImagePolicy::GrayScalePolicy policy);
 

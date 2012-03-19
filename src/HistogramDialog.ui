@@ -253,7 +253,7 @@
          <item>
           <widget class="QCheckBox" name="transparenBox">
            <property name="text">
-            <string>Transparent window when changing value</string>
+            <string>Transparent window when dragging</string>
            </property>
            <property name="checked">
             <bool>true</bool>

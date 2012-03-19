@@ -126,7 +126,7 @@ void HistogramPlot::paintEvent(QPaintEvent *)
 {
     int width = this->size().width();
     int height = this->size().height();
-    QPainter* paint=new QPainter;
+    QPainter* paint = new QPainter;
     paint->begin(this);
     // draw border
     paint->setPen(QPen(Qt::gray, borderWidth));
@@ -229,4 +229,5 @@ void HistogramPlot::paintEvent(QPaintEvent *)
                     Qt::AlignCenter, tr("Histogram"));
 
     paint->end();
+    delete paint;
 }

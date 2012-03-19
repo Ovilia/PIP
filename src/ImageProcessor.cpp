@@ -8,6 +8,7 @@
 ImageProcessor::ImageProcessor(QString fileName) :
     originImage(0),
     grayScaleImage(0),
+    binaryImage(0),
     isHisCaled(false),
     isRgbHisCaled(false),
     weightedHisSum(0),
@@ -25,9 +26,15 @@ ImageProcessor::ImageProcessor(QString fileName) :
 
 ImageProcessor::~ImageProcessor()
 {
-    delete originImage;
-    delete grayScaleImage;
-    delete binaryImage;
+    if (originImage) {
+        delete originImage;
+    }
+    if (grayScaleImage) {
+        delete grayScaleImage;
+    }
+    if (binaryImage) {
+        delete binaryImage;
+    }
 }
 
 void ImageProcessor::setImage(QString fileName)
@@ -39,6 +46,9 @@ void ImageProcessor::setImage(QString fileName)
     isEntropyCaled = false;
 
     this->fileName = fileName;
+    if (originImage) {
+        delete originImage;
+    }
     originImage = new QImage(fileName);
     if (originImage->format() != QImage::Format_RGB32) {
         *originImage = originImage->convertToFormat(QImage::Format_RGB32);
@@ -48,7 +58,14 @@ void ImageProcessor::setImage(QString fileName)
 void ImageProcessor::setGrayScalePolicy(ImagePolicy::GrayScalePolicy policy)
 {
     grayScalePolicy = policy;
-    grayScaleImage = 0;
+    if (grayScaleImage) {
+        delete grayScaleImage;
+        grayScaleImage = 0;
+    }
+    if (binaryImage) {
+        delete binaryImage;
+        binaryImage = 0;
+    }
     isHisCaled = false;
     isOtsuCaled = false;
     isEntropyCaled = false;
@@ -259,6 +276,9 @@ QImage* ImageProcessor::getGrayScaleImage()
         int size = width * height;
 
         // gray scale image of origin size
+        if (grayScaleImage) {
+            delete grayScaleImage;
+        }
         grayScaleImage = new QImage(width, height, originImage->format());
 
         // pointer to originBits being processed
@@ -361,6 +381,9 @@ QImage* ImageProcessor::getBinaryImage()
 
     int width = grayScaleImage->size().width();
     int height = grayScaleImage->size().height();
+    if (binaryImage) {
+        delete binaryImage;
+    }
     binaryImage = new QImage(width, height, originImage->format());
 
     const uchar* grayPtr = grayScaleImage->bits();
