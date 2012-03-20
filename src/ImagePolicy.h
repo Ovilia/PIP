@@ -11,9 +11,16 @@ public:
     };
 
     enum ThresholdPolicy {
-        OTSU,
+        OTSU = 0,
         ENTROPY,
         COSTUMED
+    };
+
+    enum BorderPolicy {
+        BLACK = 0,
+        NEAREST,
+        MIRROR,
+        PERIODIC
     };
 };
 
