@@ -41,6 +41,8 @@ private:
     QImage* grayScaleImage;
     QImage* binaryImage;
 
+    static const int NEXT_PIXEL = 4;
+
     // if histogram is calculated
     bool isHisCaled, isRgbHisCaled;
     int histogram[RANGE_OF_8BITS];
@@ -66,7 +68,7 @@ private:
     ImagePolicy::ThresholdPolicy thresholdPolicy;
 
     inline uchar getGrayValue(
-            uchar* rgb, ImagePolicy::GrayScalePolicy policy);
+            const uchar* rgb, ImagePolicy::GrayScalePolicy policy);
 };
 
 #endif // IMAGEPROCESSOR_H

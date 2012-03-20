@@ -57,18 +57,20 @@ void ImageProcessor::setImage(QString fileName)
 
 void ImageProcessor::setGrayScalePolicy(ImagePolicy::GrayScalePolicy policy)
 {
-    grayScalePolicy = policy;
-    if (grayScaleImage) {
-        delete grayScaleImage;
-        grayScaleImage = 0;
+    if (grayScalePolicy != policy) {
+        grayScalePolicy = policy;
+        if (grayScaleImage) {
+            delete grayScaleImage;
+            grayScaleImage = 0;
+        }
+        if (binaryImage) {
+            delete binaryImage;
+            binaryImage = 0;
+        }
+        isHisCaled = false;
+        isOtsuCaled = false;
+        isEntropyCaled = false;
     }
-    if (binaryImage) {
-        delete binaryImage;
-        binaryImage = 0;
-    }
-    isHisCaled = false;
-    isOtsuCaled = false;
-    isEntropyCaled = false;
 }
 
 ImagePolicy::GrayScalePolicy ImageProcessor::getGrayScalePolicy()
@@ -253,7 +255,7 @@ QImage* ImageProcessor::getOriginImage()
 }
 
 inline uchar ImageProcessor::getGrayValue(
-        uchar* rgb, ImagePolicy::GrayScalePolicy policy)
+        const uchar* rgb, ImagePolicy::GrayScalePolicy policy)
 {
     switch(policy) {
     case ImagePolicy::GREEN_ONLY:
@@ -282,7 +284,7 @@ QImage* ImageProcessor::getGrayScaleImage()
         grayScaleImage = new QImage(width, height, originImage->format());
 
         // pointer to originBits being processed
-        uchar* originPtr = originImage->bits();
+        const uchar* originPtr = originImage->constBits();
         // pointer to grayBits being processed
         uchar* grayPtr = grayScaleImage->bits();
 
@@ -296,8 +298,8 @@ QImage* ImageProcessor::getGrayScaleImage()
             // set alpha value to be 255
             *(grayPtr + 3) = MAX_OF_8BITS;
             // move pointer of origin and gray scale pointer to next pixel
-            originPtr += 4;
-            grayPtr += 4;
+            originPtr += NEXT_PIXEL;
+            grayPtr += NEXT_PIXEL;
         }
     }
     return grayScaleImage;
@@ -316,14 +318,14 @@ int* ImageProcessor::getHistogram()
 
         // pointer to pixels being processed which will not change
         // pixels in grayImage
-        const uchar* grayPtr = grayScaleImage->bits();
+        const uchar* grayPtr = grayScaleImage->constBits();
 
         int size = grayScaleImage->size().width() *
                 grayScaleImage->size().height();
         for (int i = 0; i < size; ++i) {
             histogram[*grayPtr]++;
             // point to next pixel
-            grayPtr += 4;
+            grayPtr += NEXT_PIXEL;
         }
 
         // calculate accumulated histogram and weighted sum
@@ -353,7 +355,7 @@ int* ImageProcessor::getRgbHistogram()
 
         // pointer to pixels being processed which will not change
         // pixels in originImage
-        const uchar* originPtr = originImage->bits();
+        const uchar* originPtr = originImage->constBits();
 
         int size = originImage->size().width() *
                 originImage->size().height();
@@ -365,7 +367,7 @@ int* ImageProcessor::getRgbHistogram()
             // red
             rgbHistogram[*(originPtr + 2)][0]++;
             // point to next pixel
-            originPtr += 4;
+            originPtr += NEXT_PIXEL;
         }
     }
     return *rgbHistogram;
@@ -381,25 +383,38 @@ QImage* ImageProcessor::getBinaryImage()
 
     int width = grayScaleImage->size().width();
     int height = grayScaleImage->size().height();
+    int size = width * height;
     if (binaryImage) {
         delete binaryImage;
     }
     binaryImage = new QImage(width, height, originImage->format());
 
-    const uchar* grayPtr = grayScaleImage->bits();
+    const uchar* grayPtr = grayScaleImage->constBits();
     uchar* binaryPtr = binaryImage->bits();
 
-    for (int i = 0; i < width; ++i) {
-        for (int j = 0; j < height; ++j) {
-            // the middle part is black, the rest is white
-            if (*grayPtr <= lower || *grayPtr > higher) {
-                *binaryPtr = 255;
-                *(binaryPtr + 1) = 255;
-                *(binaryPtr + 2) = 255;
-            }
-            grayPtr += 4;
-            binaryPtr += 4;
+    for (int i = 0; i < size; ++i) {
+        if (*grayPtr <= lower || *grayPtr > higher) {
+            // set two sides of threshold white
+            // blue
+            *binaryPtr = MAX_OF_8BITS;
+            // green
+            *(binaryPtr + 1) = MAX_OF_8BITS;
+            // red
+            *(binaryPtr + 2) = MAX_OF_8BITS;
+            // alpha
+            *(binaryPtr + 3) = MAX_OF_8BITS;
+        } else {
+            // blue
+            *binaryPtr = 0;
+            // green
+            *(binaryPtr + 1) = 0;
+            // red
+            *(binaryPtr + 2) = 0;
+            // alpha
+            *(binaryPtr + 3) = MAX_OF_8BITS;
         }
+        grayPtr += NEXT_PIXEL;
+        binaryPtr += NEXT_PIXEL;
     }
     return binaryImage;
 }
