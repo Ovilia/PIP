@@ -17,10 +17,10 @@ public:
     };
 
     enum BorderPolicy {
-        BLACK = 0,
-        NEAREST,
+        NEAREST = 0,
         MIRROR,
-        PERIODIC
+        PERIODIC,
+        BLACK
     };
 };
 

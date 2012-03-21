@@ -298,8 +298,8 @@ QImage* ImageProcessor::getGrayScaleImage()
             // set alpha value to be 255
             *(grayPtr + 3) = MAX_OF_8BITS;
             // move pointer of origin and gray scale pointer to next pixel
-            originPtr += NEXT_PIXEL;
-            grayPtr += NEXT_PIXEL;
+            originPtr += PIXEL_SIZE;
+            grayPtr += PIXEL_SIZE;
         }
     }
     return grayScaleImage;
@@ -325,7 +325,7 @@ int* ImageProcessor::getHistogram()
         for (int i = 0; i < size; ++i) {
             histogram[*grayPtr]++;
             // point to next pixel
-            grayPtr += NEXT_PIXEL;
+            grayPtr += PIXEL_SIZE;
         }
 
         // calculate accumulated histogram and weighted sum
@@ -367,7 +367,7 @@ int* ImageProcessor::getRgbHistogram()
             // red
             rgbHistogram[*(originPtr + 2)][0]++;
             // point to next pixel
-            originPtr += NEXT_PIXEL;
+            originPtr += PIXEL_SIZE;
         }
     }
     return *rgbHistogram;
@@ -413,8 +413,8 @@ QImage* ImageProcessor::getBinaryImage()
             // alpha
             *(binaryPtr + 3) = MAX_OF_8BITS;
         }
-        grayPtr += NEXT_PIXEL;
-        binaryPtr += NEXT_PIXEL;
+        grayPtr += PIXEL_SIZE;
+        binaryPtr += PIXEL_SIZE;
     }
     return binaryImage;
 }

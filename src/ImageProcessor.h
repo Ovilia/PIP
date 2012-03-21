@@ -41,7 +41,7 @@ private:
     QImage* grayScaleImage;
     QImage* binaryImage;
 
-    static const int NEXT_PIXEL = 4;
+    static const int PIXEL_SIZE = 4;
 
     // if histogram is calculated
     bool isHisCaled, isRgbHisCaled;
