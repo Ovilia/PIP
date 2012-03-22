@@ -25,12 +25,12 @@ void Filter::setBorderPolicy(ImagePolicy::BorderPolicy policy)
     }
 }
 
-inline int Filter::get2DIndex(int columns, int x, int y)
+int Filter::get2DIndex(int columns, int x, int y)
 {
     return columns * y + x;
 }
 
-inline const uchar Filter::getBorderedValue(int x, int y, ColorOffset offset)
+const uchar Filter::getBorderedValue(int x, int y, ColorOffset offset)
 {
     if (borderPolicy == ImagePolicy::BLACK) {
         return 0;
@@ -166,7 +166,7 @@ inline Filter::BorderedPart Filter::getBorderedPart(int x, int y)
     }
 }
 
-void Filter::resetBorder()
+void Filter::resetBorderPixel()
 {
     if (!filteredImage) {
         int width = originImage->size().width();
@@ -192,4 +192,43 @@ void Filter::resetBorder()
             }
         }
     }
+    // set isBorderChanged flag to be false
+    isBorderChanged = false;
+}
+
+void Filter::resetAllPixel()
+{
+    if (!filteredImage) {
+        uchar* bits = filteredImage->bits();
+        int width = originImage->size().width();
+        int height = originImage->size().height();
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                uchar gray = doFiltering(x, y, BLUE_OFFSET);
+                *bits = gray;
+                *(bits + 1) = gray;
+                *(bits + 2) = gray;
+                // move to next pixel
+                bits += PIXEL_SIZE;
+            }
+        }
+    }
+}
+
+QImage* Filter::getFilteredImage()
+{
+    if (filteredImage == 0) {
+        // init filteredImage and reset all
+        int width = originImage->width();
+        int height = originImage->height();
+        filteredImage = new QImage(width, height, originImage->format());
+        resetAllPixel();
+    } else if (isBorderChanged) {
+        /**
+         * if previously calculated center image and border policy changed,
+         * only recalculate the border part
+         */
+        resetBorderPixel();
+    }
+    return filteredImage;
 }

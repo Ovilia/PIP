@@ -19,7 +19,11 @@ public:
 
     void setBorderPolicy(ImagePolicy::BorderPolicy policy);
 
-    virtual QImage* getFilteredImage() = 0;
+    /**
+     * this is not a virtual function itself
+     * but it will call virtual function doFiltering
+     */
+    QImage* getFilteredImage();
 
 protected:
     QImage* originImage;
@@ -44,6 +48,8 @@ protected:
 
     // size of each pixel
     static const int PIXEL_SIZE = 4;
+    // max value of a bit
+    static const uchar MAX_BIT_VALUE = 255;
 
     /**
      * proceed filtering
@@ -61,22 +67,22 @@ protected:
      * @param y y index of 2-dimension data
      * @return index of 1-dimension data
      */
-    inline int get2DIndex(int columns, int x, int y);
+    int get2DIndex(int columns, int x, int y);
 
     /**
      * get red pixel value in image
      * @param x ranging from -kernelRadio to image->width() - 1 + kernelRadio
      * @param y ranging from -kernelRadio to image->height() - 1 + kernelRadio
      * @param offset ColorOffset of the wanted pixel
-     * @return red value of image, if x is out of the range
+     * @return pixel value of image, if x is out of the range
                [0, image->width() - 1] or y is out of the range
                [0, image->height() - 1], it returns the border value
                processed using borderPolicy.
      */
-    inline const uchar getBorderedValue(int x, int y, ColorOffset offset);
+    const uchar getBorderedValue(int x, int y, ColorOffset offset);
 
     /**
-     * helper function for getBordered...(int x, int y)
+     * helper function for getBorderedValue
      * if under current borderPolicy, every (x, y) pair is corresponded to
      * a pixel in originImage, return the amount of pixels which is before it
      * otherwise (e.g. borderPolicy == ImagePolicy::BLACK),
@@ -110,8 +116,9 @@ protected:
         BOTTOM_RIGHT,
         ILLEGAL_PART = -1
     };
-    /** get part index of image, if x or y is out of range,
-     *  ILLEGAL_PART is returned
+    /**
+     * get part index of image, if x or y is out of range,
+     * ILLEGAL_PART is returned
      * @param x [-kernelRadio, image->width() - 1]
      * @param y [-kernelRadio, image->height() - 1]
      */
@@ -121,7 +128,12 @@ protected:
      * change pixel data when setBorderPolicy is called
      * if filteredImage is null, do nothing
      */
-    void resetBorder();
+    void resetBorderPixel();
+
+    /**
+     * change all pixel data of filteredImage
+     */
+    void resetAllPixel();
 };
 
 #endif // FILTER_H
