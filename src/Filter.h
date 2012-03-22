@@ -13,7 +13,7 @@ public:
      * for a 3x3 kernel, kernelRadio is 1
      * for a 5x5 kernel, kernelRadion is 2
      */
-    Filter(QImage* image, int kernelRadio,
+    Filter(QImage* image, const int kernelRadio,
            ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
     virtual ~Filter();
 
@@ -26,6 +26,21 @@ public:
     QImage* getFilteredImage();
 
 protected:
+    enum ColorOffset {
+        // offset of red pixel in QImage->bits()
+        RED_OFFSET = 2,
+        GREEN_OFFSET = 1,
+        BLUE_OFFSET = 0
+    };
+    /**
+     * proceed filtering
+     * @param x x index in originImage
+     * @param y y index in originImage
+     * @param offset ColorOffset of the wanted pixel
+     * @return filtered color
+     */
+    virtual uchar doFiltering(int x, int y, ColorOffset offset) = 0;
+
     QImage* originImage;
     QImage* filteredImage;
 
@@ -38,27 +53,13 @@ protected:
      * border part instead of recalculating the whole image
      */
     bool isBorderChanged;
-
-    enum ColorOffset {
-        // offset of red pixel in QImage->bits()
-        RED_OFFSET = 2,
-        GREEN_OFFSET = 1,
-        BLUE_OFFSET = 0
-    };
+    // if kernel is changed after last calculation
+    bool isKernelChanged;
 
     // size of each pixel
     static const int PIXEL_SIZE = 4;
     // max value of a bit
     static const uchar MAX_BIT_VALUE = 255;
-
-    /**
-     * proceed filtering
-     * @param x x index in originImage
-     * @param y y index in originImage
-     * @param offset ColorOffset of the wanted pixel
-     * @return filtered color
-     */
-    virtual uchar doFiltering(int x, int y, ColorOffset offset) = 0;
 
     /**
      * get 1-dimension index with given 2-dimension index

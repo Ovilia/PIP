@@ -1,12 +1,13 @@
 #include "Filter.h"
 
-Filter::Filter(QImage* image, int kernelRadio,
+Filter::Filter(QImage* image, const int kernelRadio,
                ImagePolicy::BorderPolicy policy) :
     originImage(image),
     filteredImage(0),
     kernelRadio(kernelRadio),
     borderPolicy(policy),
-    isBorderChanged(false)
+    isBorderChanged(false),
+    isKernelChanged(false)
 {
 }
 
@@ -213,6 +214,9 @@ void Filter::resetAllPixel()
             }
         }
     }
+    // don't calculate again
+    isKernelChanged = false;
+    isBorderChanged = false;
 }
 
 QImage* Filter::getFilteredImage()
@@ -222,6 +226,9 @@ QImage* Filter::getFilteredImage()
         int width = originImage->width();
         int height = originImage->height();
         filteredImage = new QImage(width, height, originImage->format());
+        resetAllPixel();
+    } else if (isKernelChanged) {
+        // reset if kernel is changed
         resetAllPixel();
     } else if (isBorderChanged) {
         /**

@@ -4,19 +4,27 @@
 #include <QImage>
 
 #include "Filter.h"
+#include "Operator.h"
 
 class LinearFilter : public Filter
 {
 public:
-    LinearFilter(QImage* image, int kernelRadio, int* kernelPtr,
+    LinearFilter(QImage* image, const int kernelRadio,
                  ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
-    LinearFilter(QImage* image, int kernelRadio, double* kernelPtr,
+    LinearFilter(QImage* image, const int kernelRadio, const int* kernelPtr,
+                 ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
+    LinearFilter(QImage* image, const int kernelRadio, const double* kernelPtr,
                  ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
     virtual ~LinearFilter();
 
+    void changeKernel(const int* kernel);
+    void changeKernel(const double* kernel);
+
+    friend class Operator;
+
 protected:
-    int* kernelPtrInt;
-    double* kernelPtrDouble;
+    const int* kernelPtrInt;
+    const double* kernelPtrDouble;
 
     // linear filter use convolution to do filtering
     virtual uchar doFiltering(int x, int y, ColorOffset offset);

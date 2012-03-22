@@ -1,6 +1,16 @@
 #include "LinearFilter.h"
 
-LinearFilter::LinearFilter(QImage* image, int kernelRadio, int* kernelPtr,
+LinearFilter::LinearFilter(QImage* image, const int kernelRadio,
+                           ImagePolicy::BorderPolicy policy) :
+    Filter(image, kernelRadio, policy),
+    kernelPtrInt(0),
+    kernelPtrDouble(0)
+{
+
+}
+
+LinearFilter::LinearFilter(QImage* image,
+                           const int kernelRadio, const int* kernelPtr,
                            ImagePolicy::BorderPolicy policy) :
     Filter(image, kernelRadio, policy),
     kernelPtrInt(kernelPtr),
@@ -8,7 +18,8 @@ LinearFilter::LinearFilter(QImage* image, int kernelRadio, int* kernelPtr,
 {
 }
 
-LinearFilter::LinearFilter(QImage *image, int kernelRadio, double *kernelPtr,
+LinearFilter::LinearFilter(QImage *image,
+                           const int kernelRadio, const double *kernelPtr,
                            ImagePolicy::BorderPolicy policy) :
     Filter(image, kernelRadio, policy),
     kernelPtrInt(0),
@@ -18,6 +29,20 @@ LinearFilter::LinearFilter(QImage *image, int kernelRadio, double *kernelPtr,
 
 LinearFilter::~LinearFilter()
 {
+}
+
+void LinearFilter::changeKernel(const int *kernel)
+{
+    kernelPtrInt = kernel;
+    kernelPtrDouble = 0;
+    isKernelChanged = true;
+}
+
+void LinearFilter::changeKernel(const double *kernel)
+{
+    kernelPtrDouble = kernel;
+    kernelPtrInt = 0;
+    isKernelChanged = true;
 }
 
 uchar LinearFilter::doFiltering(int x, int y, ColorOffset offset)
@@ -37,7 +62,7 @@ uchar LinearFilter::doFilteringInt(int x, int y, ColorOffset offset)
     int sum = 0;
     for (int i = -kernelRadio; i <= kernelRadio; ++i) {
         for (int j = -kernelRadio; j <= kernelRadio; ++j) {
-            sum += getBorderedValue(i, j, offset) *
+            sum += getBorderedValue(x, y, offset) *
                     kernelPtrInt[get2DIndex(kernelRadio, i, j)];
         }
     }
@@ -56,7 +81,7 @@ uchar LinearFilter::doFilteringDouble(int x, int y, ColorOffset offset)
     double sum = 0;
     for (int i = -kernelRadio; i <= kernelRadio; ++i) {
         for (int j = -kernelRadio; j <= kernelRadio; ++j) {
-            sum += getBorderedValue(i, j, offset) *
+            sum += getBorderedValue(x, y, offset) *
                     kernelPtrDouble[get2DIndex(kernelRadio, i, j)];
         }
     }

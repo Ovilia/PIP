@@ -17,7 +17,9 @@ SOURCES += main.cpp\
     HistogramPlot.cpp \
     MainWindow.cpp \
     Filter.cpp \
-    LinearFilter.cpp
+    LinearFilter.cpp \
+    SobelOperator.cpp \
+    Operator.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -27,7 +29,9 @@ HEADERS  += \
     HistogramPlot.h \
     MainWindow.h \
     Filter.h \
-    LinearFilter.h
+    LinearFilter.h \
+    SobelOperator.h \
+    Operator.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -36,6 +40,10 @@ FORMS    += \
 
 RESOURCES += \
     resource.qrc
+
+
+
+
 
 
 
