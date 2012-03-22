@@ -19,7 +19,10 @@ SOURCES += main.cpp\
     Filter.cpp \
     LinearFilter.cpp \
     SobelOperator.cpp \
-    Operator.cpp
+    Operator.cpp \
+    RobertsOperator.cpp \
+    FilterDialog.cpp \
+    PrewittOperator.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -31,15 +34,26 @@ HEADERS  += \
     Filter.h \
     LinearFilter.h \
     SobelOperator.h \
-    Operator.h
+    Operator.h \
+    RobertsOperator.h \
+    FilterDialog.h \
+    PrewittOperator.h
 
 FORMS    += \
     ImageWidget.ui \
     HistogramDialog.ui \
-    MainWindow.ui
+    MainWindow.ui \
+    FilterDialog.ui
 
 RESOURCES += \
     resource.qrc
+
+
+
+
+
+
+
 
 
 

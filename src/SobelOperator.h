@@ -6,10 +6,11 @@
 #include "ImagePolicy.h"
 #include "Operator.h"
 
-class SobelOperator : Operator
+class SobelOperator : public Operator
 {
 public:
-    SobelOperator(QImage* image, ImagePolicy::BorderPolicy policy);
+    SobelOperator(QImage* image,
+                  ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
     virtual ~SobelOperator();
 
 private:
