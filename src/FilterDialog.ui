@@ -10,6 +10,12 @@
     <height>434</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
@@ -99,7 +105,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QRadioButton" name="radioButton">
+          <widget class="QRadioButton" name="customedButton">
            <property name="text">
             <string>Customed filter</string>
            </property>
@@ -295,7 +301,7 @@
                <number>3</number>
               </property>
               <property name="maximum">
-               <number>49</number>
+               <number>9</number>
               </property>
               <property name="singleStep">
                <number>2</number>
@@ -328,22 +334,32 @@
            </property>
            <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0">
-             <widget class="QWidget" name="customedKernelWidget" native="true">
-              <layout class="QGridLayout" name="gridLayout_2"/>
+             <widget class="QTableWidget" name="tableWidget">
+              <property name="verticalScrollBarPolicy">
+               <enum>Qt::ScrollBarAsNeeded</enum>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarAsNeeded</enum>
+              </property>
+              <property name="autoScroll">
+               <bool>true</bool>
+              </property>
+              <property name="showGrid">
+               <bool>true</bool>
+              </property>
+              <property name="rowCount">
+               <number>3</number>
+              </property>
+              <property name="columnCount">
+               <number>3</number>
+              </property>
+              <row/>
+              <row/>
+              <row/>
+              <column/>
+              <column/>
+              <column/>
              </widget>
-            </item>
-            <item row="0" column="1">
-             <spacer name="horizontalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>

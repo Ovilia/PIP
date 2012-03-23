@@ -44,6 +44,7 @@
      <string>Image</string>
     </property>
     <addaction name="actionHistogram"/>
+    <addaction name="actionFilter"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
@@ -58,6 +59,7 @@
    <addaction name="actionOpen"/>
    <addaction name="separator"/>
    <addaction name="actionHistogram"/>
+   <addaction name="actionFilter"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -81,6 +83,9 @@
    </property>
   </action>
   <action name="actionHistogram">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -93,6 +98,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionFilter">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/filter.png</normaloff>:/images/images/filter.png</iconset>
+   </property>
+   <property name="text">
+    <string>Filter</string>
    </property>
   </action>
  </widget>

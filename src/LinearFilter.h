@@ -20,8 +20,6 @@ public:
     void changeKernel(const int* kernel);
     void changeKernel(const double* kernel);
 
-    friend class Operator;
-
 protected:
     const int* kernelPtrInt;
     const double* kernelPtrDouble;
