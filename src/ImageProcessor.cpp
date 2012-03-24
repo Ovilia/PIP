@@ -50,8 +50,38 @@ void ImageProcessor::setImage(QString fileName)
         delete originImage;
     }
     originImage = new QImage(fileName);
-    if (originImage->format() != QImage::Format_RGB32) {
-        *originImage = originImage->convertToFormat(QImage::Format_RGB32);
+    doFormatProcess(originImage);
+}
+
+void ImageProcessor::doFormatProcess(QImage *image)
+{
+    if (image == 0) {
+        return;
+    }
+    if (image->format() != QImage::Format_RGB32) {
+        if (image->format() == QImage::Format_ARGB32) {
+            // set pixel with alpha 0 to be white
+            uchar* bits = image->bits();
+            int size = image->width() * image->height();
+            for (int i = 0; i < size; ++i) {
+                int alpha = *(bits + 3);
+                if (alpha == 0) {
+                    *bits = MAX_OF_8BITS;
+                    *(bits + 1) = MAX_OF_8BITS;
+                    *(bits + 2) = MAX_OF_8BITS;
+                } else if (alpha != MAX_OF_8BITS) {
+                    // if alpha is not 255, set rgb to be semitransparent
+                    *bits = *bits * alpha / MAX_OF_8BITS +
+                            MAX_OF_8BITS - alpha;
+                    *(bits + 1) = *(bits + 1) * alpha / MAX_OF_8BITS +
+                            MAX_OF_8BITS - alpha;
+                    *(bits + 2) = *(bits + 2) * alpha / MAX_OF_8BITS +
+                            MAX_OF_8BITS - alpha;
+                }
+                bits += 4;
+            }
+        }
+        *image = image->convertToFormat(QImage::Format_RGB32);
     }
 }
 

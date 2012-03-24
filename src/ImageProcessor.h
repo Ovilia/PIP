@@ -32,6 +32,9 @@ public:
     int getLowerThreshold();
     int getHigherThreshold();
 
+    // make image to be format RGB32
+    void doFormatProcess(QImage* image);
+
     static const int RANGE_OF_8BITS = 256;
     static const int MAX_OF_8BITS = RANGE_OF_8BITS - 1;
 
