@@ -4,7 +4,6 @@
 #include <QImage>
 
 #include "Filter.h"
-#include "Operator.h"
 
 class LinearFilter : public Filter
 {
@@ -19,6 +18,8 @@ public:
 
     void changeKernel(const int* kernel);
     void changeKernel(const double* kernel);
+
+    friend class Operator;
 
 protected:
     const int* kernelPtrInt;

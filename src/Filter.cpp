@@ -123,6 +123,7 @@ inline const int Filter::getBorderedIndex(int x, int y)
     case ImagePolicy::BLACK:
         return -1;
     }
+    return -1;
 }
 
 inline Filter::BorderedPart Filter::getBorderedPart(int x, int y)

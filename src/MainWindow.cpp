@@ -4,7 +4,7 @@
 #include "HistogramDialog.h"
 #include "ImagePolicy.h"
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     isFirstImage(true)
 {
     ui->setupUi(this);
+    connect(ui->actionFilter, SIGNAL(triggered()),
+            this, SLOT(on_actionFilter_triggered()));
 }
 
 MainWindow::~MainWindow()
@@ -86,9 +88,9 @@ void MainWindow::on_actionOpen_triggered()
             ui->gridLayout->addWidget(tabWidget);
             // enable UI components
             ui->actionHistogram->setEnabled(true);
+            ui->actionFilter->setEnabled(true);
         } else {
             // reset UI components
-            ui->actionHistogram->setChecked(false);
             binaryWidget = 0;
         }
 
@@ -112,4 +114,13 @@ void MainWindow::on_actionHistogram_triggered()
     }
     histogramDialog = new HistogramDialog(this, imageProcessor);
     histogramDialog->show();
+}
+
+void MainWindow::on_actionFilter_triggered()
+{
+    if (filterDialog) {
+        delete filterDialog;
+    }
+    filterDialog = new FilterDialog(this, this);
+    filterDialog->show();
 }

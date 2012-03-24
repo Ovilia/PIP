@@ -12,15 +12,16 @@ namespace Ui {
     class HistogramDialog;
 }
 
+class MainWindow;
+
 class HistogramDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit HistogramDialog(
-            class MainWindow* mainWindow,
-            ImageProcessor* imageProcessor,
-            QWidget *parent = 0);
+    explicit HistogramDialog(MainWindow* mainWindow,
+                             ImageProcessor* imageProcessor,
+                             QWidget *parent = 0);
     ~HistogramDialog();
 
     void changeThreshold(ImagePolicy::ThresholdPolicy policy,
@@ -63,7 +64,7 @@ private slots:
     void on_higherSlider_sliderReleased();
 
 private:
-    class MainWindow* mainWindow;
+    MainWindow* mainWindow;
     ImageProcessor* imageProcessor;
 
     Ui::HistogramDialog *ui;
