@@ -2,13 +2,21 @@
 #include <QList>
 
 #include "FilterDialog.h"
+#include "ImagePolicy.h"
 #include "MainWindow.h"
 #include "ui_FilterDialog.h"
 
-FilterDialog::FilterDialog(MainWindow* mainWindow, QWidget *parent) :
+FilterDialog::FilterDialog(MainWindow* mainWindow,
+                           ImageProcessor* imageProcessor,
+                           QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FilterDialog),
-    mainWindow(mainWindow)
+    mainWindow(mainWindow),
+    imageProcessor(imageProcessor),
+    borderPolicy(ImagePolicy::NEAREST),
+    prewitt(0),
+    roberts(0),
+    sobel(0)
 {
     ui->setupUi(this);
 
@@ -31,6 +39,16 @@ FilterDialog::~FilterDialog()
     int amt = MAX_KERNEL_RADIO * MAX_KERNEL_RADIO;
     for (int i = 0; i < amt; ++i) {
         delete kernelEdit[i];
+    }
+
+    if (prewitt) {
+        delete prewitt;
+    }
+    if (roberts) {
+        delete roberts;
+    }
+    if (sobel) {
+        delete sobel;
     }
 
     delete ui;
@@ -151,4 +169,31 @@ void FilterDialog::resetCustEdit(int count)
 
 void FilterDialog::on_applyButton_clicked()
 {
+    if (ui->robertsButton->isChecked()) {
+        if (!roberts) {
+            roberts = new RobertsOperator(imageProcessor->getGrayScaleImage(),
+                                          borderPolicy);
+        }
+        mainWindow->setFilteredImage(roberts->getFilteredImage());
+    }
+}
+
+void FilterDialog::on_nearestButton_clicked()
+{
+    borderPolicy = ImagePolicy::NEAREST;
+}
+
+void FilterDialog::on_mirrorButton_clicked()
+{
+    borderPolicy = ImagePolicy::MIRROR;
+}
+
+void FilterDialog::on_periodicButton_clicked()
+{
+    borderPolicy = ImagePolicy::PERIODIC;
+}
+
+void FilterDialog::on_blackButton_clicked()
+{
+    borderPolicy = ImagePolicy::BLACK;
 }

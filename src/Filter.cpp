@@ -200,7 +200,7 @@ void Filter::resetBorderPixel()
 
 void Filter::resetAllPixel()
 {
-    if (!filteredImage) {
+    if (filteredImage) {
         uchar* bits = filteredImage->bits();
         int width = originImage->size().width();
         int height = originImage->size().height();

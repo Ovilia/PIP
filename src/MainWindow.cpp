@@ -12,7 +12,9 @@ MainWindow::MainWindow(QWidget *parent) :
     tabWidget(0),
     originWidget(0),
     binaryWidget(0),
+    filteredWidget(0),
     histogramDialog(0),
+    filterDialog(0),
     imageProcessor(0),
     isFirstImage(true)
 {
@@ -30,11 +32,17 @@ MainWindow::~MainWindow()
     if (binaryWidget) {
         delete binaryWidget;
     }
+    if (filteredWidget) {
+        delete filteredWidget;
+    }
     if (tabWidget) {
         delete tabWidget;
     }
     if (histogramDialog) {
         delete histogramDialog;
+    }
+    if (filterDialog) {
+        delete filterDialog;
     }
     if (imageProcessor) {
         delete imageProcessor;
@@ -45,6 +53,17 @@ void MainWindow::repaintBinary()
 {
     binaryWidget->setImage(imageProcessor->getBinaryImage());
     binaryWidget->repaint();
+}
+
+void MainWindow::setFilteredImage(QImage *image)
+{
+    if (!filteredWidget) {
+        filteredWidget = new ImageWidget(image);
+        tabWidget->addTab(filteredWidget, "Filtered Image");
+    } else {
+        filteredWidget->setImage(image);
+    }
+    tabWidget->setCurrentWidget(filteredWidget);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -121,6 +140,6 @@ void MainWindow::on_actionFilter_triggered()
     if (filterDialog) {
         delete filterDialog;
     }
-    filterDialog = new FilterDialog(this, this);
+    filterDialog = new FilterDialog(this, imageProcessor, this);
     filterDialog->show();
 }

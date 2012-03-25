@@ -22,6 +22,7 @@ public:
     ~MainWindow();
 
     void repaintBinary();
+    void setFilteredImage(QImage *image);
 
 private slots:
     void on_actionOpen_triggered();
@@ -35,6 +36,7 @@ private:
     QTabWidget* tabWidget;
     ImageWidget* originWidget;
     ImageWidget* binaryWidget;
+    ImageWidget* filteredWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
