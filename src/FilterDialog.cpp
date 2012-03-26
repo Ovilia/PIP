@@ -1,5 +1,4 @@
 #include <QLineEdit>
-#include <QList>
 
 #include "FilterDialog.h"
 #include "ImagePolicy.h"
@@ -14,11 +13,15 @@ FilterDialog::FilterDialog(MainWindow* mainWindow,
     mainWindow(mainWindow),
     imageProcessor(imageProcessor),
     borderPolicy(ImagePolicy::NEAREST),
-    prewitt(0),
-    roberts(0),
-    sobel(0)
+    isColored(false)
 {
     ui->setupUi(this);
+
+    for (int i = 0; i < 2; ++i) {
+        prewitt[i] = 0;
+        roberts[i] = 0;
+        sobel[i] = 0;
+    }
 
     ui->filterParaGroup->setVisible(false);
     ui->gaussianParaGroup->setVisible(false);
@@ -41,14 +44,16 @@ FilterDialog::~FilterDialog()
         delete kernelEdit[i];
     }
 
-    if (prewitt) {
-        delete prewitt;
-    }
-    if (roberts) {
-        delete roberts;
-    }
-    if (sobel) {
-        delete sobel;
+    for (int i = 0; i < 2; ++i) {
+        if (prewitt[i]) {
+            delete prewitt[i];
+        }
+        if (roberts[i]) {
+            delete roberts[i];
+        }
+        if (sobel[i]) {
+            delete sobel[i];
+        }
     }
 
     delete ui;
@@ -63,6 +68,7 @@ void FilterDialog::disableAllButtons()
     ui->meanButton->setChecked(false);
     ui->medianFilter->setChecked(false);
     ui->customedButton->setChecked(false);
+    ui->operatorParaGroup->setVisible(false);
     ui->filterParaGroup->setVisible(false);
     ui->gaussianParaGroup->setVisible(false);
     ui->customedParaGroup->setVisible(false);
@@ -73,6 +79,7 @@ void FilterDialog::on_robertsButton_clicked(bool checked)
     if (checked) {
         disableAllButtons();
         ui->robertsButton->setChecked(true);
+        ui->operatorParaGroup->setVisible(true);
     }
 }
 
@@ -81,6 +88,7 @@ void FilterDialog::on_prewittButton_clicked(bool checked)
     if (checked) {
         disableAllButtons();
         ui->prewittButton->setChecked(true);
+        ui->operatorParaGroup->setVisible(true);
     }
 }
 
@@ -89,6 +97,7 @@ void FilterDialog::on_sobelButton_clicked(bool checked)
     if (checked) {
         disableAllButtons();
         ui->sobelButton->setChecked(true);
+        ui->operatorParaGroup->setVisible(true);
     }
 }
 
@@ -170,11 +179,48 @@ void FilterDialog::resetCustEdit(int count)
 void FilterDialog::on_applyButton_clicked()
 {
     if (ui->robertsButton->isChecked()) {
-        if (!roberts) {
-            roberts = new RobertsOperator(imageProcessor->getGrayScaleImage(),
-                                          borderPolicy);
+        if (!roberts[isColored]) {
+            if (isColored) {
+                roberts[isColored] = new RobertsOperator(
+                            imageProcessor->getOriginImage(),
+                            isColored, borderPolicy);
+            } else {
+                roberts[isColored] = new RobertsOperator(
+                            imageProcessor->getGrayScaleImage(),
+                            isColored, borderPolicy);
+            }
         }
-        mainWindow->setFilteredImage(roberts->getFilteredImage());
+        roberts[isColored]->setXEnabled(ui->horizontalCheck->isChecked());
+        roberts[isColored]->setYEnabled(ui->verticalCheck->isChecked());
+        mainWindow->setFilteredImage(roberts[isColored]->getFilteredImage());
+
+    } else if (ui->prewittButton->isChecked()) {
+        if (isColored) {
+            prewitt[isColored] = new PrewittOperator(
+                        imageProcessor->getOriginImage(),
+                        isColored, borderPolicy);
+        } else {
+            prewitt[isColored] = new PrewittOperator(
+                        imageProcessor->getGrayScaleImage(),
+                        isColored, borderPolicy);
+        }
+        prewitt[isColored]->setXEnabled(ui->horizontalCheck->isChecked());
+        prewitt[isColored]->setYEnabled(ui->verticalCheck->isChecked());
+        mainWindow->setFilteredImage(prewitt[isColored]->getFilteredImage());
+
+    } else if (ui->sobelButton->isChecked()) {
+        if (isColored) {
+            sobel[isColored] = new SobelOperator(
+                        imageProcessor->getOriginImage(),
+                        isColored, borderPolicy);
+        } else {
+            sobel[isColored] = new SobelOperator(
+                        imageProcessor->getGrayScaleImage(),
+                        isColored, borderPolicy);
+        }
+        sobel[isColored]->setXEnabled(ui->horizontalCheck->isChecked());
+        sobel[isColored]->setYEnabled(ui->verticalCheck->isChecked());
+        mainWindow->setFilteredImage(sobel[isColored]->getFilteredImage());
     }
 }
 
@@ -196,4 +242,23 @@ void FilterDialog::on_periodicButton_clicked()
 void FilterDialog::on_blackButton_clicked()
 {
     borderPolicy = ImagePolicy::BLACK;
+}
+
+void FilterDialog::on_horizontalCheck_clicked(bool checked)
+{
+    if (!checked && !ui->verticalCheck->isChecked()) {
+        ui->verticalCheck->setChecked(true);
+    }
+}
+
+void FilterDialog::on_verticalCheck_clicked(bool checked)
+{
+    if (!checked && !ui->horizontalCheck->isChecked()) {
+        ui->horizontalCheck->setChecked(true);
+    }
+}
+
+void FilterDialog::on_rgbCheck_clicked(bool checked)
+{
+    isColored = checked;
 }

@@ -52,6 +52,12 @@ private slots:
 
     void on_blackButton_clicked();
 
+    void on_horizontalCheck_clicked(bool checked);
+
+    void on_verticalCheck_clicked(bool checked);
+
+    void on_rgbCheck_clicked(bool checked);
+
 private:
     Ui::FilterDialog *ui;
     MainWindow* mainWindow;
@@ -62,9 +68,12 @@ private:
     QLineEdit* kernelEdit[MAX_KERNEL_RADIO * MAX_KERNEL_RADIO];
 
     ImagePolicy::BorderPolicy borderPolicy;
-    PrewittOperator* prewitt;
-    RobertsOperator* roberts;
-    SobelOperator* sobel;
+
+    bool isColored;
+    // colored an not colored buffer
+    PrewittOperator* prewitt[2];
+    RobertsOperator* roberts[2];
+    SobelOperator* sobel[2];
 
     void disableAllButtons();
     void resetCustEdit(int count);

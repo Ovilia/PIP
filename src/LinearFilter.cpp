@@ -1,8 +1,8 @@
 #include "LinearFilter.h"
 
-LinearFilter::LinearFilter(QImage* image, const int kernelRadio,
+LinearFilter::LinearFilter(QImage* image, const int kernelRadio, const bool isColored,
                            ImagePolicy::BorderPolicy policy) :
-    Filter(image, kernelRadio, policy),
+    Filter(image, kernelRadio, isColored, policy),
     kernelPtrInt(0),
     kernelPtrDouble(0)
 {
@@ -11,8 +11,9 @@ LinearFilter::LinearFilter(QImage* image, const int kernelRadio,
 
 LinearFilter::LinearFilter(QImage* image,
                            const int kernelRadio, const int* kernelPtr,
+                           const bool isColored,
                            ImagePolicy::BorderPolicy policy) :
-    Filter(image, kernelRadio, policy),
+    Filter(image, kernelRadio, isColored, policy),
     kernelPtrInt(kernelPtr),
     kernelPtrDouble(0)
 {
@@ -20,8 +21,9 @@ LinearFilter::LinearFilter(QImage* image,
 
 LinearFilter::LinearFilter(QImage *image,
                            const int kernelRadio, const double *kernelPtr,
+                           const bool isColored,
                            ImagePolicy::BorderPolicy policy) :
-    Filter(image, kernelRadio, policy),
+    Filter(image, kernelRadio, isColored, policy),
     kernelPtrInt(0),
     kernelPtrDouble(kernelPtr)
 {
@@ -45,51 +47,43 @@ void LinearFilter::changeKernel(const double *kernel)
     isKernelChanged = true;
 }
 
-uchar LinearFilter::doFiltering(int x, int y, ColorOffset offset)
+int LinearFilter::doFiltering(int x, int y, ColorOffset offset)
 {
     if (kernelPtrInt) {
         return doFilteringInt(x, y, offset);
     } else if (kernelPtrDouble) {
-        return doFilteringDouble(x, y, offset);
+        return (int)doFilteringDouble(x, y, offset);
     } else {
         return 0;
     }
 }
 
-uchar LinearFilter::doFilteringInt(int x, int y, ColorOffset offset)
+int LinearFilter::doFilteringInt(int x, int y, ColorOffset offset)
 {
     // convolution
     int sum = 0;
     for (int i = -kernelRadio; i <= kernelRadio; ++i) {
         for (int j = -kernelRadio; j <= kernelRadio; ++j) {
-            sum += getBorderedValue(x, y, offset) *
-                    kernelPtrInt[get2DIndex(kernelRadio, i, j)];
+            sum += getBorderedValue(x + i, y + j, offset) *
+                    kernelPtrInt[get2DIndex(2 * kernelRadio + 1,
+                                            i + kernelRadio,
+                                            j + kernelRadio)];
         }
     }
-    if (sum <= 0) {
-        return 0;
-    } else if (sum > MAX_BIT_VALUE) {
-        return MAX_BIT_VALUE;
-    } else {
-        return (uchar)sum;
-    }
+    return sum;
 }
 
-uchar LinearFilter::doFilteringDouble(int x, int y, ColorOffset offset)
+double LinearFilter::doFilteringDouble(int x, int y, ColorOffset offset)
 {
     // convolution
     double sum = 0;
     for (int i = -kernelRadio; i <= kernelRadio; ++i) {
         for (int j = -kernelRadio; j <= kernelRadio; ++j) {
-            sum += getBorderedValue(x, y, offset) *
-                    kernelPtrDouble[get2DIndex(kernelRadio, i, j)];
+            sum += getBorderedValue(x + i, y + j, offset) *
+                    kernelPtrDouble[get2DIndex(2 * kernelRadio + 1,
+                                               i + kernelRadio,
+                                               j + kernelRadio)];
         }
     }
-    if (sum <= 0) {
-        return 0;
-    } else if (sum > MAX_BIT_VALUE) {
-        return MAX_BIT_VALUE;
-    } else {
-        return (uchar)sum;
-    }
+    return sum;
 }

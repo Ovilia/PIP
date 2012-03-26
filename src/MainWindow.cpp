@@ -19,8 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
     isFirstImage(true)
 {
     ui->setupUi(this);
-    connect(ui->actionFilter, SIGNAL(triggered()),
-            this, SLOT(on_actionFilter_triggered()));
 }
 
 MainWindow::~MainWindow()
@@ -110,7 +108,14 @@ void MainWindow::on_actionOpen_triggered()
             ui->actionFilter->setEnabled(true);
         } else {
             // reset UI components
-            binaryWidget = 0;
+            if (binaryWidget) {
+                delete binaryWidget;
+                binaryWidget = 0;
+            }
+            if (filteredWidget) {
+                delete filteredWidget;
+                filteredWidget = 0;
+            }
         }
 
         // isFirstImage is set to be false after first opening

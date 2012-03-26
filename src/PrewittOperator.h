@@ -6,15 +6,17 @@
 #include "ImagePolicy.h"
 #include "Operator.h"
 
-class PrewittOperator : Operator
+class PrewittOperator : public Operator
 {
 public:
-    PrewittOperator(QImage* image,
+    PrewittOperator(QImage* image, const bool isColored,
                     ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
     virtual ~PrewittOperator();
 
 private:
-    static const int KERNERL_LENGTH = 9;
+    static const int KERNERL_RADIO = 1;
+    static const int KERNERL_LENGTH =
+            (2 * KERNERL_RADIO + 1) * (2 * KERNERL_RADIO + 1);
     static const int X_KERNERL[KERNERL_LENGTH];
     static const int Y_KERNERL[KERNERL_LENGTH];
 };

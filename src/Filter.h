@@ -13,7 +13,7 @@ public:
      * for a 3x3 kernel, kernelRadio is 1
      * for a 5x5 kernel, kernelRadion is 2
      */
-    Filter(QImage* image, const int kernelRadio,
+    Filter(QImage* image, const int kernelRadio, const bool isColored,
            ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
     virtual ~Filter();
 
@@ -33,18 +33,25 @@ protected:
         BLUE_OFFSET = 0
     };
     /**
-     * proceed filtering
+     * proceed filtering, notice the returned value should be checked between
+     * [0, 255]
      * @param x x index in originImage
      * @param y y index in originImage
      * @param offset ColorOffset of the wanted pixel
      * @return filtered color
      */
-    virtual uchar doFiltering(int x, int y, ColorOffset offset) = 0;
+    virtual int doFiltering(int x, int y, ColorOffset offset) = 0;
+    /**
+     * check pixel value and make sure it is between [0, 255]
+     */
+    inline uchar getPixelValue(int filteredValue);
 
     QImage* originImage;
     QImage* filteredImage;
 
     int kernelRadio;
+
+    bool isColored;
 
     ImagePolicy::BorderPolicy borderPolicy;
     /**

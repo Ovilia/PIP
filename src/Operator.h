@@ -14,7 +14,7 @@ class Operator : Filter
 public:
     Operator(QImage* image, const int kernelRadio,
              const int* xKernel, const int* yKernel,
-             ImagePolicy::BorderPolicy policy);
+             const bool isColored, ImagePolicy::BorderPolicy policy);
     ~Operator();
 
     // overload function
@@ -41,7 +41,7 @@ protected:
     QImage* xyOperatedImage;
 
     // override function used for xyOperatedImage
-    virtual uchar doFiltering(int x, int y, ColorOffset offset);
+    virtual int doFiltering(int x, int y, ColorOffset offset);
 };
 
 #endif // OPERATOR_H

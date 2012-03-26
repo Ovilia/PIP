@@ -5,8 +5,8 @@
 
 Operator::Operator(QImage* image, const int kernelRadio,
                    const int* xKernel, const int* yKernel,
-                   ImagePolicy::BorderPolicy policy) :
-    Filter(image, kernelRadio, policy),
+                   const bool isColored, ImagePolicy::BorderPolicy policy) :
+    Filter(image, kernelRadio, isColored, policy),
     kernelRadio(kernelRadio),
     xKernel(xKernel),
     yKernel(yKernel),
@@ -16,8 +16,8 @@ Operator::Operator(QImage* image, const int kernelRadio,
     yOperatedImage(0),
     xyOperatedImage(0)
 {
-    xFilter = new LinearFilter(image, kernelRadio, xKernel, policy);
-    yFilter = new LinearFilter(image, kernelRadio, yKernel, policy);
+    xFilter = new LinearFilter(image, kernelRadio, xKernel, isColored, policy);
+    yFilter = new LinearFilter(image, kernelRadio, yKernel, isColored, policy);
 }
 
 Operator::~Operator()
@@ -60,16 +60,12 @@ QImage* Operator::getFilteredImage()
     return 0;
 }
 
-uchar Operator::doFiltering(int x, int y, ColorOffset offset)
+int Operator::doFiltering(int x, int y, ColorOffset offset)
 {
-    int xValue = xFilter->getBorderedValue(x, y, offset);
-    int yValue = yFilter->getBorderedValue(x, y, offset);
+    int xValue = xFilter->doFiltering(x, y, offset);
+    int yValue = yFilter->doFiltering(x, y, offset);
     // geometric mean of xValue an yValue
-    int mean = (int)qSqrt(xValue * xValue + yValue * yValue);
-    if (mean > MAX_BIT_VALUE) {
-        mean = MAX_BIT_VALUE;
-    }
-    return mean;
+    return (int)qSqrt(xValue * xValue + yValue * yValue);
 }
 
 void Operator::setXEnabled(bool isEnabled)

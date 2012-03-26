@@ -8,11 +8,13 @@
 class LinearFilter : public Filter
 {
 public:
-    LinearFilter(QImage* image, const int kernelRadio,
+    LinearFilter(QImage* image, const int kernelRadio, const bool isColored,
                  ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
     LinearFilter(QImage* image, const int kernelRadio, const int* kernelPtr,
+                 const bool isColored,
                  ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
     LinearFilter(QImage* image, const int kernelRadio, const double* kernelPtr,
+                 const bool isColored,
                  ImagePolicy::BorderPolicy policy = ImagePolicy::NEAREST);
     virtual ~LinearFilter();
 
@@ -26,12 +28,12 @@ protected:
     const double* kernelPtrDouble;
 
     // linear filter use convolution to do filtering
-    virtual uchar doFiltering(int x, int y, ColorOffset offset);
+    virtual int doFiltering(int x, int y, ColorOffset offset);
 
     // helper function for doing int filtering
-    uchar doFilteringInt(int x, int y, ColorOffset offset);
+    int doFilteringInt(int x, int y, ColorOffset offset);
     // helper function for doing double filtering
-    uchar doFilteringDouble(int x, int y, ColorOffset offset);
+    double doFilteringDouble(int x, int y, ColorOffset offset);
 };
 
 #endif // LINEARFILTER_H

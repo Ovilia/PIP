@@ -321,7 +321,6 @@ QImage* ImageProcessor::getGrayScaleImage()
         for (int i = 0; i < size; ++i) {
             // calculate gray value according to strategy
             uchar grayValue = getGrayValue(originPtr, grayScalePolicy);
-            // set rgb value to be grayValue
             for (int rgb = 0; rgb < 3; ++rgb) {
                 *(grayPtr + rgb) = grayValue;
             }

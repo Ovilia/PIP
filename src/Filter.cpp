@@ -1,10 +1,11 @@
 #include "Filter.h"
 
-Filter::Filter(QImage* image, const int kernelRadio,
+Filter::Filter(QImage* image, const int kernelRadio, const bool isColored,
                ImagePolicy::BorderPolicy policy) :
     originImage(image),
     filteredImage(0),
     kernelRadio(kernelRadio),
+    isColored(isColored),
     borderPolicy(policy),
     isBorderChanged(false),
     isKernelChanged(false)
@@ -130,7 +131,7 @@ inline Filter::BorderedPart Filter::getBorderedPart(int x, int y)
 {
     int width = originImage->width();
     int height = originImage->height();
-    if (x >= -kernelRadio && x <0) {
+    if (x >= -kernelRadio && x < 0) {
         // left part
         if (y >= -kernelRadio && y < 0) {
             return TOP_LEFT;
@@ -141,7 +142,7 @@ inline Filter::BorderedPart Filter::getBorderedPart(int x, int y)
         } else {
             return ILLEGAL_PART;
         }
-    } else if (x > 0 && x < width) {
+    } else if (x >= 0 && x < width) {
         // center
         if (y >= -kernelRadio && y < 0) {
             return TOP_CENTER;
@@ -168,6 +169,17 @@ inline Filter::BorderedPart Filter::getBorderedPart(int x, int y)
     }
 }
 
+inline uchar Filter::getPixelValue(int value)
+{
+    if (value <= 0) {
+        return 0;
+    } else if (value > MAX_BIT_VALUE) {
+        return MAX_BIT_VALUE;
+    } else {
+        return (uchar)value;
+    }
+}
+
 void Filter::resetBorderPixel()
 {
     if (!filteredImage) {
@@ -177,19 +189,26 @@ void Filter::resetBorderPixel()
         // only calculate pixels that will change with borderPolicy
         // x -> [0, kernelRadio] || [width - kernelRadio, width - 1]
         // y -> [0, kernelRadio] || [height - kernelRadio, height - 1]
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
                 if (x < kernelRadio || x > width - kernelRadio ||
                         y < kernelRadio || y > height - kernelRadio) {
-                    // BLUE_OFFSET is used here since rgb is the same
-                    // and blue is the first pixel
-                    uchar gray = doFiltering(x, y, BLUE_OFFSET);
                     uchar* bits = filteredImage->bits()
                             + get2DIndex(width, x, y);
-                    // set rgb
-                    *bits = gray;
-                    *(bits + 1) = gray;
-                    *(bits + 2) = gray;
+                    if (isColored) {
+                        *(bits + RED_OFFSET) = getPixelValue(
+                                    doFiltering(x, y, RED_OFFSET));
+                        *(bits + GREEN_OFFSET) = getPixelValue(
+                                    doFiltering(x, y, GREEN_OFFSET));
+                        *(bits + BLUE_OFFSET) = getPixelValue(
+                                    doFiltering(x, y, BLUE_OFFSET));
+                    } else {
+                        // gray image
+                        uchar gray = getPixelValue(doFiltering(x, y, BLUE_OFFSET));
+                        for (int rgb = 0; rgb < 3; ++rgb) {
+                            *(bits + rgb) = gray;
+                        }
+                    }
                 }
             }
         }
@@ -204,12 +223,22 @@ void Filter::resetAllPixel()
         uchar* bits = filteredImage->bits();
         int width = originImage->size().width();
         int height = originImage->size().height();
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
-                uchar gray = doFiltering(x, y, BLUE_OFFSET);
-                *bits = gray;
-                *(bits + 1) = gray;
-                *(bits + 2) = gray;
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                if (isColored) {
+                    *(bits + RED_OFFSET) = getPixelValue(
+                                doFiltering(x, y, RED_OFFSET));
+                    *(bits + GREEN_OFFSET) = getPixelValue(
+                                doFiltering(x, y, GREEN_OFFSET));
+                    *(bits + BLUE_OFFSET) = getPixelValue(
+                                doFiltering(x, y, BLUE_OFFSET));
+                } else {
+                    // gray image
+                    uchar gray = getPixelValue(doFiltering(x, y, BLUE_OFFSET));
+                    for (int rgb = 0; rgb < 3; ++rgb) {
+                        *(bits + rgb) = gray;
+                    }
+                }
                 // move to next pixel
                 bits += PIXEL_SIZE;
             }
