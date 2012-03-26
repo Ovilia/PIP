@@ -9,7 +9,7 @@
 
 class LinearFilter;
 
-class Operator : Filter
+class Operator : public Filter
 {
 public:
     Operator(QImage* image, const int kernelRadio,

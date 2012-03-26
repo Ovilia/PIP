@@ -22,7 +22,10 @@ SOURCES += main.cpp\
     Operator.cpp \
     RobertsOperator.cpp \
     FilterDialog.cpp \
-    PrewittOperator.cpp
+    PrewittOperator.cpp \
+    GaussianFilter.cpp \
+    MeanFilter.cpp \
+    MedianFilter.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -37,7 +40,10 @@ HEADERS  += \
     Operator.h \
     RobertsOperator.h \
     FilterDialog.h \
-    PrewittOperator.h
+    PrewittOperator.h \
+    GaussianFilter.h \
+    MeanFilter.h \
+    MedianFilter.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -47,6 +53,16 @@ FORMS    += \
 
 RESOURCES += \
     resource.qrc
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -4,9 +4,12 @@
 #include <QDialog>
 #include <QLineEdit>
 
+#include "GaussianFilter.h"
 #include "ImagePolicy.h"
 #include "ImageProcessor.h"
 #include "MainWindow.h"
+#include "MeanFilter.h"
+#include "MedianFilter.h"
 #include "PrewittOperator.h"
 #include "RobertsOperator.h"
 #include "SobelOperator.h"
@@ -74,6 +77,9 @@ private:
     PrewittOperator* prewitt[2];
     RobertsOperator* roberts[2];
     SobelOperator* sobel[2];
+    GaussianFilter* gaussian[2];
+    MeanFilter* mean[2];
+    MedianFilter* median[2];
 
     void disableAllButtons();
     void resetCustEdit(int count);

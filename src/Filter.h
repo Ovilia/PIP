@@ -25,6 +25,8 @@ public:
      */
     QImage* getFilteredImage();
 
+    int getKernelRadio();
+
 protected:
     enum ColorOffset {
         // offset of red pixel in QImage->bits()

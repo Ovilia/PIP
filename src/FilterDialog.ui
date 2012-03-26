@@ -182,6 +182,9 @@
            <property name="text">
             <string>Use RGB color</string>
            </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
         </layout>
@@ -309,7 +312,7 @@
                <number>3</number>
               </property>
               <property name="maximum">
-               <number>49</number>
+               <number>16</number>
               </property>
               <property name="singleStep">
                <number>2</number>
@@ -358,7 +361,13 @@
              </spacer>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox">
+             <widget class="QDoubleSpinBox" name="sigmaSpin">
+              <property name="minimum">
+               <double>0.050000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>5.000000000000000</double>
+              </property>
               <property name="singleStep">
                <double>0.050000000000000</double>
               </property>

@@ -13,7 +13,7 @@ FilterDialog::FilterDialog(MainWindow* mainWindow,
     mainWindow(mainWindow),
     imageProcessor(imageProcessor),
     borderPolicy(ImagePolicy::NEAREST),
-    isColored(false)
+    isColored(true)
 {
     ui->setupUi(this);
 
@@ -21,6 +21,9 @@ FilterDialog::FilterDialog(MainWindow* mainWindow,
         prewitt[i] = 0;
         roberts[i] = 0;
         sobel[i] = 0;
+        gaussian[i] = 0;
+        mean[i] = 0;
+        median[i] = 0;
     }
 
     ui->filterParaGroup->setVisible(false);
@@ -53,6 +56,15 @@ FilterDialog::~FilterDialog()
         }
         if (sobel[i]) {
             delete sobel[i];
+        }
+        if (gaussian[i]) {
+            delete gaussian[i];
+        }
+        if (mean[i]) {
+            delete mean[i];
+        }
+        if (median[i]) {
+            delete median[i];
         }
     }
 
@@ -107,7 +119,7 @@ void FilterDialog::on_gaussianButton_clicked(bool checked)
         disableAllButtons();
         ui->gaussianButton->setChecked(true);
         ui->gaussianParaGroup->setVisible(true);
-        ui->filterParaGroup->setVisible(true);
+        ui->filterParaGroup->setVisible(false);
     }
 }
 
@@ -189,38 +201,114 @@ void FilterDialog::on_applyButton_clicked()
                             imageProcessor->getGrayScaleImage(),
                             isColored, borderPolicy);
             }
+        } else {
+            roberts[isColored]->setBorderPolicy(borderPolicy);
         }
         roberts[isColored]->setXEnabled(ui->horizontalCheck->isChecked());
         roberts[isColored]->setYEnabled(ui->verticalCheck->isChecked());
         mainWindow->setFilteredImage(roberts[isColored]->getFilteredImage());
 
     } else if (ui->prewittButton->isChecked()) {
-        if (isColored) {
-            prewitt[isColored] = new PrewittOperator(
-                        imageProcessor->getOriginImage(),
-                        isColored, borderPolicy);
+        if (!prewitt[isColored]) {
+            if (isColored) {
+                prewitt[isColored] = new PrewittOperator(
+                            imageProcessor->getOriginImage(),
+                            isColored, borderPolicy);
+            } else {
+                prewitt[isColored] = new PrewittOperator(
+                            imageProcessor->getGrayScaleImage(),
+                            isColored, borderPolicy);
+            }
         } else {
-            prewitt[isColored] = new PrewittOperator(
-                        imageProcessor->getGrayScaleImage(),
-                        isColored, borderPolicy);
+            prewitt[isColored]->setBorderPolicy(borderPolicy);
         }
         prewitt[isColored]->setXEnabled(ui->horizontalCheck->isChecked());
         prewitt[isColored]->setYEnabled(ui->verticalCheck->isChecked());
         mainWindow->setFilteredImage(prewitt[isColored]->getFilteredImage());
 
     } else if (ui->sobelButton->isChecked()) {
-        if (isColored) {
-            sobel[isColored] = new SobelOperator(
-                        imageProcessor->getOriginImage(),
-                        isColored, borderPolicy);
+        if (!sobel[isColored]) {
+            if (isColored) {
+                sobel[isColored] = new SobelOperator(
+                            imageProcessor->getOriginImage(),
+                            isColored, borderPolicy);
+            } else {
+                sobel[isColored] = new SobelOperator(
+                            imageProcessor->getGrayScaleImage(),
+                            isColored, borderPolicy);
+            }
         } else {
-            sobel[isColored] = new SobelOperator(
-                        imageProcessor->getGrayScaleImage(),
-                        isColored, borderPolicy);
+            sobel[isColored]->setBorderPolicy(borderPolicy);
         }
         sobel[isColored]->setXEnabled(ui->horizontalCheck->isChecked());
         sobel[isColored]->setYEnabled(ui->verticalCheck->isChecked());
         mainWindow->setFilteredImage(sobel[isColored]->getFilteredImage());
+
+    } else if (ui->gaussianButton->isChecked()) {
+        double sigma = ui->sigmaSpin->value();
+        // compare radio rather than sigma to avoid floating number comparation
+        int radio = sigma * GaussianFilter::RADIO_DIVIDED_BY_SIGMA;
+        if (!gaussian[isColored] ||
+                radio != gaussian[isColored]->getKernelRadio()) {
+            // gaussian kernel radio changed
+            if (gaussian[isColored]) {
+                delete gaussian[isColored];
+            }
+            if (isColored) {
+                gaussian[isColored] = new GaussianFilter(
+                            imageProcessor->getOriginImage(),
+                            sigma, isColored, borderPolicy);
+            } else {
+                gaussian[isColored] = new GaussianFilter(
+                            imageProcessor->getGrayScaleImage(),
+                            sigma, isColored, borderPolicy);
+            }
+        } else {
+            gaussian[isColored]->setBorderPolicy(borderPolicy);
+        }
+        mainWindow->setFilteredImage(gaussian[isColored]->getFilteredImage());
+
+    } else if (ui->meanButton->isChecked()) {
+        int radio = ui->filterRadioSpin->value() / 2;
+        if (!mean[isColored] ||
+                radio != mean[isColored]->getKernelRadio()) {
+            if (mean[isColored]) {
+                delete mean[isColored];
+            }
+            if (isColored) {
+                mean[isColored] = new MeanFilter(
+                            imageProcessor->getOriginImage(),
+                            radio, isColored, borderPolicy);
+            } else {
+                mean[isColored] = new MeanFilter(
+                            imageProcessor->getGrayScaleImage(),
+                            radio, isColored, borderPolicy);
+            }
+        } else {
+            mean[isColored]->setBorderPolicy(borderPolicy);
+        }
+        mainWindow->setFilteredImage(mean[isColored]->getFilteredImage());
+
+    } else if (ui->medianFilter->isChecked()) {
+        int radio = ui->filterRadioSpin->value() / 2;
+        if (!median[isColored] ||
+                radio != median[isColored]->getKernelRadio()) {
+            if (median[isColored]) {
+                delete median[isColored];
+            }
+            if (isColored) {
+                median[isColored] = new MedianFilter(
+                            imageProcessor->getOriginImage(),
+                            radio, isColored, borderPolicy);
+            } else {
+                median[isColored] = new MedianFilter(
+                            imageProcessor->getGrayScaleImage(),
+                            radio, isColored, borderPolicy);
+            }
+        } else {
+            median[isColored]->setBorderPolicy(borderPolicy);
+        }
+        mainWindow->setFilteredImage(median[isColored]->getFilteredImage());
     }
 }
 

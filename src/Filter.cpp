@@ -19,6 +19,11 @@ Filter::~Filter()
     }
 }
 
+int Filter::getKernelRadio()
+{
+    return kernelRadio;
+}
+
 void Filter::setBorderPolicy(ImagePolicy::BorderPolicy policy)
 {
     if (policy != borderPolicy) {
@@ -34,12 +39,13 @@ int Filter::get2DIndex(int columns, int x, int y)
 
 const uchar Filter::getBorderedValue(int x, int y, ColorOffset offset)
 {
-    if (borderPolicy == ImagePolicy::BLACK) {
+    int index = getBorderedIndex(x, y);
+    if (index >= 0) {
+        return *(originImage->constBits() +
+                 PIXEL_SIZE * index + offset);
+    } else {
         return 0;
     }
-    return *(originImage->constBits() +
-             PIXEL_SIZE * getBorderedIndex(x, y)
-             + offset);
 }
 
 inline const int Filter::getBorderedIndex(int x, int y)
@@ -122,7 +128,12 @@ inline const int Filter::getBorderedIndex(int x, int y)
         }
 
     case ImagePolicy::BLACK:
-        return -1;
+        switch (part) {
+        case Filter::CENTER_CENTER:
+            return get2DIndex(width, x, y);
+        default:
+            return -1;
+        }
     }
     return -1;
 }
