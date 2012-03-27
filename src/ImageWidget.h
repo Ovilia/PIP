@@ -4,9 +4,13 @@
 #include <QPixmap>
 #include <QWidget>
 
+#include "ImageLabel.h"
+
 namespace Ui {
     class ImageWidget;
 }
+
+class ImageLabel;
 
 class ImageWidget : public QWidget
 {
@@ -18,11 +22,16 @@ public:
 
     void setImage(QImage* image);
 
+    // called by ImageLabel to update rgb info
+    void setMousePosition(int x, int y);
+
 private slots:
     void on_horizontalSlider_valueChanged(int value);
 
 private:
+    static const int PIXEL_SIZE =4;
     Ui::ImageWidget *ui;
+    ImageLabel* imageLabel;
     QImage* image;
 };
 

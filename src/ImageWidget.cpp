@@ -7,11 +7,13 @@ ImageWidget::ImageWidget(QImage* image, QWidget *parent) :
     image(0)
 {
     ui->setupUi(this);
+    imageLabel = new ImageLabel(image, this, this);
+    imageLabel->setMinimumSize(
+                image->size().width(), image->size().height());
+    imageLabel->setMaximumSize(
+                image->size().width(), image->size().height());
+    ui->scrollArea->setWidget(imageLabel);
     setImage(image);
-    ui->imageLabel->setMinimumSize(
-                image->size().width(), image->size().height());
-    ui->imageLabel->setMaximumSize(
-                image->size().width(), image->size().height());
 }
 
 ImageWidget::~ImageWidget()
@@ -22,7 +24,7 @@ ImageWidget::~ImageWidget()
 void ImageWidget::setImage(QImage* image)
 {
     this->image = image;
-    ui->imageLabel->setPixmap(QPixmap::fromImage(*image));
+    imageLabel->setPixmap(QPixmap::fromImage(*image));
     ui->scaleLabel->setText("100%");
     ui->horizontalSlider->setValue(100);
 }
@@ -38,6 +40,17 @@ void ImageWidget::on_horizontalSlider_valueChanged(int value)
         height = image->size().height() * value / 100;
     }
     ui->scaleLabel->setText(QString::number(value) + "%");
-    ui->imageLabel->setMinimumSize(width, height);
-    ui->imageLabel->setMaximumSize(width, height);
+    imageLabel->setMinimumSize(width, height);
+    imageLabel->setMaximumSize(width, height);
+}
+
+void ImageWidget::setMousePosition(int x, int y)
+{
+    ui->xPosLabel->setText(QString::number(x));
+    ui->yPosLabel->setText(QString::number(y));
+    const uchar* bits = image->constBits() +
+            (y * image->width() + x) * PIXEL_SIZE;
+    ui->rLabel->setText(QString::number(*(bits + 2)));
+    ui->gLabel->setText(QString::number(*(bits + 1)));
+    ui->bLabel->setText(QString::number(*bits));
 }

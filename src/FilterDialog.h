@@ -2,7 +2,7 @@
 #define FILTERDIALOG_H
 
 #include <QDialog>
-#include <QLineEdit>
+#include <QSpinBox>
 
 #include "GaussianFilter.h"
 #include "ImagePolicy.h"
@@ -68,7 +68,7 @@ private:
 
     static const int MIN_KERNEL_RADIO = 3;
     static const int MAX_KERNEL_RADIO = 9;
-    QLineEdit* kernelEdit[MAX_KERNEL_RADIO * MAX_KERNEL_RADIO];
+    QSpinBox* kernelSpin[MAX_KERNEL_RADIO * MAX_KERNEL_RADIO];
 
     ImagePolicy::BorderPolicy borderPolicy;
 
@@ -80,6 +80,8 @@ private:
     GaussianFilter* gaussian[2];
     MeanFilter* mean[2];
     MedianFilter* median[2];
+    LinearFilter* customed;
+    int* customedPtr;
 
     void disableAllButtons();
     void resetCustEdit(int count);

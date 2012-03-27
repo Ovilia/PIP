@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     PrewittOperator.cpp \
     GaussianFilter.cpp \
     MeanFilter.cpp \
-    MedianFilter.cpp
+    MedianFilter.cpp \
+    ImageLabel.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -43,7 +44,8 @@ HEADERS  += \
     PrewittOperator.h \
     GaussianFilter.h \
     MeanFilter.h \
-    MedianFilter.h
+    MedianFilter.h \
+    ImageLabel.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -53,6 +55,8 @@ FORMS    += \
 
 RESOURCES += \
     resource.qrc
+
+
 
 
 

@@ -1,4 +1,6 @@
-#include <QLineEdit>
+#include <QSpinBox>
+
+#include <stdio.h>
 
 #include "FilterDialog.h"
 #include "ImagePolicy.h"
@@ -13,7 +15,8 @@ FilterDialog::FilterDialog(MainWindow* mainWindow,
     mainWindow(mainWindow),
     imageProcessor(imageProcessor),
     borderPolicy(ImagePolicy::NEAREST),
-    isColored(true)
+    isColored(true),
+    customedPtr(0)
 {
     ui->setupUi(this);
 
@@ -25,6 +28,7 @@ FilterDialog::FilterDialog(MainWindow* mainWindow,
         mean[i] = 0;
         median[i] = 0;
     }
+    customed = 0;
 
     ui->filterParaGroup->setVisible(false);
     ui->gaussianParaGroup->setVisible(false);
@@ -33,8 +37,11 @@ FilterDialog::FilterDialog(MainWindow* mainWindow,
     for (int i = 0; i < MAX_KERNEL_RADIO; ++i) {
         for (int j = 0; j < MAX_KERNEL_RADIO; ++j) {
             int index = i * MAX_KERNEL_RADIO + j;
-            kernelEdit[index] = new QLineEdit("0");
-            ui->gridLayout->addWidget(kernelEdit[index], i, j, 1, 1);
+            kernelSpin[index] = new QSpinBox();
+            kernelSpin[index]->setMaximum(255);
+            kernelSpin[index]->setMinimum(-255);
+            kernelSpin[index]->setValue(0);
+            ui->gridLayout->addWidget(kernelSpin[index], i, j, 1, 1);
         }
     }
     resetCustEdit(MIN_KERNEL_RADIO);
@@ -44,7 +51,7 @@ FilterDialog::~FilterDialog()
 {
     int amt = MAX_KERNEL_RADIO * MAX_KERNEL_RADIO;
     for (int i = 0; i < amt; ++i) {
-        delete kernelEdit[i];
+        delete kernelSpin[i];
     }
 
     for (int i = 0; i < 2; ++i) {
@@ -66,6 +73,13 @@ FilterDialog::~FilterDialog()
         if (median[i]) {
             delete median[i];
         }
+    }
+
+    if (customed) {
+        delete customed;
+    }
+    if (customedPtr) {
+        delete customedPtr;
     }
 
     delete ui;
@@ -180,9 +194,9 @@ void FilterDialog::resetCustEdit(int count)
     for (int i = 0; i < MAX_KERNEL_RADIO; ++i) {
         for (int j = 0; j < MAX_KERNEL_RADIO; ++j) {
             if (i < count && j < count) {
-                kernelEdit[i * MAX_KERNEL_RADIO + j]->setVisible(true);
+                kernelSpin[i * MAX_KERNEL_RADIO + j]->setVisible(true);
             } else {
-                kernelEdit[i * MAX_KERNEL_RADIO + j]->setVisible(false);
+                kernelSpin[i * MAX_KERNEL_RADIO + j]->setVisible(false);
             }
         }
     }
@@ -309,6 +323,38 @@ void FilterDialog::on_applyButton_clicked()
             median[isColored]->setBorderPolicy(borderPolicy);
         }
         mainWindow->setFilteredImage(median[isColored]->getFilteredImage());
+
+    } else if (ui->customedButton->isChecked()) {
+        int spin = ui->filterRadioSpin->value();
+        int radio = spin / 2;
+        // customed kernel is usually not the same with the former ones
+        // so it is not buffered
+        if (customed) {
+            delete customed;
+        }
+        if (isColored) {
+            customed = new LinearFilter(imageProcessor->getOriginImage(),
+                                        radio, isColored, borderPolicy);
+        } else {
+            customed = new LinearFilter(imageProcessor->getGrayScaleImage(),
+                                        radio, isColored, borderPolicy);
+        }
+        if (customedPtr) {
+            delete customedPtr;
+        }
+        int length = (2 * radio + 1) * (2 * radio + 1);
+        customedPtr = new int[length];
+        int index = 0;
+        for (int i = 0; i < spin; ++i) {
+            for (int j = 0; j < spin; ++j) {
+                printf("index = %d\tk[%d] = %d\n", index, MAX_KERNEL_RADIO * i + j,
+                       kernelSpin[MAX_KERNEL_RADIO * i + j]->value());
+                customedPtr[index] = kernelSpin[MAX_KERNEL_RADIO * i + j]->value();
+                ++index;
+            }
+        }
+        customed->changeKernel(customedPtr);
+        mainWindow->setFilteredImage(customed->getFilteredImage());
     }
 }
 

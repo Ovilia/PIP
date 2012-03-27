@@ -136,7 +136,7 @@ void MainWindow::on_actionHistogram_triggered()
     if (histogramDialog) {
         delete histogramDialog;
     }
-    histogramDialog = new HistogramDialog(this, imageProcessor);
+    histogramDialog = new HistogramDialog(this, imageProcessor, this);
     histogramDialog->show();
 }
 
