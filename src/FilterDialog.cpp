@@ -1,7 +1,5 @@
 #include <QSpinBox>
 
-#include <stdio.h>
-
 #include "FilterDialog.h"
 #include "ImagePolicy.h"
 #include "MainWindow.h"
@@ -208,7 +206,7 @@ void FilterDialog::on_applyButton_clicked()
         if (!roberts[isColored]) {
             if (isColored) {
                 roberts[isColored] = new RobertsOperator(
-                            imageProcessor->getOriginImage(),
+                            imageProcessor->getCurrentImage(),
                             isColored, borderPolicy);
             } else {
                 roberts[isColored] = new RobertsOperator(
@@ -226,7 +224,7 @@ void FilterDialog::on_applyButton_clicked()
         if (!prewitt[isColored]) {
             if (isColored) {
                 prewitt[isColored] = new PrewittOperator(
-                            imageProcessor->getOriginImage(),
+                            imageProcessor->getCurrentImage(),
                             isColored, borderPolicy);
             } else {
                 prewitt[isColored] = new PrewittOperator(
@@ -244,7 +242,7 @@ void FilterDialog::on_applyButton_clicked()
         if (!sobel[isColored]) {
             if (isColored) {
                 sobel[isColored] = new SobelOperator(
-                            imageProcessor->getOriginImage(),
+                            imageProcessor->getCurrentImage(),
                             isColored, borderPolicy);
             } else {
                 sobel[isColored] = new SobelOperator(
@@ -270,7 +268,7 @@ void FilterDialog::on_applyButton_clicked()
             }
             if (isColored) {
                 gaussian[isColored] = new GaussianFilter(
-                            imageProcessor->getOriginImage(),
+                            imageProcessor->getCurrentImage(),
                             sigma, isColored, borderPolicy);
             } else {
                 gaussian[isColored] = new GaussianFilter(
@@ -291,7 +289,7 @@ void FilterDialog::on_applyButton_clicked()
             }
             if (isColored) {
                 mean[isColored] = new MeanFilter(
-                            imageProcessor->getOriginImage(),
+                            imageProcessor->getCurrentImage(),
                             radio, isColored, borderPolicy);
             } else {
                 mean[isColored] = new MeanFilter(
@@ -312,7 +310,7 @@ void FilterDialog::on_applyButton_clicked()
             }
             if (isColored) {
                 median[isColored] = new MedianFilter(
-                            imageProcessor->getOriginImage(),
+                            imageProcessor->getCurrentImage(),
                             radio, isColored, borderPolicy);
             } else {
                 median[isColored] = new MedianFilter(
@@ -333,7 +331,7 @@ void FilterDialog::on_applyButton_clicked()
             delete customed;
         }
         if (isColored) {
-            customed = new LinearFilter(imageProcessor->getOriginImage(),
+            customed = new LinearFilter(imageProcessor->getCurrentImage(),
                                         radio, isColored, borderPolicy);
         } else {
             customed = new LinearFilter(imageProcessor->getGrayScaleImage(),
@@ -347,8 +345,6 @@ void FilterDialog::on_applyButton_clicked()
         int index = 0;
         for (int i = 0; i < spin; ++i) {
             for (int j = 0; j < spin; ++j) {
-                printf("index = %d\tk[%d] = %d\n", index, MAX_KERNEL_RADIO * i + j,
-                       kernelSpin[MAX_KERNEL_RADIO * i + j]->value());
                 customedPtr[index] = kernelSpin[MAX_KERNEL_RADIO * i + j]->value();
                 ++index;
             }

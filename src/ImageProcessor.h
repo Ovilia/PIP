@@ -13,6 +13,7 @@ public:
     ~ImageProcessor();
 
     QImage* getOriginImage();
+    QImage* getCurrentImage();
     QImage* getGrayScaleImage();
     QImage* getBinaryImage();
     int* getHistogram();
@@ -35,17 +36,53 @@ public:
     // make image to be format RGB32
     void doFormatProcess(QImage* image);
 
+    // undo last action if is legal and return if can
+    // still undo after this action
+    bool undo();
+    // redo last undo action if is legal and return if can
+    // still redo after this action
+    bool redo();
+
+    /**
+     * Start of actions that can be undo and redo,
+     * these actions will always call bufferCurrentImage()
+     * to buffer current image before any operation
+     */
+
+    // set contrast value, contrast should between [-50, 100]
+    void doContrast(int contrast);
+
+    // set brightness, brightness should between [-150, 150]
+    void doBrightness(int brightness);
+
+    /**
+     * End of actions that can be undo and redo
+     */
+
     static const int RANGE_OF_8BITS = 256;
     static const int MAX_OF_8BITS = RANGE_OF_8BITS - 1;
 
 private:
     QString fileName;
     QImage* originImage;
+    QImage* currentImage;
     QImage* grayScaleImage;
     QImage* binaryImage;
 
     static const int PIXEL_SIZE = 4;
 
+    // count of history image that can be undo
+    static const int HISTORY_COUNT = 10;
+    // amount of buffered image
+    int usedBuffer;
+    // amount of undid image
+    int undoBuffer;
+    QImage* bufferedImage[HISTORY_COUNT];
+    // set originImage to be bufferedImage
+    void bufferCurrentImage();
+
+    // reset all to uncalculated state
+    void resetUncalculated();
     // if histogram is calculated
     bool isHisCaled, isRgbHisCaled;
     int histogram[RANGE_OF_8BITS];

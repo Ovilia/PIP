@@ -7,8 +7,11 @@
 
 ImageProcessor::ImageProcessor(QString fileName) :
     originImage(0),
+    currentImage(0),
     grayScaleImage(0),
     binaryImage(0),
+    usedBuffer(0),
+    undoBuffer(0),
     isHisCaled(false),
     isRgbHisCaled(false),
     weightedHisSum(0),
@@ -21,13 +24,20 @@ ImageProcessor::ImageProcessor(QString fileName) :
     grayScalePolicy(ImagePolicy::MATCH_LUMINANCE),
     thresholdPolicy(ImagePolicy::OTSU)
 {
+    for (int i = 0; i < HISTORY_COUNT; ++i) {
+        bufferedImage[i] = 0;
+    }
     setImage(fileName);
+    originImage = currentImage;
 }
 
 ImageProcessor::~ImageProcessor()
 {
     if (originImage) {
         delete originImage;
+    }
+    for (int i = 0; i < usedBuffer; ++i) {
+        delete bufferedImage[i];
     }
     if (grayScaleImage) {
         delete grayScaleImage;
@@ -39,18 +49,10 @@ ImageProcessor::~ImageProcessor()
 
 void ImageProcessor::setImage(QString fileName)
 {
-    grayScaleImage = 0;
-    isHisCaled = false;
-    isRgbHisCaled = false;
-    isOtsuCaled = false;
-    isEntropyCaled = false;
-
     this->fileName = fileName;
-    if (originImage) {
-        delete originImage;
-    }
-    originImage = new QImage(fileName);
-    doFormatProcess(originImage);
+    bufferCurrentImage();
+    currentImage = new QImage(fileName);
+    doFormatProcess(currentImage);
 }
 
 void ImageProcessor::doFormatProcess(QImage *image)
@@ -83,6 +85,80 @@ void ImageProcessor::doFormatProcess(QImage *image)
         }
         *image = image->convertToFormat(QImage::Format_RGB32);
     }
+}
+
+void ImageProcessor::doContrast(int contrast)
+{
+    // currentImage will be changed, buffer it so that undo is possible
+    bufferCurrentImage();
+
+    // TODO: do contrast now
+    // post-condition: result is in currentImage
+
+    // Tip: To get rgb bits data:
+    // const uchar* bits = currentImage->constBits();
+}
+
+void ImageProcessor::doBrightness(int brightness)
+{
+    // currentImage will be changed, buffer it so that undo is possible
+    bufferCurrentImage();
+
+    // TODO: do brightness now
+    // post-condition: result is in currentImage
+}
+
+void ImageProcessor::bufferCurrentImage()
+{
+    if (!currentImage) {
+        return;
+    }
+    if (usedBuffer >= HISTORY_COUNT) {
+        // buffer is full, remove the oldest one
+        delete bufferedImage[HISTORY_COUNT - 1];
+        // move other buffer to be older
+        for (int i = 0; i < HISTORY_COUNT - 1; ++i) {
+            bufferedImage[i] = bufferedImage[i + 1];
+        }
+        usedBuffer = HISTORY_COUNT - 1;
+    }
+    // copy to last position used if is not full
+    bufferedImage[usedBuffer] = currentImage;
+    ++usedBuffer;
+    resetUncalculated();
+}
+
+void ImageProcessor::resetUncalculated()
+{
+    // reset to uncalculated state
+    grayScaleImage = 0;
+    binaryImage = 0;
+    isHisCaled = false;
+    isRgbHisCaled = false;
+    isOtsuCaled = false;
+    isEntropyCaled = false;
+}
+
+bool ImageProcessor::undo()
+{
+    if (undoBuffer < usedBuffer) {
+        // undo last action
+        currentImage = bufferedImage[undoBuffer];
+        ++undoBuffer;
+    }
+    resetUncalculated();
+    return undoBuffer < usedBuffer;
+}
+
+bool ImageProcessor::redo()
+{
+    if (undoBuffer > 0) {
+        // redo last action
+        --undoBuffer;
+        currentImage = bufferedImage[undoBuffer];
+    }
+    resetUncalculated();
+    return undoBuffer > 0;
 }
 
 void ImageProcessor::setGrayScalePolicy(ImagePolicy::GrayScalePolicy policy)
@@ -284,6 +360,11 @@ QImage* ImageProcessor::getOriginImage()
     return originImage;
 }
 
+QImage* ImageProcessor::getCurrentImage()
+{
+    return currentImage;
+}
+
 inline uchar ImageProcessor::getGrayValue(
         const uchar* rgb, ImagePolicy::GrayScalePolicy policy)
 {
@@ -303,18 +384,18 @@ QImage* ImageProcessor::getGrayScaleImage()
 {
     // lazy calculation
     if (!grayScaleImage) {
-        int width = originImage->size().width();
-        int height = originImage->size().height();
+        int width = currentImage->size().width();
+        int height = currentImage->size().height();
         int size = width * height;
 
         // gray scale image of origin size
         if (grayScaleImage) {
             delete grayScaleImage;
         }
-        grayScaleImage = new QImage(width, height, originImage->format());
+        grayScaleImage = new QImage(width, height, currentImage->format());
 
         // pointer to originBits being processed
-        const uchar* originPtr = originImage->constBits();
+        const uchar* originPtr = currentImage->constBits();
         // pointer to grayBits being processed
         uchar* grayPtr = grayScaleImage->bits();
 
@@ -383,11 +464,10 @@ int* ImageProcessor::getRgbHistogram()
         }
 
         // pointer to pixels being processed which will not change
-        // pixels in originImage
-        const uchar* originPtr = originImage->constBits();
+        // pixels in currentImage
+        const uchar* originPtr = currentImage->constBits();
 
-        int size = originImage->size().width() *
-                originImage->size().height();
+        int size = currentImage->width() * currentImage->height();
         for (int i = 0; i < size; ++i) {
             // blue
             rgbHistogram[*originPtr][2]++;
@@ -410,13 +490,13 @@ QImage* ImageProcessor::getBinaryImage()
     int lower = getLowerThreshold();
     int higher = getHigherThreshold();
 
-    int width = grayScaleImage->size().width();
-    int height = grayScaleImage->size().height();
+    int width = grayScaleImage->width();
+    int height = grayScaleImage->height();
     int size = width * height;
     if (binaryImage) {
         delete binaryImage;
     }
-    binaryImage = new QImage(width, height, originImage->format());
+    binaryImage = new QImage(width, height, currentImage->format());
 
     const uchar* grayPtr = grayScaleImage->constBits();
     uchar* binaryPtr = binaryImage->bits();

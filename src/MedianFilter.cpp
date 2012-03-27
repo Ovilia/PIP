@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <QImage>
 
 #include "ImagePolicy.h"
@@ -26,18 +28,8 @@ int MedianFilter::doFiltering(int x, int y, ColorOffset offset)
             ++index;
         }
     }
-    int max;
-    int maxIndex = -1;
-    for (int i = 0; i < nMax; ++i) {
-        max = -1;
-        for (int j = 0; j < kernelLength; ++j) {
-            if (value[j] > max) {
-                max = value[j];
-                maxIndex = j;
-            }
-        }
-        value[maxIndex] = -1;
-    }
+    std::sort(value, value + kernelLength);
+    int result = value[nMax];
     delete []value;
-    return max;
+    return result;
 }

@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     GaussianFilter.cpp \
     MeanFilter.cpp \
     MedianFilter.cpp \
-    ImageLabel.cpp
+    ImageLabel.cpp \
+    AlgebraicOperation.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -45,7 +46,8 @@ HEADERS  += \
     GaussianFilter.h \
     MeanFilter.h \
     MedianFilter.h \
-    ImageLabel.h
+    ImageLabel.h \
+    AlgebraicOperation.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -55,46 +57,5 @@ FORMS    += \
 
 RESOURCES += \
     resource.qrc
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
