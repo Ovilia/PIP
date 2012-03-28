@@ -36,8 +36,10 @@ ImageProcessor::~ImageProcessor()
     if (originImage) {
         delete originImage;
     }
-    for (int i = 0; i < usedBuffer; ++i) {
-        delete bufferedImage[i];
+    for (int i = 0; i < HISTORY_COUNT; ++i) {
+        if (!bufferedImage[i]) {
+            delete bufferedImage[i];
+        }
     }
     if (grayScaleImage) {
         delete grayScaleImage;
@@ -92,11 +94,43 @@ void ImageProcessor::doContrast(int contrast)
     // currentImage will be changed, buffer it so that undo is possible
     bufferCurrentImage();
 
-    // TODO: do contrast now
-    // post-condition: result is in currentImage
+    // make sure histogram is calculated
+    getHistogram();
 
-    // Tip: To get rgb bits data:
-    // const uchar* bits = currentImage->constBits();
+    uchar* originPtr = currentImage->bits();
+    int height = currentImage->height();
+    int width = currentImage->width();
+    int averageBrightness;
+    int originColor = 0;
+    int adjustedColor = 0;
+
+    // compute averageBrightness
+    long brightnessSum = 0;
+    for (int i = 0; i < RANGE_OF_8BITS; ++i) {
+        brightnessSum += histogram[i];
+    }
+    averageBrightness = brightnessSum / width / height;
+
+    // adjust each pixel
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            for (int rgb = 0; rgb < 3; ++rgb) {
+                originColor = *(originPtr +
+                                PIXEL_SIZE * (width * j + i) + rgb);
+                adjustedColor = (int)((double)averageBrightness + (double)
+                                      (originColor - averageBrightness)
+                                      * (double)contrast / 100);
+                if (adjustedColor < 0) {
+                    adjustedColor = 0;
+                }
+                if (adjustedColor > MAX_OF_8BITS) {
+                    adjustedColor = MAX_OF_8BITS;
+                }
+                *(originPtr + PIXEL_SIZE * (width * j + i) + rgb) =
+                        adjustedColor;
+            }
+        }
+    }
 }
 
 void ImageProcessor::doBrightness(int brightness)
