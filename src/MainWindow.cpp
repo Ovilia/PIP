@@ -6,6 +6,8 @@
 #include "mainwindow.h"
 #include "ui_MainWindow.h"
 
+//#define TEAM_WORK
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -19,6 +21,13 @@ MainWindow::MainWindow(QWidget *parent) :
     isFirstImage(true)
 {
     ui->setupUi(this);
+
+#ifndef TEAM_WORK
+    ui->actionBrightness->setVisible(false);
+    ui->actionContrast->setVisible(false);
+    ui->actionUndo->setVisible(false);
+    ui->actionRedo->setVisible(false);
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -106,6 +115,10 @@ void MainWindow::on_actionOpen_triggered()
             // enable UI components
             ui->actionHistogram->setEnabled(true);
             ui->actionFilter->setEnabled(true);
+#ifdef TEAM_WORK
+            ui->actionBrightness->setEnabled(true);
+            ui->actionContrast->setEnabled(true);
+#endif
         } else {
             // reset UI components
             if (binaryWidget) {
@@ -147,4 +160,34 @@ void MainWindow::on_actionFilter_triggered()
     }
     filterDialog = new FilterDialog(this, imageProcessor, this);
     filterDialog->show();
+}
+
+void MainWindow::on_actionBrightness_triggered()
+{
+#ifdef TEAM_WORK
+    // TODO: do contrast here
+    imageProcessor->doContrast(50);
+    ui->actionUndo->setEnabled(true);
+#endif
+}
+
+void MainWindow::on_actionContrast_triggered()
+{
+#ifdef TEAM_WORK
+    // TODO: do contrast here
+    imageProcessor->doBrightness(0);
+    ui->actionUndo->setEnabled(true);
+#endif
+}
+
+void MainWindow::on_actionUndo_triggered()
+{
+    ui->actionUndo->setEnabled(imageProcessor->undo());
+    ui->actionRedo->setEnabled(imageProcessor->isRedoable());
+}
+
+void MainWindow::on_actionRedo_triggered()
+{
+    ui->actionRedo->setEnabled(imageProcessor->redo());
+    ui->actionUndo->setEnabled(imageProcessor->isUndoable());
 }

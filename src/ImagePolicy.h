@@ -22,6 +22,11 @@ public:
         PERIODIC,
         BLACK
     };
+
+    enum ScalePolicy {
+        SP_NEAREST = 0,
+        SP_BILINEAR
+    };
 };
 
 #endif // IMAGESTRATEGY_H

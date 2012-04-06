@@ -28,6 +28,8 @@ public:
 private slots:
     void on_horizontalSlider_valueChanged(int value);
 
+    void on_saveButton_clicked();
+
 private:
     static const int PIXEL_SIZE =4;
     Ui::ImageWidget *ui;

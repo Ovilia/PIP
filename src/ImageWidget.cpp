@@ -1,3 +1,5 @@
+#include <QFileDialog>
+
 #include "ImageWidget.h"
 #include "ui_ImageWidget.h"
 
@@ -12,6 +14,7 @@ ImageWidget::ImageWidget(QImage* image, QWidget *parent) :
                 image->size().width(), image->size().height());
     imageLabel->setMaximumSize(
                 image->size().width(), image->size().height());
+    imageLabel->setScaledContents(true);
     ui->scrollArea->setWidget(imageLabel);
     setImage(image);
 }
@@ -53,4 +56,14 @@ void ImageWidget::setMousePosition(int x, int y)
     ui->rLabel->setText(QString::number(*(bits + 2)));
     ui->gLabel->setText(QString::number(*(bits + 1)));
     ui->bLabel->setText(QString::number(*bits));
+}
+
+void ImageWidget::on_saveButton_clicked()
+{
+    QString filePath = QFileDialog::getSaveFileName(
+                this, tr("Save an Image"), QDir::currentPath(),
+                tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif);;All files (*.*)"));
+    if (!filePath.isNull()) {
+        image->save(filePath);
+    }
 }

@@ -97,9 +97,13 @@ void ImageProcessor::doContrast(int contrast)
     // make sure histogram is calculated
     getHistogram();
 
-    uchar* originPtr = currentImage->bits();
+    const uchar* originPtr = currentImage->constBits();
     int height = currentImage->height();
     int width = currentImage->width();
+
+    QImage* newImage = new QImage(width, height, currentImage->format());
+    uchar* newPtr = newImage->bits();
+
     int averageBrightness;
     int originColor = 0;
     int adjustedColor = 0;
@@ -126,11 +130,12 @@ void ImageProcessor::doContrast(int contrast)
                 if (adjustedColor > MAX_OF_8BITS) {
                     adjustedColor = MAX_OF_8BITS;
                 }
-                *(originPtr + PIXEL_SIZE * (width * j + i) + rgb) =
+                *(newPtr + PIXEL_SIZE * (width * j + i) + rgb) =
                         adjustedColor;
             }
         }
     }
+    currentImage = newImage;
 }
 
 void ImageProcessor::doBrightness(int brightness)
@@ -140,6 +145,34 @@ void ImageProcessor::doBrightness(int brightness)
 
     // TODO: do brightness now
     // post-condition: result is in currentImage
+}
+
+void ImageProcessor::doScale(int newWidth, int newHeight,
+                             ImagePolicy::ScalePolicy policy)
+{
+    bufferCurrentImage();
+
+    QImage* newImage = new QImage(newWidth, newHeight, currentImage->format());
+    switch (policy) {
+    case ImagePolicy::SP_NEAREST:
+        doNearestScale(currentImage, newImage);
+        break;
+
+    case ImagePolicy::SP_BILINEAR:
+        break;
+    }
+
+    currentImage = newImage;
+}
+
+void ImageProcessor::doNearestScale(QImage* oldImage, QImage* newImage)
+{
+    const uchar* originPtr = oldImage->constBits();
+    int height = currentImage->height();
+    int width = currentImage->width();
+    uchar* newPtr = newImage->bits();
+
+    // TODO: do nearest scaling here
 }
 
 void ImageProcessor::bufferCurrentImage()
@@ -181,7 +214,7 @@ bool ImageProcessor::undo()
         ++undoBuffer;
     }
     resetUncalculated();
-    return undoBuffer < usedBuffer;
+    return isUndoable();
 }
 
 bool ImageProcessor::redo()
@@ -192,6 +225,16 @@ bool ImageProcessor::redo()
         currentImage = bufferedImage[undoBuffer];
     }
     resetUncalculated();
+    return isRedoable();
+}
+
+inline bool ImageProcessor::isUndoable() const
+{
+    return undoBuffer < usedBuffer;
+}
+
+inline bool ImageProcessor::isRedoable() const
+{
     return undoBuffer > 0;
 }
 

@@ -31,6 +31,14 @@ private slots:
 
     void on_actionFilter_triggered();
 
+    void on_actionBrightness_triggered();
+
+    void on_actionContrast_triggered();
+
+    void on_actionUndo_triggered();
+
+    void on_actionRedo_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;

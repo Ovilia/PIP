@@ -72,3 +72,4 @@ private:
 };
 
 #endif // HISTOGRAMDIALOG_H
+
