@@ -8,6 +8,7 @@
 #include "HistogramDialog.h"
 #include "ImageProcessor.h"
 #include "ImageWidget.h"
+#include "ScaleDialog.h"
 
 namespace Ui {
     class MainWindow;
@@ -21,8 +22,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    ImageProcessor* getImageProcessor();
+
     void repaintBinary();
-    void setFilteredImage(QImage *image);
+    void setFilteredImage(QImage* image);
+
+    void setScaledImage(QImage* image);
 
 private slots:
     void on_actionOpen_triggered();
@@ -35,15 +40,19 @@ private slots:
 
     void on_actionContrast_triggered();
 
+    void on_actionScale_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
     ImageWidget* originWidget;
     ImageWidget* binaryWidget;
     ImageWidget* filteredWidget;
+    ImageWidget* scaledWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
+    class ScaleDialog* scaledDialog;
 
     // file location of image
     QString imagePath;

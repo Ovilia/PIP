@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     MeanFilter.cpp \
     MedianFilter.cpp \
     ImageLabel.cpp \
-    AlgebraicOperation.cpp
+    AlgebraicOperation.cpp \
+    ImageScaler.cpp \
+    ScaleDialog.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -47,15 +49,23 @@ HEADERS  += \
     MeanFilter.h \
     MedianFilter.h \
     ImageLabel.h \
-    AlgebraicOperation.h
+    AlgebraicOperation.h \
+    ImageScaler.h \
+    ScaleDialog.h
 
 FORMS    += \
     ImageWidget.ui \
     HistogramDialog.ui \
     MainWindow.ui \
-    FilterDialog.ui
+    FilterDialog.ui \
+    ScaleDialog.ui
 
 RESOURCES += \
     resource.qrc
+
+
+
+
+
 
 

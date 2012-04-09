@@ -15,8 +15,10 @@ MainWindow::MainWindow(QWidget *parent) :
     originWidget(0),
     binaryWidget(0),
     filteredWidget(0),
+    scaledWidget(0),
     histogramDialog(0),
     filterDialog(0),
+    scaledDialog(0),
     imageProcessor(0),
     isFirstImage(true)
 {
@@ -25,8 +27,6 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifndef TEAM_WORK
     ui->actionBrightness->setVisible(false);
     ui->actionContrast->setVisible(false);
-    ui->actionUndo->setVisible(false);
-    ui->actionRedo->setVisible(false);
 #endif
 }
 
@@ -42,6 +42,10 @@ MainWindow::~MainWindow()
     if (filteredWidget) {
         delete filteredWidget;
     }
+    if (scaledWidget) {
+        delete scaledWidget->getImage();
+        delete scaledWidget;
+    }
     if (tabWidget) {
         delete tabWidget;
     }
@@ -54,6 +58,11 @@ MainWindow::~MainWindow()
     if (imageProcessor) {
         delete imageProcessor;
     }
+}
+
+ImageProcessor* MainWindow::getImageProcessor()
+{
+    return imageProcessor;
 }
 
 void MainWindow::repaintBinary()
@@ -71,6 +80,18 @@ void MainWindow::setFilteredImage(QImage *image)
         filteredWidget->setImage(image);
     }
     tabWidget->setCurrentWidget(filteredWidget);
+}
+
+void MainWindow::setScaledImage(QImage *image)
+{
+    if (!scaledWidget) {
+        scaledWidget = new ImageWidget(image);
+        tabWidget->addTab(scaledWidget, "Scaled Image");
+    } else {
+        delete scaledWidget->getImage();
+        scaledWidget->setImage(image);
+    }
+    tabWidget->setCurrentWidget(scaledWidget);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -115,6 +136,7 @@ void MainWindow::on_actionOpen_triggered()
             // enable UI components
             ui->actionHistogram->setEnabled(true);
             ui->actionFilter->setEnabled(true);
+            ui->actionScale->setEnabled(true);
 #ifdef TEAM_WORK
             ui->actionBrightness->setEnabled(true);
             ui->actionContrast->setEnabled(true);
@@ -128,6 +150,23 @@ void MainWindow::on_actionOpen_triggered()
             if (filteredWidget) {
                 delete filteredWidget;
                 filteredWidget = 0;
+            }
+            if (scaledWidget) {
+                delete scaledWidget->getImage();
+                delete scaledWidget;
+                scaledWidget = 0;
+            }
+            if (histogramDialog) {
+                delete histogramDialog;
+                histogramDialog = 0;
+            }
+            if (filterDialog) {
+                delete filterDialog;
+                filterDialog = 0;
+            }
+            if (scaledDialog) {
+                delete scaledDialog;
+                scaledDialog = 0;
             }
         }
 
@@ -178,4 +217,13 @@ void MainWindow::on_actionContrast_triggered()
     imageProcessor->doBrightness(0);
     ui->actionUndo->setEnabled(true);
 #endif
+}
+
+void MainWindow::on_actionScale_triggered()
+{
+    if (scaledDialog) {
+        delete scaledDialog;
+    }
+    scaledDialog = new ScaleDialog(this, this);
+    scaledDialog->show();
 }

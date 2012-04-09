@@ -8,8 +8,6 @@
         <file>images/histogram_small.png</file>
         <file>images/open.png</file>
         <file>images/open_small.png</file>
-        <file>images/redo.png</file>
-        <file>images/undo.png</file>
         <file>images/bright.png</file>
         <file>images/contrast.png</file>
     </qresource>

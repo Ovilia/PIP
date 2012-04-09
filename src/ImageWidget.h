@@ -21,6 +21,7 @@ public:
     ~ImageWidget();
 
     void setImage(QImage* image);
+    QImage* getImage();
 
     // called by ImageLabel to update rgb info
     void setMousePosition(int x, int y);

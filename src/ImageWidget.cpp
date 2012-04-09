@@ -28,8 +28,17 @@ void ImageWidget::setImage(QImage* image)
 {
     this->image = image;
     imageLabel->setPixmap(QPixmap::fromImage(*image));
+    imageLabel->setMinimumSize(
+                image->size().width(), image->size().height());
+    imageLabel->setMaximumSize(
+                image->size().width(), image->size().height());
     ui->scaleLabel->setText("100%");
     ui->horizontalSlider->setValue(100);
+}
+
+QImage* ImageWidget::getImage()
+{
+    return image;
 }
 
 void ImageWidget::on_horizontalSlider_valueChanged(int value)
