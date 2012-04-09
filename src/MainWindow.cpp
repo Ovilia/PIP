@@ -179,15 +179,3 @@ void MainWindow::on_actionContrast_triggered()
     ui->actionUndo->setEnabled(true);
 #endif
 }
-
-void MainWindow::on_actionUndo_triggered()
-{
-    ui->actionUndo->setEnabled(imageProcessor->undo());
-    ui->actionRedo->setEnabled(imageProcessor->isRedoable());
-}
-
-void MainWindow::on_actionRedo_triggered()
-{
-    ui->actionRedo->setEnabled(imageProcessor->redo());
-    ui->actionUndo->setEnabled(imageProcessor->isUndoable());
-}

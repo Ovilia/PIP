@@ -13,7 +13,6 @@ public:
     ~ImageProcessor();
 
     QImage* getOriginImage();
-    QImage* getCurrentImage();
     QImage* getGrayScaleImage();
     QImage* getBinaryImage();
     int* getHistogram();
@@ -36,30 +35,13 @@ public:
     // make image to be format RGB32
     void doFormatProcess(QImage* image);
 
-    // undo last action if is legal and return if can
-    // still undo after this action
-    bool undo();
-    // redo last undo action if is legal and return if can
-    // still redo after this action
-    bool redo();
-    // return if can undo or redo without undo or redo
-    inline bool isUndoable() const;
-    inline bool isRedoable() const;
-
-    /**
-     * Start of actions that can be undo and redo,
-     * these actions will always call bufferCurrentImage()
-     * to buffer current image before any operation
-     */
-
+#ifdef TEAM_WORK
     // set contrast value, contrast should between [-50, 100]
     void doContrast(int contrast);
 
     // set brightness, brightness should between [-150, 150]
     void doBrightness(int brightness);
-
-    // scale the image to new width and height
-    void doScale(int width, int height, ImagePolicy::ScalePolicy policy);
+#endif
 
     /**
      * End of actions that can be undo and redo
@@ -71,21 +53,10 @@ public:
 private:
     QString fileName;
     QImage* originImage;
-    QImage* currentImage;
     QImage* grayScaleImage;
     QImage* binaryImage;
 
     static const int PIXEL_SIZE = 4;
-
-    // count of history image that can be undo
-    static const int HISTORY_COUNT = 10;
-    // amount of buffered image
-    int usedBuffer;
-    // amount of undid image
-    int undoBuffer;
-    QImage* bufferedImage[HISTORY_COUNT];
-    // set originImage to be bufferedImage
-    void bufferCurrentImage();
 
     // reset all to uncalculated state
     void resetUncalculated();
@@ -115,8 +86,6 @@ private:
 
     inline uchar getGrayValue(
             const uchar* rgb, ImagePolicy::GrayScalePolicy policy);
-
-    void doNearestScale(QImage* oldImage, QImage* newImage);
 };
 
 #endif // IMAGEPROCESSOR_H
