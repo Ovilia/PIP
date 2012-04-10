@@ -58,10 +58,14 @@ void ImageWidget::on_horizontalSlider_valueChanged(int value)
 
 void ImageWidget::setMousePosition(int x, int y)
 {
-    ui->xPosLabel->setText(QString::number(x));
-    ui->yPosLabel->setText(QString::number(y));
+    double ratio = ui->horizontalSlider->value() / 100.0;
+    int xInt = (int)(x / ratio);
+    int yInt = (int)(y / ratio);
+
+    ui->xPosLabel->setText(QString::number(xInt));
+    ui->yPosLabel->setText(QString::number(yInt));
     const uchar* bits = image->constBits() +
-            (y * image->width() + x) * PIXEL_SIZE;
+            (yInt * image->width() + xInt) * PIXEL_SIZE;
     ui->rLabel->setText(QString::number(*(bits + 2)));
     ui->gLabel->setText(QString::number(*(bits + 1)));
     ui->bLabel->setText(QString::number(*bits));

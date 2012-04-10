@@ -19,8 +19,6 @@ public:
     ~ScaleDialog();
 
 private slots:
-    void on_resetButton_clicked();
-
     void on_applyButton_clicked();
 
 private:

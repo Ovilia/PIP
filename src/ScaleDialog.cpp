@@ -33,20 +33,18 @@ ScaleDialog::~ScaleDialog()
     delete ui;
 }
 
-void ScaleDialog::on_resetButton_clicked()
-{
-    int width = originImage->width();
-    int height = originImage->height();
-    ui->widthSpin->setValue(width);
-    ui->heightSpin->setValue(height);
-}
-
 void ScaleDialog::on_applyButton_clicked()
 {
+    ImagePolicy::ScalePolicy policy;
+    if (ui->nearButton->isChecked()) {
+        policy = ImagePolicy::SP_NEAREST;
+    } else {
+        policy = ImagePolicy::SP_BILINEAR;
+    }
     mainWindow->setScaledImage(ImageScaler::getScaledImage(
                                    originImage,
                                    ui->widthSpin->value(),
                                    ui->heightSpin->value(),
-                                   ImagePolicy::SP_NEAREST));
+                                   policy));
     close();
 }

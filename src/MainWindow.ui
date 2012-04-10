@@ -144,6 +144,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/scale.png</normaloff>:/images/images/scale.png</iconset>
+   </property>
    <property name="text">
     <string>Scale</string>
    </property>
