@@ -47,14 +47,20 @@ private slots:
 
     void on_actionAlgebra_triggered();
 
+    void on_actionEqualization_triggered();
+
+    void on_actionGray_Scale_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
     ImageWidget* originWidget;
+    ImageWidget* grayWidget;
     ImageWidget* binaryWidget;
     ImageWidget* filteredWidget;
     ImageWidget* scaledWidget;
     ImageWidget* algebraWidget;
+    ImageWidget* equalWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;

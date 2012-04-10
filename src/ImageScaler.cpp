@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "ImageScaler.h"
 
 ImageScaler::ImageScaler()

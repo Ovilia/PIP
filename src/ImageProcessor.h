@@ -15,6 +15,8 @@ public:
     QImage* getOriginImage();
     QImage* getGrayScaleImage();
     QImage* getBinaryImage();
+    QImage* getEqualImage();
+
     int* getHistogram();
     int* getRgbHistogram();
 
@@ -55,6 +57,7 @@ private:
     QImage* originImage;
     QImage* grayScaleImage;
     QImage* binaryImage;
+    QImage* equalImage;
 
     static const int PIXEL_SIZE = 4;
 
@@ -65,7 +68,7 @@ private:
     int histogram[RANGE_OF_8BITS];
     int rgbHistogram[RANGE_OF_8BITS][3];
     // accumulated histogram
-    int accumulatedHistogram[RANGE_OF_8BITS];
+    int accHistogram[RANGE_OF_8BITS];
     // x * histogram[x]
     int weightedHisSum;
 

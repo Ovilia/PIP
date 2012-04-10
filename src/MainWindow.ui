@@ -45,14 +45,22 @@
      <string>Image</string>
     </property>
     <addaction name="actionScale"/>
-    <addaction name="actionHistogram"/>
     <addaction name="actionFilter"/>
     <addaction name="actionBrightness"/>
     <addaction name="actionContrast"/>
     <addaction name="actionAlgebra"/>
+    <addaction name="actionGray_Scale"/>
+   </widget>
+   <widget class="QMenu" name="menuHistogram">
+    <property name="title">
+     <string>Histogram</string>
+    </property>
+    <addaction name="actionHistogram"/>
+    <addaction name="actionEqualization"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
+   <addaction name="menuHistogram"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -62,9 +70,13 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="separator"/>
+   <addaction name="actionGray_Scale"/>
    <addaction name="actionScale"/>
    <addaction name="separator"/>
    <addaction name="actionHistogram"/>
+   <addaction name="actionEqualization"/>
+   <addaction name="separator"/>
    <addaction name="actionFilter"/>
    <addaction name="actionContrast"/>
    <addaction name="actionBrightness"/>
@@ -164,6 +176,23 @@
    </property>
    <property name="text">
     <string>Algebra</string>
+   </property>
+  </action>
+  <action name="actionEqualization">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Equalization</string>
+   </property>
+  </action>
+  <action name="actionGray_Scale">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/gray.png</normaloff>:/images/images/gray.png</iconset>
+   </property>
+   <property name="text">
+    <string>Gray Scale</string>
    </property>
   </action>
  </widget>

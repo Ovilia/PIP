@@ -13,10 +13,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     tabWidget(0),
     originWidget(0),
+    grayWidget(0),
     binaryWidget(0),
     filteredWidget(0),
     scaledWidget(0),
     algebraWidget(0),
+    equalWidget(0),
     histogramDialog(0),
     filterDialog(0),
     scaledDialog(0),
@@ -38,6 +40,9 @@ MainWindow::~MainWindow()
     if (originWidget) {
         delete originWidget;
     }
+    if (grayWidget) {
+        delete grayWidget;
+    }
     if (binaryWidget) {
         delete binaryWidget;
     }
@@ -51,6 +56,9 @@ MainWindow::~MainWindow()
     if (algebraWidget) {
         delete algebraWidget->getImage();
         delete algebraWidget;
+    }
+    if (equalWidget) {
+        delete equalWidget;
     }
     if (tabWidget) {
         delete tabWidget;
@@ -159,12 +167,18 @@ void MainWindow::on_actionOpen_triggered()
             ui->actionFilter->setEnabled(true);
             ui->actionScale->setEnabled(true);
             ui->actionAlgebra->setEnabled(true);
+            ui->actionEqualization->setEnabled(true);
+            ui->actionGray_Scale->setEnabled(true);
 #ifdef TEAM_WORK
             ui->actionBrightness->setEnabled(true);
             ui->actionContrast->setEnabled(true);
 #endif
         } else {
             // reset UI components
+            if (grayWidget) {
+                delete grayWidget;
+                grayWidget = 0;
+            }
             if (binaryWidget) {
                 delete binaryWidget;
                 binaryWidget = 0;
@@ -177,6 +191,10 @@ void MainWindow::on_actionOpen_triggered()
                 delete scaledWidget->getImage();
                 delete scaledWidget;
                 scaledWidget = 0;
+            }
+            if (equalWidget) {
+                delete equalWidget;
+                equalWidget = 0;
             }
             if (histogramDialog) {
                 delete histogramDialog;
@@ -261,4 +279,22 @@ void MainWindow::on_actionAlgebra_triggered()
     }
     algebraDialog = new AlgebraDialog(this);
     algebraDialog->show();
+}
+
+void MainWindow::on_actionEqualization_triggered()
+{
+    if (!equalWidget) {
+        equalWidget = new ImageWidget(imageProcessor->getEqualImage());
+        tabWidget->addTab(equalWidget, "Histogram Equalization");
+    }
+    tabWidget->setCurrentWidget(equalWidget);
+}
+
+void MainWindow::on_actionGray_Scale_triggered()
+{
+    if (!grayWidget) {
+        grayWidget = new ImageWidget(imageProcessor->getGrayScaleImage());
+        tabWidget->addTab(grayWidget, "Gray Scale");
+    }
+    tabWidget->setCurrentWidget(grayWidget);
 }

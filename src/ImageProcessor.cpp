@@ -9,6 +9,7 @@ ImageProcessor::ImageProcessor(QString fileName) :
     originImage(0),
     grayScaleImage(0),
     binaryImage(0),
+    equalImage(0),
     isHisCaled(false),
     isRgbHisCaled(false),
     weightedHisSum(0),
@@ -35,6 +36,9 @@ ImageProcessor::~ImageProcessor()
     if (binaryImage) {
         delete binaryImage;
     }
+    if (equalImage) {
+        delete equalImage;
+    }
 }
 
 void ImageProcessor::setImage(QString fileName)
@@ -42,6 +46,7 @@ void ImageProcessor::setImage(QString fileName)
     this->fileName = fileName;
     originImage = new QImage(fileName);
     doFormatProcess(originImage);
+    resetUncalculated();
 }
 
 void ImageProcessor::doFormatProcess(QImage *image)
@@ -139,8 +144,18 @@ void ImageProcessor::doBrightness(int brightness)
 void ImageProcessor::resetUncalculated()
 {
     // reset to uncalculated state
-    grayScaleImage = 0;
-    binaryImage = 0;
+    if (grayScaleImage) {
+        delete grayScaleImage;
+        grayScaleImage = 0;
+    }
+    if (binaryImage) {
+        delete binaryImage;
+        binaryImage = 0;
+    }
+    if (equalImage) {
+        delete equalImage;
+        equalImage = 0;
+    }
     isHisCaled = false;
     isRgbHisCaled = false;
     isOtsuCaled = false;
@@ -221,7 +236,7 @@ int ImageProcessor::getOtsuThreshold()
         // Sum of pixels with index below thresholdValue
         int belowSum = 0;
         // Sum of pixels with index upper than threshold value
-        int upperSum = accumulatedHistogram[RANGE_OF_8BITS - 1];
+        int upperSum = accHistogram[RANGE_OF_8BITS - 1];
 
         // Sum of pixels multiplies index value below thresholdValue
         int belowWeighted = 0;
@@ -313,8 +328,8 @@ int ImageProcessor::getEntropyThreshold()
                 continue;
             }
 
-            int upperSum = accumulatedHistogram[RANGE_OF_8BITS - 1]
-                    - accumulatedHistogram[thresholdValue];
+            int upperSum = accHistogram[RANGE_OF_8BITS - 1]
+                    - accHistogram[thresholdValue];
             if (upperSum == 0)
             {
                 break;
@@ -324,8 +339,8 @@ int ImageProcessor::getEntropyThreshold()
             belowSumXLogX += xLogX;
             upperSumXLogX -= xLogX;
 
-            double belowEntropy = qLn(accumulatedHistogram[thresholdValue])
-                    - belowSumXLogX / accumulatedHistogram[thresholdValue];
+            double belowEntropy = qLn(accHistogram[thresholdValue])
+                    - belowSumXLogX / accHistogram[thresholdValue];
             double upperEntropy = qLn(upperSum)
                     - upperSumXLogX / upperSum;
             double entropy = belowEntropy + upperEntropy;
@@ -424,7 +439,7 @@ int* ImageProcessor::getHistogram()
         weightedHisSum = 0;
         for (int i = 0; i < RANGE_OF_8BITS; ++i) {
             sum += histogram[i];
-            accumulatedHistogram[i] = sum;
+            accHistogram[i] = sum;
             weightedHisSum += i * histogram[i];
         }
 
@@ -459,6 +474,8 @@ int* ImageProcessor::getRgbHistogram()
             // point to next pixel
             originPtr += PIXEL_SIZE;
         }
+
+        isRgbHisCaled = true;
     }
     return *rgbHistogram;
 }
@@ -507,4 +524,47 @@ QImage* ImageProcessor::getBinaryImage()
         binaryPtr += PIXEL_SIZE;
     }
     return binaryImage;
+}
+
+QImage* ImageProcessor::getEqualImage()
+{
+    if (equalImage) {
+        return equalImage;
+    }
+    getHistogram();
+    getGrayScaleImage();
+
+    // min level of rgb, within [0, 256)
+    int minLevel;
+    for (int i = 0; i < RANGE_OF_8BITS; ++i) {
+        if (histogram[i] > 0) {
+            minLevel = i;
+            break;
+        }
+    }
+    // max level of rgb, within [0, 256)
+    int maxLevel;
+    for (int i = RANGE_OF_8BITS - 1; i >= 0; --i) {
+        if (histogram[i] > 0) {
+            maxLevel = i;
+            break;
+        }
+    }
+
+    equalImage = new QImage(originImage->width(), originImage->height(),
+                            originImage->format());
+    uchar* bits = equalImage->bits();
+    const uchar* oBits = grayScaleImage->constBits();
+    int size = equalImage->width() * equalImage->height();
+    for (int i = 0; i < size; ++i) {
+        uchar value = (double)accHistogram[*oBits] / size * MAX_OF_8BITS;
+        for (int rgb = 0; rgb < 3; ++rgb) {
+            *bits = value;
+            ++bits;
+            ++oBits;
+        }
+        ++bits;
+        ++oBits;
+    }
+    return equalImage;
 }
