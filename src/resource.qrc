@@ -12,5 +12,7 @@
         <file>images/contrast.png</file>
         <file>images/scale.png</file>
         <file>images/algebra.png</file>
+        <file>images/equal.png</file>
+        <file>images/logo.png</file>
     </qresource>
 </RCC>

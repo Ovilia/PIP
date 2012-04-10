@@ -67,15 +67,3 @@ FORMS    += \
 
 RESOURCES += \
     resource.qrc
-
-
-
-
-
-
-
-
-
-
-
-

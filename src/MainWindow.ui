@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>PIP Image Processor</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/images/images/logo.png</normaloff>:/images/images/logo.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout"/>
   </widget>
@@ -44,23 +48,17 @@
     <property name="title">
      <string>Image</string>
     </property>
-    <addaction name="actionScale"/>
-    <addaction name="actionFilter"/>
+    <addaction name="actionAlgebra"/>
     <addaction name="actionBrightness"/>
     <addaction name="actionContrast"/>
-    <addaction name="actionAlgebra"/>
-    <addaction name="actionGray_Scale"/>
-   </widget>
-   <widget class="QMenu" name="menuHistogram">
-    <property name="title">
-     <string>Histogram</string>
-    </property>
-    <addaction name="actionHistogram"/>
     <addaction name="actionEqualization"/>
+    <addaction name="actionFilter"/>
+    <addaction name="actionGray_Scale"/>
+    <addaction name="actionHistogram"/>
+    <addaction name="actionScale"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
-   <addaction name="menuHistogram"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -72,15 +70,15 @@
    <addaction name="actionOpen"/>
    <addaction name="separator"/>
    <addaction name="actionGray_Scale"/>
-   <addaction name="actionScale"/>
-   <addaction name="separator"/>
    <addaction name="actionHistogram"/>
    <addaction name="actionEqualization"/>
+   <addaction name="separator"/>
+   <addaction name="actionAlgebra"/>
+   <addaction name="actionScale"/>
    <addaction name="separator"/>
    <addaction name="actionFilter"/>
    <addaction name="actionContrast"/>
    <addaction name="actionBrightness"/>
-   <addaction name="actionAlgebra"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -182,11 +180,18 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/equal.png</normaloff>:/images/images/equal.png</iconset>
+   </property>
    <property name="text">
     <string>Equalization</string>
    </property>
   </action>
   <action name="actionGray_Scale">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/images/images/gray.png</normaloff>:/images/images/gray.png</iconset>

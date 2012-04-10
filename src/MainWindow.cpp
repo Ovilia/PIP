@@ -192,6 +192,11 @@ void MainWindow::on_actionOpen_triggered()
                 delete scaledWidget;
                 scaledWidget = 0;
             }
+            if (algebraWidget) {
+                delete algebraWidget->getImage();
+                delete algebraWidget;
+                algebraWidget = 0;
+            }
             if (equalWidget) {
                 delete equalWidget;
                 equalWidget = 0;
