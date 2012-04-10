@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     ImageLabel.cpp \
     AlgebraicOperation.cpp \
     ImageScaler.cpp \
-    ScaleDialog.cpp
+    ScaleDialog.cpp \
+    AlgebraDialog.cpp \
+    Algebra.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -51,17 +53,25 @@ HEADERS  += \
     ImageLabel.h \
     AlgebraicOperation.h \
     ImageScaler.h \
-    ScaleDialog.h
+    ScaleDialog.h \
+    AlgebraDialog.h \
+    Algebra.h
 
 FORMS    += \
     ImageWidget.ui \
     HistogramDialog.ui \
     MainWindow.ui \
     FilterDialog.ui \
-    ScaleDialog.ui
+    ScaleDialog.ui \
+    AlgebraDialog.ui
 
 RESOURCES += \
     resource.qrc
+
+
+
+
+
 
 
 

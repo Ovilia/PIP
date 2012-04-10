@@ -11,5 +11,6 @@
         <file>images/bright.png</file>
         <file>images/contrast.png</file>
         <file>images/scale.png</file>
+        <file>images/algebra.png</file>
     </qresource>
 </RCC>

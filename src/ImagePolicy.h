@@ -27,6 +27,13 @@ public:
         SP_NEAREST = 0,
         SP_BILINEAR
     };
+
+    enum AlgebraPolicy {
+        AP_ADD = 0,
+        AP_MINUS,
+        AP_MULTIPLY,
+        AP_DIVIDE
+    };
 };
 
 #endif // IMAGESTRATEGY_H

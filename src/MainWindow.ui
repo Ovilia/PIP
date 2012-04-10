@@ -49,6 +49,7 @@
     <addaction name="actionFilter"/>
     <addaction name="actionBrightness"/>
     <addaction name="actionContrast"/>
+    <addaction name="actionAlgebra"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
@@ -67,6 +68,7 @@
    <addaction name="actionFilter"/>
    <addaction name="actionContrast"/>
    <addaction name="actionBrightness"/>
+   <addaction name="actionAlgebra"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -150,6 +152,18 @@
    </property>
    <property name="text">
     <string>Scale</string>
+   </property>
+  </action>
+  <action name="actionAlgebra">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/algebra.png</normaloff>:/images/images/algebra.png</iconset>
+   </property>
+   <property name="text">
+    <string>Algebra</string>
    </property>
   </action>
  </widget>

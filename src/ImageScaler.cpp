@@ -65,9 +65,7 @@ QImage* ImageScaler::getBilinearImage(QImage* originImage,
             const uchar* const q21 = (j == newWidth - 1) ? q11 : (q11 + 4);
             const uchar* const q12 = (i == newHeight - 1) ? q11 : (q11 + oWidth * 4);
             const uchar* const q22 = (j == newWidth - 1) ? q12 : (q12 + 4);
-            bool a = j == newWidth - 1;
-            bool b = i == newHeight - 1;
-            //qDebug()<<*q11<<*q21<<*q12<<*q22<<"\t("<<a<<b<<")";
+
             for (int rgb = 0; rgb < 3; ++rgb) {
                 *newBits = (uchar)(*(q11 + rgb) * (x1 + 1 - x) * (y1 + 1 - y) +
                                    *(q21 + rgb) * (x - x1) * (y1 + 1 - y) +

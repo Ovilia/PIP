@@ -16,9 +16,11 @@ MainWindow::MainWindow(QWidget *parent) :
     binaryWidget(0),
     filteredWidget(0),
     scaledWidget(0),
+    algebraWidget(0),
     histogramDialog(0),
     filterDialog(0),
     scaledDialog(0),
+    algebraDialog(0),
     imageProcessor(0),
     isFirstImage(true)
 {
@@ -46,6 +48,10 @@ MainWindow::~MainWindow()
         delete scaledWidget->getImage();
         delete scaledWidget;
     }
+    if (algebraWidget) {
+        delete algebraWidget->getImage();
+        delete algebraWidget;
+    }
     if (tabWidget) {
         delete tabWidget;
     }
@@ -54,6 +60,9 @@ MainWindow::~MainWindow()
     }
     if (filterDialog) {
         delete filterDialog;
+    }
+    if (algebraDialog) {
+        delete algebraDialog;
     }
     if (imageProcessor) {
         delete imageProcessor;
@@ -92,6 +101,18 @@ void MainWindow::setScaledImage(QImage *image)
         scaledWidget->setImage(image);
     }
     tabWidget->setCurrentWidget(scaledWidget);
+}
+
+void MainWindow::setAlgebraImage(QImage* image)
+{
+    if (!algebraWidget) {
+        algebraWidget = new ImageWidget(image);
+        tabWidget->addTab(algebraWidget, "Algebra");
+    } else {
+        delete algebraWidget->getImage();
+        algebraWidget->setImage(image);
+    }
+    tabWidget->setCurrentWidget(algebraWidget);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -137,6 +158,7 @@ void MainWindow::on_actionOpen_triggered()
             ui->actionHistogram->setEnabled(true);
             ui->actionFilter->setEnabled(true);
             ui->actionScale->setEnabled(true);
+            ui->actionAlgebra->setEnabled(true);
 #ifdef TEAM_WORK
             ui->actionBrightness->setEnabled(true);
             ui->actionContrast->setEnabled(true);
@@ -167,6 +189,10 @@ void MainWindow::on_actionOpen_triggered()
             if (scaledDialog) {
                 delete scaledDialog;
                 scaledDialog = 0;
+            }
+            if (algebraDialog) {
+                delete algebraDialog;
+                algebraDialog = 0;
             }
         }
 
@@ -226,4 +252,13 @@ void MainWindow::on_actionScale_triggered()
     }
     scaledDialog = new ScaleDialog(this, this);
     scaledDialog->show();
+}
+
+void MainWindow::on_actionAlgebra_triggered()
+{
+    if (algebraDialog) {
+        delete algebraDialog;
+    }
+    algebraDialog = new AlgebraDialog(this);
+    algebraDialog->show();
 }

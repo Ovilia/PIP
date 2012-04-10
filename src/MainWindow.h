@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTabWidget>
 
+#include "AlgebraDialog.h"
 #include "FilterDialog.h"
 #include "HistogramDialog.h"
 #include "ImageProcessor.h"
@@ -29,6 +30,8 @@ public:
 
     void setScaledImage(QImage* image);
 
+    void setAlgebraImage(QImage* image);
+
 private slots:
     void on_actionOpen_triggered();
 
@@ -42,6 +45,8 @@ private slots:
 
     void on_actionScale_triggered();
 
+    void on_actionAlgebra_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -49,10 +54,12 @@ private:
     ImageWidget* binaryWidget;
     ImageWidget* filteredWidget;
     ImageWidget* scaledWidget;
+    ImageWidget* algebraWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
     class ScaleDialog* scaledDialog;
+    class AlgebraDialog* algebraDialog;
 
     // file location of image
     QString imagePath;
