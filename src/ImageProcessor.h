@@ -1,7 +1,7 @@
 #ifndef IMAGEPROCESSOR_H
 #define IMAGEPROCESSOR_H
 
-#define TEAM_WORK
+//#define TEAM_WORK
 
 #include <QImage>
 #include <QString>
@@ -37,15 +37,13 @@ public:
     int getHigherThreshold();
 
     // make image to be format RGB32
-    void doFormatProcess(QImage* image);
+    static void doFormatProcess(QImage* image);
 
-#ifdef TEAM_WORK
     // set contrast value, contrast should between [-50, 100]
     QImage* getContrastImage(int contrast);
 
     // set brightness, brightness should between [-150, 150]
     QImage* getBrightnessImage(int brightness);
-#endif
 
     /**
      * End of actions that can be undo and redo

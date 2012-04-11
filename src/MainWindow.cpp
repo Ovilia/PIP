@@ -1,3 +1,5 @@
+//#define TEAM_WORK
+
 #include <QFileDialog>
 #include <QPixmap>
 

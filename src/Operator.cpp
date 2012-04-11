@@ -13,8 +13,7 @@ Operator::Operator(QImage* image, const int kernelRadio,
     isXEnabled(true),
     isYEnabled(true),
     xOperatedImage(0),
-    yOperatedImage(0),
-    xyOperatedImage(0)
+    yOperatedImage(0)
 {
     xFilter = new LinearFilter(image, kernelRadio, xKernel, isColored, policy);
     yFilter = new LinearFilter(image, kernelRadio, yKernel, isColored, policy);
@@ -27,15 +26,6 @@ Operator::~Operator()
     }
     if (yFilter) {
         delete yFilter;
-    }
-    if (xOperatedImage) {
-        delete xOperatedImage;
-    }
-    if (yOperatedImage) {
-        delete yOperatedImage;
-    }
-    if (xyOperatedImage) {
-        delete xyOperatedImage;
     }
 }
 

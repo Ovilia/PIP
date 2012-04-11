@@ -15,7 +15,7 @@ public:
     Operator(QImage* image, const int kernelRadio,
              const int* xKernel, const int* yKernel,
              const bool isColored, ImagePolicy::BorderPolicy policy);
-    ~Operator();
+    virtual ~Operator();
 
     // overload function
     QImage* getFilteredImage();
@@ -38,7 +38,6 @@ protected:
 
     QImage* xOperatedImage;
     QImage* yOperatedImage;
-    QImage* xyOperatedImage;
 
     // override function used for xyOperatedImage
     virtual int doFiltering(int x, int y, ColorOffset offset);

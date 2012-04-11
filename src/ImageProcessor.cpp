@@ -1,3 +1,5 @@
+//#define TEAM_WORK
+
 #include <QtCore/qmath.h>
 #include <QImage>
 #include <QPixmap>
@@ -89,9 +91,9 @@ void ImageProcessor::doFormatProcess(QImage *image)
     }
 }
 
-#ifdef TEAM_WORK
 QImage* ImageProcessor::getContrastImage(int contrast)
 {
+#ifdef TEAM_WORK
     // make sure histogram is calculated
     getHistogram();
 
@@ -138,17 +140,45 @@ QImage* ImageProcessor::getContrastImage(int contrast)
         }
     }
     return contrastImage;
+#endif
 }
 
 QImage* ImageProcessor::getBrightnessImage(int brightness)
 {
+#ifdef TEAM_WORK
     if (brightImage) {
         delete brightImage;
     }
 
+    brightImage = new QImage(originImage->size(), QImage::Format_RGB32);
+    unsigned char* originPtr = originImage->bits();
+    unsigned char* operatedPtr = brightImage->bits();
+    int height = originImage->height();
+    int width = originImage->width();
+    int adjustedColor;
+
+    if (brightness > MAX_OF_8BITS) {
+        brightness = MAX_OF_8BITS;
+    } else if (brightness < -MAX_OF_8BITS) {
+        brightness = -MAX_OF_8BITS;
+    }
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            for (int k = 0; k < 3; ++k) {
+                adjustedColor = *(originPtr + 4 * (j * width + i) + k)
+                        + brightness;
+                if (adjustedColor < 0) {
+                    adjustedColor = 0;
+                } else if (adjustedColor > MAX_OF_8BITS) {
+                    adjustedColor = MAX_OF_8BITS;
+                }
+                *(operatedPtr + 4 * (j * width + i) + k) = adjustedColor;
+            }
+        }
+    }
     return brightImage;
-}
 #endif
+}
 
 void ImageProcessor::resetUncalculated()
 {

@@ -1,5 +1,7 @@
 #include "ImageScaler.h"
 
+#include "ImageProcessor.h"
+
 ImageScaler::ImageScaler()
 {
 }
@@ -8,6 +10,9 @@ QImage* ImageScaler::getScaledImage(QImage* originImage,
                                     int newWidth, int newHeight,
                                     ImagePolicy::ScalePolicy policy)
 {
+    // change into RGB32
+    ImageProcessor::doFormatProcess(originImage);
+
     switch (policy) {
     case ImagePolicy::SP_NEAREST:
         return getNearestImage(originImage, newWidth, newHeight);
