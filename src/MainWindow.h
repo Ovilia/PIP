@@ -5,6 +5,7 @@
 #include <QTabWidget>
 
 #include "AlgebraDialog.h"
+#include "ContrastDialog.h"
 #include "FilterDialog.h"
 #include "HistogramDialog.h"
 #include "ImageProcessor.h"
@@ -31,6 +32,8 @@ public:
     void setScaledImage(QImage* image);
 
     void setAlgebraImage(QImage* image);
+
+    void setContrastImage(QImage* image);
 
 private slots:
     void on_actionOpen_triggered();
@@ -61,11 +64,13 @@ private:
     ImageWidget* scaledWidget;
     ImageWidget* algebraWidget;
     ImageWidget* equalWidget;
+    ImageWidget* contrastWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
     class ScaleDialog* scaledDialog;
     class AlgebraDialog* algebraDialog;
+    class ContrastDialog* contrastDialog;
 
     // file location of image
     QString imagePath;

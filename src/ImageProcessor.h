@@ -1,6 +1,8 @@
 #ifndef IMAGEPROCESSOR_H
 #define IMAGEPROCESSOR_H
 
+#define TEAM_WORK
+
 #include <QImage>
 #include <QString>
 
@@ -39,10 +41,10 @@ public:
 
 #ifdef TEAM_WORK
     // set contrast value, contrast should between [-50, 100]
-    void doContrast(int contrast);
+    QImage* getContrastImage(int contrast);
 
     // set brightness, brightness should between [-150, 150]
-    void doBrightness(int brightness);
+    QImage* getBrightnessImage(int brightness);
 #endif
 
     /**
@@ -58,6 +60,8 @@ private:
     QImage* grayScaleImage;
     QImage* binaryImage;
     QImage* equalImage;
+    QImage* contrastImage;
+    QImage* brightImage;
 
     static const int PIXEL_SIZE = 4;
 

@@ -6,8 +6,6 @@
 #include "mainwindow.h"
 #include "ui_MainWindow.h"
 
-//#define TEAM_WORK
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -19,10 +17,12 @@ MainWindow::MainWindow(QWidget *parent) :
     scaledWidget(0),
     algebraWidget(0),
     equalWidget(0),
+    contrastWidget(0),
     histogramDialog(0),
     filterDialog(0),
     scaledDialog(0),
     algebraDialog(0),
+    contrastDialog(0),
     imageProcessor(0),
     isFirstImage(true)
 {
@@ -60,6 +60,9 @@ MainWindow::~MainWindow()
     if (equalWidget) {
         delete equalWidget;
     }
+    if (contrastWidget) {
+        delete contrastWidget;
+    }
     if (tabWidget) {
         delete tabWidget;
     }
@@ -71,6 +74,9 @@ MainWindow::~MainWindow()
     }
     if (algebraDialog) {
         delete algebraDialog;
+    }
+    if (contrastDialog) {
+        delete contrastDialog;
     }
     if (imageProcessor) {
         delete imageProcessor;
@@ -121,6 +127,17 @@ void MainWindow::setAlgebraImage(QImage* image)
         algebraWidget->setImage(image);
     }
     tabWidget->setCurrentWidget(algebraWidget);
+}
+
+void MainWindow::setContrastImage(QImage* image)
+{
+    if (!contrastWidget) {
+        contrastWidget = new ImageWidget(image);
+        tabWidget->addTab(contrastWidget, "Contrast");
+    } else {
+        contrastWidget->setImage(image);
+    }
+    tabWidget->setCurrentWidget(contrastWidget);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -201,6 +218,10 @@ void MainWindow::on_actionOpen_triggered()
                 delete equalWidget;
                 equalWidget = 0;
             }
+            if (contrastWidget) {
+                delete contrastWidget;
+                contrastWidget = 0;
+            }
             if (histogramDialog) {
                 delete histogramDialog;
                 histogramDialog = 0;
@@ -216,6 +237,10 @@ void MainWindow::on_actionOpen_triggered()
             if (algebraDialog) {
                 delete algebraDialog;
                 algebraDialog = 0;
+            }
+            if (contrastDialog) {
+                delete contrastDialog;
+                contrastDialog = 0;
             }
         }
 
@@ -254,17 +279,18 @@ void MainWindow::on_actionBrightness_triggered()
 {
 #ifdef TEAM_WORK
     // TODO: do contrast here
-    imageProcessor->doContrast(50);
-    ui->actionUndo->setEnabled(true);
+    //imageProcessor->doContrast(50);
 #endif
 }
 
 void MainWindow::on_actionContrast_triggered()
 {
 #ifdef TEAM_WORK
-    // TODO: do contrast here
-    imageProcessor->doBrightness(0);
-    ui->actionUndo->setEnabled(true);
+    if (contrastDialog) {
+        delete contrastDialog;
+    }
+    contrastDialog = new ContrastDialog(this, this);
+    contrastDialog->show();
 #endif
 }
 

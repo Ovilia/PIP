@@ -10,6 +10,8 @@ ImageProcessor::ImageProcessor(QString fileName) :
     grayScaleImage(0),
     binaryImage(0),
     equalImage(0),
+    contrastImage(0),
+    brightImage(0),
     isHisCaled(false),
     isRgbHisCaled(false),
     weightedHisSum(0),
@@ -38,6 +40,12 @@ ImageProcessor::~ImageProcessor()
     }
     if (equalImage) {
         delete equalImage;
+    }
+    if (contrastImage) {
+        delete contrastImage;
+    }
+    if (brightImage) {
+        delete brightImage;
     }
 }
 
@@ -82,20 +90,21 @@ void ImageProcessor::doFormatProcess(QImage *image)
 }
 
 #ifdef TEAM_WORK
-void ImageProcessor::doContrast(int contrast)
+QImage* ImageProcessor::getContrastImage(int contrast)
 {
-    // originImage will be changed, buffer it so that undo is possible
-    bufferoriginImage();
-
     // make sure histogram is calculated
     getHistogram();
+
+    if (contrastImage) {
+        delete contrastImage;
+    }
 
     const uchar* originPtr = originImage->constBits();
     int height = originImage->height();
     int width = originImage->width();
 
-    QImage* newImage = new QImage(width, height, originImage->format());
-    uchar* newPtr = newImage->bits();
+    contrastImage = new QImage(width, height, originImage->format());
+    uchar* newPtr = contrastImage->bits();
 
     int averageBrightness;
     int originColor = 0;
@@ -128,16 +137,16 @@ void ImageProcessor::doContrast(int contrast)
             }
         }
     }
-    originImage = newImage;
+    return contrastImage;
 }
 
-void ImageProcessor::doBrightness(int brightness)
+QImage* ImageProcessor::getBrightnessImage(int brightness)
 {
-    // originImage will be changed, buffer it so that undo is possible
-    bufferoriginImage();
+    if (brightImage) {
+        delete brightImage;
+    }
 
-    // TODO: do brightness now
-    // post-condition: result is in originImage
+    return brightImage;
 }
 #endif
 
