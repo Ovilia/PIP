@@ -1,47 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ContrastDialog</class>
- <widget class="QDialog" name="ContrastDialog">
+ <class>RotateDialog</class>
+ <widget class="QDialog" name="RotateDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>257</width>
+    <width>275</width>
     <height>61</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Contrast</string>
+   <string>Rotate</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
-    <normaloff>:/images/images/contrast.png</normaloff>:/images/images/contrast.png</iconset>
+    <normaloff>:/images/images/rotate.png</normaloff>:/images/images/rotate.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Contrast: </string>
+         <string>Rotate angle: </string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="valueLabel">
+       <widget class="QLabel" name="angleLabel">
         <property name="text">
-         <string>100</string>
+         <string>0</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QSlider" name="horizontalSlider">
+       <widget class="QSlider" name="angleSlider">
         <property name="maximum">
-         <number>500</number>
-        </property>
-        <property name="value">
-         <number>100</number>
+         <number>359</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

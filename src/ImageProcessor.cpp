@@ -1,5 +1,3 @@
-//#define TEAM_WORK
-
 #include <QtCore/qmath.h>
 #include <QImage>
 #include <QPixmap>
@@ -93,7 +91,6 @@ void ImageProcessor::doFormatProcess(QImage *image)
 
 QImage* ImageProcessor::getContrastImage(int contrast)
 {
-#ifdef TEAM_WORK
     // make sure histogram is calculated
     getHistogram();
 
@@ -140,12 +137,10 @@ QImage* ImageProcessor::getContrastImage(int contrast)
         }
     }
     return contrastImage;
-#endif
 }
 
 QImage* ImageProcessor::getBrightnessImage(int brightness)
 {
-#ifdef TEAM_WORK
     if (brightImage) {
         delete brightImage;
     }
@@ -177,7 +172,6 @@ QImage* ImageProcessor::getBrightnessImage(int brightness)
         }
     }
     return brightImage;
-#endif
 }
 
 void ImageProcessor::resetUncalculated()

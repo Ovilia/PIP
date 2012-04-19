@@ -5,11 +5,13 @@
 #include <QTabWidget>
 
 #include "AlgebraDialog.h"
+#include "BrightDialog.h"
 #include "ContrastDialog.h"
 #include "FilterDialog.h"
 #include "HistogramDialog.h"
 #include "ImageProcessor.h"
 #include "ImageWidget.h"
+#include "RotateDialog.h"
 #include "ScaleDialog.h"
 
 namespace Ui {
@@ -28,12 +30,11 @@ public:
 
     void repaintBinary();
     void setFilteredImage(QImage* image);
-
     void setScaledImage(QImage* image);
-
+    void setRotatedImage(QImage *image);
     void setAlgebraImage(QImage* image);
-
     void setContrastImage(QImage* image);
+    void setBrightnessImage(QImage* image);
 
 private slots:
     void on_actionOpen_triggered();
@@ -54,6 +55,8 @@ private slots:
 
     void on_actionGray_Scale_triggered();
 
+    void on_actionRotate_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -62,15 +65,19 @@ private:
     ImageWidget* binaryWidget;
     ImageWidget* filteredWidget;
     ImageWidget* scaledWidget;
+    ImageWidget* rotatedWidget;
     ImageWidget* algebraWidget;
     ImageWidget* equalWidget;
     ImageWidget* contrastWidget;
+    ImageWidget* brightWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
     class ScaleDialog* scaledDialog;
+    class RotateDialog* rotatedDialog;
     class AlgebraDialog* algebraDialog;
     class ContrastDialog* contrastDialog;
+    class BrightDialog* brightDialog;
 
     // file location of image
     QString imagePath;

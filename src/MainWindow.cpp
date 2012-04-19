@@ -1,4 +1,4 @@
-//#define TEAM_WORK
+#define TEAM_WORK
 
 #include <QFileDialog>
 #include <QPixmap>
@@ -17,14 +17,18 @@ MainWindow::MainWindow(QWidget *parent) :
     binaryWidget(0),
     filteredWidget(0),
     scaledWidget(0),
+    rotatedWidget(0),
     algebraWidget(0),
     equalWidget(0),
     contrastWidget(0),
+    brightWidget(0),
     histogramDialog(0),
     filterDialog(0),
     scaledDialog(0),
+    rotatedDialog(0),
     algebraDialog(0),
     contrastDialog(0),
+    brightDialog(0),
     imageProcessor(0),
     isFirstImage(true)
 {
@@ -55,6 +59,10 @@ MainWindow::~MainWindow()
         delete scaledWidget->getImage();
         delete scaledWidget;
     }
+    if (rotatedWidget) {
+        delete rotatedWidget->getImage();
+        delete rotatedWidget;
+    }
     if (algebraWidget) {
         delete algebraWidget->getImage();
         delete algebraWidget;
@@ -64,6 +72,9 @@ MainWindow::~MainWindow()
     }
     if (contrastWidget) {
         delete contrastWidget;
+    }
+    if (brightWidget) {
+        delete brightWidget;
     }
     if (tabWidget) {
         delete tabWidget;
@@ -79,6 +90,9 @@ MainWindow::~MainWindow()
     }
     if (contrastDialog) {
         delete contrastDialog;
+    }
+    if (brightDialog) {
+        delete brightDialog;
     }
     if (imageProcessor) {
         delete imageProcessor;
@@ -119,6 +133,18 @@ void MainWindow::setScaledImage(QImage *image)
     tabWidget->setCurrentWidget(scaledWidget);
 }
 
+void MainWindow::setRotatedImage(QImage *image)
+{
+    if (!rotatedWidget) {
+        rotatedWidget = new ImageWidget(image);
+        tabWidget->addTab(rotatedWidget, "Rotated Image");
+    } else {
+        delete rotatedWidget->getImage();
+        rotatedWidget->setImage(image);
+    }
+    tabWidget->setCurrentWidget(rotatedWidget);
+}
+
 void MainWindow::setAlgebraImage(QImage* image)
 {
     if (!algebraWidget) {
@@ -140,6 +166,17 @@ void MainWindow::setContrastImage(QImage* image)
         contrastWidget->setImage(image);
     }
     tabWidget->setCurrentWidget(contrastWidget);
+}
+
+void MainWindow::setBrightnessImage(QImage* image)
+{
+    if (!brightWidget) {
+        brightWidget = new ImageWidget(image);
+        tabWidget->addTab(brightWidget, "Brightness");
+    } else {
+        brightWidget->setImage(image);
+    }
+    tabWidget->setCurrentWidget(brightWidget);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -185,6 +222,7 @@ void MainWindow::on_actionOpen_triggered()
             ui->actionHistogram->setEnabled(true);
             ui->actionFilter->setEnabled(true);
             ui->actionScale->setEnabled(true);
+            ui->actionRotate->setEnabled(true);
             ui->actionAlgebra->setEnabled(true);
             ui->actionEqualization->setEnabled(true);
             ui->actionGray_Scale->setEnabled(true);
@@ -211,6 +249,11 @@ void MainWindow::on_actionOpen_triggered()
                 delete scaledWidget;
                 scaledWidget = 0;
             }
+            if (rotatedWidget) {
+                delete rotatedWidget->getImage();
+                delete rotatedWidget;
+                rotatedWidget = 0;
+            }
             if (algebraWidget) {
                 delete algebraWidget->getImage();
                 delete algebraWidget;
@@ -224,6 +267,10 @@ void MainWindow::on_actionOpen_triggered()
                 delete contrastWidget;
                 contrastWidget = 0;
             }
+            if (brightWidget) {
+                delete brightWidget;
+                brightWidget = 0;
+            }
             if (histogramDialog) {
                 delete histogramDialog;
                 histogramDialog = 0;
@@ -235,6 +282,10 @@ void MainWindow::on_actionOpen_triggered()
             if (scaledDialog) {
                 delete scaledDialog;
                 scaledDialog = 0;
+            }
+            if (rotatedDialog) {
+                delete rotatedDialog;
+                rotatedDialog = 0;
             }
             if (algebraDialog) {
                 delete algebraDialog;
@@ -280,8 +331,11 @@ void MainWindow::on_actionFilter_triggered()
 void MainWindow::on_actionBrightness_triggered()
 {
 #ifdef TEAM_WORK
-    // TODO: do contrast here
-    //imageProcessor->doContrast(50);
+    if (brightDialog) {
+        delete brightDialog;
+    }
+    brightDialog = new BrightDialog(this, this);
+    brightDialog->show();
 #endif
 }
 
@@ -303,6 +357,15 @@ void MainWindow::on_actionScale_triggered()
     }
     scaledDialog = new ScaleDialog(this, this);
     scaledDialog->show();
+}
+
+void MainWindow::on_actionRotate_triggered()
+{
+    if (rotatedDialog) {
+        delete rotatedDialog;
+    }
+    rotatedDialog = new RotateDialog(this, this);
+    rotatedDialog->show();
 }
 
 void MainWindow::on_actionAlgebra_triggered()

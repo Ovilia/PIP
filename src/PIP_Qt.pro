@@ -32,7 +32,10 @@ SOURCES += main.cpp\
     ScaleDialog.cpp \
     AlgebraDialog.cpp \
     Algebra.cpp \
-    ContrastDialog.cpp
+    ContrastDialog.cpp \
+    ImageRotator.cpp \
+    RotateDialog.cpp \
+    BrightDialog.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -57,7 +60,10 @@ HEADERS  += \
     ScaleDialog.h \
     AlgebraDialog.h \
     Algebra.h \
-    ContrastDialog.h
+    ContrastDialog.h \
+    ImageRotator.h \
+    RotateDialog.h \
+    BrightDialog.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -66,10 +72,20 @@ FORMS    += \
     FilterDialog.ui \
     ScaleDialog.ui \
     AlgebraDialog.ui \
-    ContrastDialog.ui
+    ContrastDialog.ui \
+    RotateDialog.ui \
+    BrightDialog.ui
 
 RESOURCES += \
     resource.qrc
+
+
+
+
+
+
+
+
 
 
 

@@ -34,6 +34,13 @@ public:
         AP_MULTIPLY,
         AP_DIVIDE
     };
+
+    enum ColorOffset {
+        OFFSET_BLUE = 0,
+        OFFSET_GREEN,
+        OFFSET_RED,
+        OFFSET_ALPHA
+    };
 };
 
 #endif // IMAGESTRATEGY_H

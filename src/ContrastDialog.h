@@ -19,7 +19,7 @@ public:
     ~ContrastDialog();
 
 private slots:
-    void on_horizontalSlider_sliderMoved(int position);
+    void on_horizontalSlider_valueChanged(int value);
 
 private:
     Ui::ContrastDialog *ui;

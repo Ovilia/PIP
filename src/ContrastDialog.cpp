@@ -16,9 +16,9 @@ ContrastDialog::~ContrastDialog()
     delete ui;
 }
 
-void ContrastDialog::on_horizontalSlider_sliderMoved(int position)
+void ContrastDialog::on_horizontalSlider_valueChanged(int value)
 {
     mainWindow->setContrastImage(
-                mainWindow->getImageProcessor()->getContrastImage(position));
-    ui->valueLabel->setText(QString::number(position));
+                mainWindow->getImageProcessor()->getContrastImage(value));
+    ui->valueLabel->setText(QString::number(value));
 }

@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -55,12 +58,16 @@
     <addaction name="actionFilter"/>
     <addaction name="actionGray_Scale"/>
     <addaction name="actionHistogram"/>
+    <addaction name="actionRotate"/>
     <addaction name="actionScale"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -75,6 +82,7 @@
    <addaction name="separator"/>
    <addaction name="actionAlgebra"/>
    <addaction name="actionScale"/>
+   <addaction name="actionRotate"/>
    <addaction name="separator"/>
    <addaction name="actionFilter"/>
    <addaction name="actionContrast"/>
@@ -198,6 +206,18 @@
    </property>
    <property name="text">
     <string>Gray Scale</string>
+   </property>
+  </action>
+  <action name="actionRotate">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/rotate.png</normaloff>:/images/images/rotate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rotate</string>
    </property>
   </action>
  </widget>

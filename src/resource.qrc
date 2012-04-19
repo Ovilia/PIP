@@ -14,5 +14,6 @@
         <file>images/algebra.png</file>
         <file>images/equal.png</file>
         <file>images/logo.png</file>
+        <file>images/rotate.png</file>
     </qresource>
 </RCC>
