@@ -4,15 +4,21 @@
 #include <QDialog>
 #include <QSpinBox>
 
+#include "EmbossFilter.h"
 #include "GaussianFilter.h"
 #include "ImagePolicy.h"
 #include "ImageProcessor.h"
 #include "MainWindow.h"
 #include "MeanFilter.h"
 #include "MedianFilter.h"
+#include "MotionFilter.h"
+#include "PointFilter.h"
 #include "PrewittOperator.h"
 #include "RobertsOperator.h"
+#include "SharpenFilter.h"
 #include "SobelOperator.h"
+
+#define TEAM_WORK
 
 namespace Ui {
     class FilterDialog;
@@ -43,6 +49,14 @@ private slots:
 
     void on_customedButton_clicked(bool checked);
 
+#ifdef TEAM_WORK
+    void on_sharpenButton_clicked();
+
+    void on_embossButton_clicked();
+
+    void on_motionButton_clicked();
+#endif
+
     void on_filterRadioSpin_valueChanged(int value);
 
     void on_applyButton_clicked();
@@ -60,6 +74,10 @@ private slots:
     void on_verticalCheck_clicked(bool checked);
 
     void on_rgbCheck_clicked(bool checked);
+
+    void on_comicButton_clicked();
+
+    void on_sepiaButton_clicked();
 
 private:
     Ui::FilterDialog *ui;
@@ -82,6 +100,13 @@ private:
     MedianFilter* median[2];
     LinearFilter* customed;
     int* customedPtr;
+
+#ifdef TEAM_WORK
+    SharpenFilter* sharpen[2];
+    EmbossFilter* emboss[2];
+    MotionFilter* motion[2];
+    PointFilter* point;
+#endif
 
     void disableAllButtons();
     void resetCustEdit(int count);

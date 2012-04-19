@@ -35,7 +35,11 @@ SOURCES += main.cpp\
     ContrastDialog.cpp \
     ImageRotator.cpp \
     RotateDialog.cpp \
-    BrightDialog.cpp
+    BrightDialog.cpp \
+    SharpenFilter.cpp \
+    EmbossFilter.cpp \
+    MotionFilter.cpp \
+    PointFilter.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -63,7 +67,11 @@ HEADERS  += \
     ContrastDialog.h \
     ImageRotator.h \
     RotateDialog.h \
-    BrightDialog.h
+    BrightDialog.h \
+    SharpenFilter.h \
+    EmbossFilter.h \
+    MotionFilter.h \
+    PointFilter.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -78,6 +86,18 @@ FORMS    += \
 
 RESOURCES += \
     resource.qrc
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

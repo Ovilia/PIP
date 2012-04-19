@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>631</width>
-    <height>472</height>
+    <height>447</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -115,6 +115,59 @@
            </property>
            <property name="autoExclusive">
             <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="additionalGroup">
+        <property name="title">
+         <string>Additional Filters</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_10">
+         <item>
+          <widget class="QRadioButton" name="sharpenButton">
+           <property name="text">
+            <string>Sharpen filter</string>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="embossButton">
+           <property name="text">
+            <string>Emboss filter</string>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="motionButton">
+           <property name="text">
+            <string>Motion filter</string>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="comicButton">
+           <property name="text">
+            <string>Comic filter</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="sepiaButton">
+           <property name="text">
+            <string>Sepia filter</string>
            </property>
           </widget>
          </item>
