@@ -3,6 +3,8 @@
 #include <QFileDialog>
 #include <QPixmap>
 
+#include "BinaryMorphology.h"
+
 #include "HistogramDialog.h"
 #include "ImagePolicy.h"
 #include "mainwindow.h"
@@ -11,6 +13,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+
     tabWidget(0),
     originWidget(0),
     grayWidget(0),
@@ -22,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     equalWidget(0),
     contrastWidget(0),
     brightWidget(0),
+
     histogramDialog(0),
     filterDialog(0),
     scaledDialog(0),
@@ -29,7 +33,10 @@ MainWindow::MainWindow(QWidget *parent) :
     algebraDialog(0),
     contrastDialog(0),
     brightDialog(0),
+
     imageProcessor(0),
+    binaryMorphology(0),
+
     isFirstImage(true)
 {
     ui->setupUi(this);
@@ -191,7 +198,15 @@ void MainWindow::on_actionOpen_triggered()
         if (imageProcessor) {
             imageProcessor->setImage(imagePath);
         } else {
+            if (imageProcessor) {
+                delete imageProcessor;
+            }
             imageProcessor = new ImageProcessor(imagePath);
+
+            if (binaryMorphology) {
+                delete binaryMorphology;
+            }
+            binaryMorphology = new BinaryMorphology(imageProcessor);
         }
 
         if (isFirstImage) {
@@ -389,7 +404,12 @@ void MainWindow::on_actionEqualization_triggered()
 void MainWindow::on_actionGray_Scale_triggered()
 {
     if (!grayWidget) {
-        grayWidget = new ImageWidget(imageProcessor->getGrayScaleImage());
+        int arr[] = {0, 1, 0, 1, 1, 1, 0, 1, 0};
+        StructElement s(3, 3, 1, 1, arr);
+        binaryMorphology->doDilation(s);
+        QImage* binary = binaryMorphology->getOperatedImage();
+        grayWidget = new ImageWidget(binary);
+        //grayWidget = new ImageWidget(imageProcessor->getGrayScaleImage());
         tabWidget->addTab(grayWidget, "Gray Scale");
     }
     tabWidget->setCurrentWidget(grayWidget);

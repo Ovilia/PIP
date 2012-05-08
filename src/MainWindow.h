@@ -5,6 +5,7 @@
 #include <QTabWidget>
 
 #include "AlgebraDialog.h"
+#include "BinaryMorphology.h"
 #include "BrightDialog.h"
 #include "ContrastDialog.h"
 #include "FilterDialog.h"
@@ -82,6 +83,8 @@ private:
     // file location of image
     QString imagePath;
     ImageProcessor* imageProcessor;
+
+    BinaryMorphology* binaryMorphology;
 
     // if is the first time opening an image
     bool isFirstImage;

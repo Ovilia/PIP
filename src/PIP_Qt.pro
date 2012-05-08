@@ -39,7 +39,9 @@ SOURCES += main.cpp\
     SharpenFilter.cpp \
     EmbossFilter.cpp \
     MotionFilter.cpp \
-    PointFilter.cpp
+    PointFilter.cpp \
+    BinaryMorphology.cpp \
+    StructElement.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -71,7 +73,9 @@ HEADERS  += \
     SharpenFilter.h \
     EmbossFilter.h \
     MotionFilter.h \
-    PointFilter.h
+    PointFilter.h \
+    BinaryMorphology.h \
+    StructElement.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -86,6 +90,18 @@ FORMS    += \
 
 RESOURCES += \
     resource.qrc
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
