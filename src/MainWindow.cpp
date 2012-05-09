@@ -3,8 +3,6 @@
 #include <QFileDialog>
 #include <QPixmap>
 
-#include "BinaryMorphology.h"
-
 #include "HistogramDialog.h"
 #include "ImagePolicy.h"
 #include "mainwindow.h"
@@ -25,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     equalWidget(0),
     contrastWidget(0),
     brightWidget(0),
+    morphoWidget(0),
 
     histogramDialog(0),
     filterDialog(0),
@@ -33,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     algebraDialog(0),
     contrastDialog(0),
     brightDialog(0),
+    morphoDialog(0),
 
     imageProcessor(0),
     binaryMorphology(0),
@@ -83,9 +83,13 @@ MainWindow::~MainWindow()
     if (brightWidget) {
         delete brightWidget;
     }
+    if (morphoWidget) {
+        delete morphoWidget;
+    }
     if (tabWidget) {
         delete tabWidget;
     }
+
     if (histogramDialog) {
         delete histogramDialog;
     }
@@ -101,6 +105,10 @@ MainWindow::~MainWindow()
     if (brightDialog) {
         delete brightDialog;
     }
+    if (morphoDialog) {
+        delete morphoDialog;
+    }
+
     if (imageProcessor) {
         delete imageProcessor;
     }
@@ -109,6 +117,11 @@ MainWindow::~MainWindow()
 ImageProcessor* MainWindow::getImageProcessor()
 {
     return imageProcessor;
+}
+
+BinaryMorphology* MainWindow::getBinaryMorpo()
+{
+    return binaryMorphology;
 }
 
 void MainWindow::repaintBinary()
@@ -186,6 +199,17 @@ void MainWindow::setBrightnessImage(QImage* image)
     tabWidget->setCurrentWidget(brightWidget);
 }
 
+void MainWindow::setMorphologyImage(QImage *image)
+{
+    if (!morphoWidget) {
+        morphoWidget = new ImageWidget(image);
+        tabWidget->addTab(morphoWidget, "Morphology");
+    } else {
+        morphoWidget->setImage(image);
+    }
+    tabWidget->setCurrentWidget(morphoWidget);
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
     imagePath = QFileDialog::getOpenFileName(
@@ -198,16 +222,12 @@ void MainWindow::on_actionOpen_triggered()
         if (imageProcessor) {
             imageProcessor->setImage(imagePath);
         } else {
-            if (imageProcessor) {
-                delete imageProcessor;
-            }
             imageProcessor = new ImageProcessor(imagePath);
-
-            if (binaryMorphology) {
-                delete binaryMorphology;
-            }
-            binaryMorphology = new BinaryMorphology(imageProcessor);
         }
+        if (binaryMorphology) {
+            delete binaryMorphology;
+        }
+        binaryMorphology = new BinaryMorphology(imageProcessor);
 
         if (isFirstImage) {
             if (tabWidget) {
@@ -241,6 +261,8 @@ void MainWindow::on_actionOpen_triggered()
             ui->actionAlgebra->setEnabled(true);
             ui->actionEqualization->setEnabled(true);
             ui->actionGray_Scale->setEnabled(true);
+            ui->actionMorpOper->setEnabled(true);
+            ui->actionSkeleton->setEnabled(true);
 #ifdef TEAM_WORK
             ui->actionBrightness->setEnabled(true);
             ui->actionContrast->setEnabled(true);
@@ -286,6 +308,11 @@ void MainWindow::on_actionOpen_triggered()
                 delete brightWidget;
                 brightWidget = 0;
             }
+            if (morphoWidget) {
+                delete morphoWidget;
+                morphoWidget = 0;
+            }
+
             if (histogramDialog) {
                 delete histogramDialog;
                 histogramDialog = 0;
@@ -404,13 +431,16 @@ void MainWindow::on_actionEqualization_triggered()
 void MainWindow::on_actionGray_Scale_triggered()
 {
     if (!grayWidget) {
-        int arr[] = {0, 1, 0, 1, 1, 1, 0, 1, 0};
-        StructElement s(3, 3, 1, 1, arr);
-        binaryMorphology->doDilation(s);
-        QImage* binary = binaryMorphology->getOperatedImage();
-        grayWidget = new ImageWidget(binary);
-        //grayWidget = new ImageWidget(imageProcessor->getGrayScaleImage());
+        grayWidget = new ImageWidget(imageProcessor->getGrayScaleImage());
         tabWidget->addTab(grayWidget, "Gray Scale");
     }
     tabWidget->setCurrentWidget(grayWidget);
+}
+
+void MainWindow::on_actionMorpOper_triggered()
+{
+    if (!morphoDialog) {
+        morphoDialog = new MorphologyDialog(this, this);
+    }
+    morphoDialog->show();
 }

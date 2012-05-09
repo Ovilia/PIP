@@ -12,6 +12,7 @@
 #include "HistogramDialog.h"
 #include "ImageProcessor.h"
 #include "ImageWidget.h"
+#include "MorphologyDialog.h"
 #include "RotateDialog.h"
 #include "ScaleDialog.h"
 
@@ -28,6 +29,7 @@ public:
     ~MainWindow();
 
     ImageProcessor* getImageProcessor();
+    BinaryMorphology* getBinaryMorpo();
 
     void repaintBinary();
     void setFilteredImage(QImage* image);
@@ -36,6 +38,7 @@ public:
     void setAlgebraImage(QImage* image);
     void setContrastImage(QImage* image);
     void setBrightnessImage(QImage* image);
+    void setMorphologyImage(QImage* image);
 
 private slots:
     void on_actionOpen_triggered();
@@ -58,6 +61,8 @@ private slots:
 
     void on_actionRotate_triggered();
 
+    void on_actionMorpOper_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -71,6 +76,7 @@ private:
     ImageWidget* equalWidget;
     ImageWidget* contrastWidget;
     ImageWidget* brightWidget;
+    ImageWidget* morphoWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
@@ -79,6 +85,7 @@ private:
     class AlgebraDialog* algebraDialog;
     class ContrastDialog* contrastDialog;
     class BrightDialog* brightDialog;
+    class MorphologyDialog* morphoDialog;
 
     // file location of image
     QString imagePath;

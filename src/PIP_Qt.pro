@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     MotionFilter.cpp \
     PointFilter.cpp \
     BinaryMorphology.cpp \
-    StructElement.cpp
+    StructElement.cpp \
+    MorphologyDialog.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -75,7 +76,8 @@ HEADERS  += \
     MotionFilter.h \
     PointFilter.h \
     BinaryMorphology.h \
-    StructElement.h
+    StructElement.h \
+    MorphologyDialog.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -86,10 +88,14 @@ FORMS    += \
     AlgebraDialog.ui \
     ContrastDialog.ui \
     RotateDialog.ui \
-    BrightDialog.ui
+    BrightDialog.ui \
+    MorphologyDialog.ui
 
 RESOURCES += \
     resource.qrc
+
+
+
 
 
 

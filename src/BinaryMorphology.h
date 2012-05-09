@@ -13,10 +13,11 @@ public:
                      bool whiteAsForeground = true);
     ~BinaryMorphology();
 
-    void doDilation(const StructElement& se);
-    void doErosion(const StructElement& se);
-    void doOpening(const StructElement& se);
-    void doClosing(const StructElement& se);
+    // return operated image
+    QImage* doDilation(const StructElement& se);
+    QImage* doErosion(const StructElement& se);
+    QImage* doOpening(const StructElement& se);
+    QImage* doClosing(const StructElement& se);
 
     void setForeground(bool whiteAsForeground);
 
@@ -27,9 +28,9 @@ public:
     // return if redo successfully
     bool redo();
     // return if can undo
-    bool canUndo();
+    bool canUndo() const;
     // return if can redo
-    bool canRedo();
+    bool canRedo() const;
 
 private:
     uchar foreGroundColor, backGroundColor;

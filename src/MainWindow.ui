@@ -61,8 +61,16 @@
     <addaction name="actionRotate"/>
     <addaction name="actionScale"/>
    </widget>
+   <widget class="QMenu" name="menuMorphology">
+    <property name="title">
+     <string>Morphology</string>
+    </property>
+    <addaction name="actionMorpOper"/>
+    <addaction name="actionSkeleton"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
+   <addaction name="menuMorphology"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="enabled">
@@ -87,6 +95,9 @@
    <addaction name="actionFilter"/>
    <addaction name="actionContrast"/>
    <addaction name="actionBrightness"/>
+   <addaction name="separator"/>
+   <addaction name="actionMorpOper"/>
+   <addaction name="actionSkeleton"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -218,6 +229,22 @@
    </property>
    <property name="text">
     <string>Rotate</string>
+   </property>
+  </action>
+  <action name="actionMorpOper">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Morphology Operation</string>
+   </property>
+  </action>
+  <action name="actionSkeleton">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Skeleton</string>
    </property>
   </action>
  </widget>

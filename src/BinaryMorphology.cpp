@@ -14,7 +14,8 @@ BinaryMorphology::BinaryMorphology(ImageProcessor* imageProcessor,
 
 BinaryMorphology::~BinaryMorphology()
 {
-    for (int i = 0; i < BUFFER_SIZE; ++i) {
+    // i start from 1 so that won't delete original binary image
+    for (int i = 1; i < BUFFER_SIZE; ++i) {
         if (bufferImage[i]) {
             delete bufferImage[i];
         }
@@ -32,32 +33,36 @@ void BinaryMorphology::setForeground(bool whiteAsForeground)
     }
 }
 
-void BinaryMorphology::doDilation(const StructElement& se)
+QImage* BinaryMorphology::doDilation(const StructElement& se)
 {
     QImage* image = dilationHelper(*bufferImage[bufferCurrentIndex], se);
     pushImage(image);
+    return getOperatedImage();
 }
 
-void BinaryMorphology::doErosion(const StructElement& se)
+QImage* BinaryMorphology::doErosion(const StructElement& se)
 {
     QImage* image = erosionHelper(*bufferImage[bufferCurrentIndex], se);
     pushImage(image);
+    return getOperatedImage();
 }
 
-void BinaryMorphology::doOpening(const StructElement& se)
+QImage* BinaryMorphology::doOpening(const StructElement& se)
 {
     QImage* imageEro = erosionHelper(*bufferImage[bufferCurrentIndex], se);
     QImage* imageOpen = dilationHelper(*imageEro, se);
     delete imageEro;
     pushImage(imageOpen);
+    return getOperatedImage();
 }
 
-void BinaryMorphology::doClosing(const StructElement& se)
+QImage* BinaryMorphology::doClosing(const StructElement& se)
 {
     QImage* imageDil = dilationHelper(*bufferImage[bufferCurrentIndex], se);
     QImage* imageClose = erosionHelper(*imageDil, se);
     delete imageDil;
     pushImage(imageClose);
+    return getOperatedImage();
 }
 
 QImage* BinaryMorphology::dilationHelper(const QImage& image,
@@ -107,14 +112,50 @@ QImage* BinaryMorphology::dilationHelper(const QImage& image,
             oBits += 4;
         }
     }
-
     return newImage;
 }
 
 QImage* BinaryMorphology::erosionHelper(const QImage& image,
                                         const StructElement& se)
 {
+    int width = image.width();
+    int height = image.height();
+    QImage* newImage = new QImage(image.size(), image.format());
 
+    // erosion
+    int minX = se.getMinX();
+    int maxX = se.getMaxX();
+    int minY = se.getMinY();
+    int maxY = se.getMaxY();
+    int totalBits = width * height * 4;
+    uchar* nBits = newImage->bits();
+    const uchar* oBits = image.constBits();
+
+    for (int h = 0; h < height; ++h){
+        for (int w = 0; w < width; ++w) {
+            bool isFore = true;
+            for (int x = minX; isFore && x < maxX; ++x) {
+                for (int y = minY; isFore && y < maxY; ++y) {
+                    int index = ((h + y) * width + (w + x)) * 4;
+                    // when se match but not foreground in image, not hit
+                    if (index < 0 || index > totalBits ||
+                            (se.getValue(x, y) == SE_MATCH &&
+                                      *(oBits + index) != foreGroundColor)) {
+                        isFore = false;
+                    }
+                }
+            }
+            int color = backGroundColor;
+            if (isFore) {
+                color = foreGroundColor;
+            }
+            for (int rgb = 0; rgb < 3; ++rgb) {
+                *(nBits + rgb) = color;
+            }
+            nBits += 4;
+        }
+    }
+    return newImage;
 }
 
 QImage* BinaryMorphology::getOperatedImage()
@@ -124,16 +165,6 @@ QImage* BinaryMorphology::getOperatedImage()
 
 bool BinaryMorphology::undo()
 {
-    if (bufferUsedIndex > bufferCurrentIndex) {
-        ++bufferCurrentIndex;
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool BinaryMorphology::redo()
-{
     if (bufferCurrentIndex > 0) {
         --bufferCurrentIndex;
         return true;
@@ -142,16 +173,17 @@ bool BinaryMorphology::redo()
     }
 }
 
-bool BinaryMorphology::canUndo()
+bool BinaryMorphology::redo()
 {
     if (bufferUsedIndex > bufferCurrentIndex) {
+        ++bufferCurrentIndex;
         return true;
     } else {
         return false;
     }
 }
 
-bool BinaryMorphology::canRedo()
+bool BinaryMorphology::canUndo() const
 {
     if (bufferCurrentIndex > 0) {
         return true;
@@ -160,18 +192,28 @@ bool BinaryMorphology::canRedo()
     }
 }
 
+bool BinaryMorphology::canRedo() const
+{
+    if (bufferUsedIndex > bufferCurrentIndex) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void BinaryMorphology::pushImage(QImage *image)
 {
-    if (bufferUsedIndex < BUFFER_SIZE - 1) {
+    if (bufferCurrentIndex < BUFFER_SIZE - 1) {
         // buffer is not full, push to the end
         ++bufferCurrentIndex;
-        bufferImage[bufferCurrentIndex] = image;
         bufferUsedIndex = bufferCurrentIndex;
+        bufferImage[bufferCurrentIndex] = image;
     } else {
         // buffer is full, delete the oldest one
         for (int i = 1; i < BUFFER_SIZE; ++i) {
             bufferImage[i - 1] = bufferImage[i];
         }
-        bufferImage[BUFFER_SIZE - 1] = image;
+        bufferUsedIndex = bufferCurrentIndex;
+        bufferImage[bufferCurrentIndex] = image;
     }
 }

@@ -3,8 +3,6 @@
 #include "ImageWidget.h"
 #include "ui_ImageWidget.h"
 
-#include <QDebug>
-
 ImageWidget::ImageWidget(QImage* image, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ImageWidget),
@@ -68,8 +66,6 @@ void ImageWidget::setMousePosition(int x, int y)
     ui->yPosLabel->setText(QString::number(yInt));
     const uchar* bits = image->constBits() +
             (yInt * image->width() + xInt) * PIXEL_SIZE;
-    qDebug() << bits << image->width() <<
-                (yInt * image->width() + xInt) * PIXEL_SIZE;
     ui->rLabel->setText(QString::number(*(bits + 2)));
     ui->gLabel->setText(QString::number(*(bits + 1)));
     ui->bLabel->setText(QString::number(*bits));
