@@ -43,6 +43,10 @@ private slots:
 
     void on_redoButton_clicked();
 
+    void on_sizeSpin_editingFinished();
+
+    void on_sizeSpin_valueChanged(int arg1);
+
 private:
     Ui::MorphologyDialog *ui;
     MainWindow* mainWindow;

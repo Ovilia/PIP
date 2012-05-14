@@ -235,6 +235,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/morphology.png</normaloff>:/images/images/morphology.png</iconset>
+   </property>
    <property name="text">
     <string>Morphology Operation</string>
    </property>
@@ -242,6 +246,10 @@
   <action name="actionSkeleton">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/skeleton.png</normaloff>:/images/images/skeleton.png</iconset>
    </property>
    <property name="text">
     <string>Skeleton</string>

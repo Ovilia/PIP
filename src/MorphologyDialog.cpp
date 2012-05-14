@@ -52,6 +52,7 @@ void MorphologyDialog::resetCustSpin(int radius)
             }
         }
     }
+    resize(minimumSize());
 }
 
 void MorphologyDialog::resetSeArr(int radius, SeType seType)
@@ -132,48 +133,54 @@ void MorphologyDialog::on_custButton_clicked()
 {
     ui->seWidget->setVisible(true);
     ui->sizeSpin->setMaximum(MAX_CUSTOM_SE_RADIO);
+    seType = ST_CUSTOMED;
+    ui->sizeSpin->setValue(MIN_SE_RADIO);
+    resetCustSpin(MIN_SE_RADIO);
 }
 
 void MorphologyDialog::on_squareButton_clicked()
 {
     ui->seWidget->setVisible(false);
     ui->sizeSpin->setMaximum(MAX_SE_RADIO);
+    seType = ST_SQUARE;
+    resize(minimumSize());
 }
 
 void MorphologyDialog::on_circleButton_clicked()
 {
     ui->seWidget->setVisible(false);
     ui->sizeSpin->setMaximum(MAX_SE_RADIO);
+    seType = ST_CIRCLE;
+    resize(minimumSize());
 }
 
 void MorphologyDialog::on_crossButton_clicked()
 {
     ui->seWidget->setVisible(false);
     ui->sizeSpin->setMaximum(MAX_SE_RADIO);
+    seType = ST_CROSS;
+    resize(minimumSize());
 }
 
 void MorphologyDialog::on_diamondButton_clicked()
 {
     ui->seWidget->setVisible(false);
     ui->sizeSpin->setMaximum(MAX_SE_RADIO);
+    seType = ST_DIAMOND;
+    resize(minimumSize());
 }
 
 void MorphologyDialog::on_applyButton_clicked()
 {
     int radius = ui->sizeSpin->value();
-    if (ui->squareButton->isChecked()) {
-        resetSeArr(radius, ST_SQUARE);
-    } else if (ui->circleButton->isChecked()) {
-        resetSeArr(radius, ST_CIRCLE);
-    } else if (ui->crossButton->isChecked()) {
-        resetSeArr(radius, ST_CROSS);
-    } else if (ui->diamondButton->isChecked()) {
-        resetSeArr(radius, ST_DIAMOND);
+    if (ui->custButton->isChecked()) {
+        // TODO: custom se set
     } else {
-        // TODO: custom value from ui
+        resetSeArr(radius, seType);
     }
 
     BinaryMorphology* morpho = mainWindow->getBinaryMorpo();
+    morpho->setForeground(ui->whiteCheck->isChecked());
     StructElement se(radius, radius, radius / 2, radius / 2, seArr);
     if (ui->dilationButton->isChecked()) {
         morpho->doDilation(se);
@@ -210,4 +217,29 @@ void MorphologyDialog::on_redoButton_clicked()
     }
     ui->redoButton->setEnabled(morpho->canRedo());
     ui->undoButton->setEnabled(morpho->canUndo());
+}
+
+void MorphologyDialog::on_sizeSpin_editingFinished()
+{
+    if (seType != ST_CUSTOMED) {
+        // customed spin check is in on_sizeSpin_valueChanged
+        int origin = ui->sizeSpin->value();
+        int value = origin / 2 * 2 + 1;
+        if (value != origin) {
+            // invalid input se size
+            ui->sizeSpin->setValue(value);
+        }
+    }
+}
+
+void MorphologyDialog::on_sizeSpin_valueChanged(int arg1)
+{
+    if (seType == ST_CUSTOMED) {
+        int value = arg1 / 2 * 2 + 1;
+        if (value != arg1) {
+            // invalid input se size
+            ui->sizeSpin->setValue(value);
+        }
+        resetCustSpin(value);
+    }
 }

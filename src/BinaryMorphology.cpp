@@ -1,7 +1,7 @@
 #include "BinaryMorphology.h"
 
 BinaryMorphology::BinaryMorphology(ImageProcessor* imageProcessor,
-                                 bool whiteAsForeground) :
+                                   bool whiteAsForeground) :
     bufferCurrentIndex(0),
     bufferUsedIndex(0)
 {
@@ -37,14 +37,14 @@ QImage* BinaryMorphology::doDilation(const StructElement& se)
 {
     QImage* image = dilationHelper(*bufferImage[bufferCurrentIndex], se);
     pushImage(image);
-    return getOperatedImage();
+    return image;
 }
 
 QImage* BinaryMorphology::doErosion(const StructElement& se)
 {
     QImage* image = erosionHelper(*bufferImage[bufferCurrentIndex], se);
     pushImage(image);
-    return getOperatedImage();
+    return image;
 }
 
 QImage* BinaryMorphology::doOpening(const StructElement& se)
@@ -53,7 +53,7 @@ QImage* BinaryMorphology::doOpening(const StructElement& se)
     QImage* imageOpen = dilationHelper(*imageEro, se);
     delete imageEro;
     pushImage(imageOpen);
-    return getOperatedImage();
+    return imageOpen;
 }
 
 QImage* BinaryMorphology::doClosing(const StructElement& se)
@@ -62,7 +62,7 @@ QImage* BinaryMorphology::doClosing(const StructElement& se)
     QImage* imageClose = erosionHelper(*imageDil, se);
     delete imageDil;
     pushImage(imageClose);
-    return getOperatedImage();
+    return imageClose;
 }
 
 QImage* BinaryMorphology::dilationHelper(const QImage& image,
@@ -71,6 +71,7 @@ QImage* BinaryMorphology::dilationHelper(const QImage& image,
     int width = image.width();
     int height = image.height();
     int size = width * height;
+    int totalBits = width * height * 4;
     QImage* newImage = new QImage(image.size(), image.format());
     uchar* nBits = newImage->bits();
 
@@ -99,7 +100,7 @@ QImage* BinaryMorphology::dilationHelper(const QImage& image,
                         if (se.getValue(x, y) == SE_MATCH) {
                             // set rgb to be foregound
                             int index = ((h + y) * width + (w + x)) * 4;
-                            if (index > 0) {
+                            if (index >= 0 && index < totalBits) {
                                 for (int rgb = 0; rgb < 3; ++rgb) {
                                     *(nBits + index + rgb) = foreGroundColor;
                                 }

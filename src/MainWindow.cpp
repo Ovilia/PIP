@@ -224,10 +224,6 @@ void MainWindow::on_actionOpen_triggered()
         } else {
             imageProcessor = new ImageProcessor(imagePath);
         }
-        if (binaryMorphology) {
-            delete binaryMorphology;
-        }
-        binaryMorphology = new BinaryMorphology(imageProcessor);
 
         if (isFirstImage) {
             if (tabWidget) {
@@ -439,6 +435,11 @@ void MainWindow::on_actionGray_Scale_triggered()
 
 void MainWindow::on_actionMorpOper_triggered()
 {
+    if (binaryMorphology) {
+        delete binaryMorphology;
+    }
+    binaryMorphology = new BinaryMorphology(imageProcessor);
+
     if (!morphoDialog) {
         morphoDialog = new MorphologyDialog(this, this);
     }

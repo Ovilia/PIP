@@ -533,7 +533,7 @@ QImage* ImageProcessor::getBinaryImage()
     uchar* binaryPtr = binaryImage->bits();
 
     for (int i = 0; i < size; ++i) {
-        if (*grayPtr <= lower || *grayPtr > higher) {
+        if (*grayPtr < lower || *grayPtr >= higher) {
             // set two sides of threshold white
             // blue
             *binaryPtr = MAX_OF_8BITS;

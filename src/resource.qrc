@@ -15,5 +15,7 @@
         <file>images/equal.png</file>
         <file>images/logo.png</file>
         <file>images/rotate.png</file>
+        <file>images/morphology.png</file>
+        <file>images/skeleton.png</file>
     </qresource>
 </RCC>
