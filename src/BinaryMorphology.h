@@ -20,8 +20,13 @@ public:
     QImage* doClosing(const StructElement& se);
 
     void setForeground(bool whiteAsForeground);
+    uchar getForeground() const;
+    uchar getBackground() const;
 
-    QImage* getOperatedImage();
+    QImage* getOperatedImage() const;
+
+    // check if current image is of one color
+    bool isOneColor(bool& isAllFore, bool& isAllBack) const;
 
     // return if undo successfully
     bool undo();

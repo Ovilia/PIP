@@ -12,6 +12,7 @@
 #include "HistogramDialog.h"
 #include "ImageProcessor.h"
 #include "ImageWidget.h"
+#include "MorphoDistance.h"
 #include "MorphologyDialog.h"
 #include "RotateDialog.h"
 #include "ScaleDialog.h"
@@ -63,6 +64,8 @@ private slots:
 
     void on_actionMorpOper_triggered();
 
+    void on_actionDistance_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -77,6 +80,7 @@ private:
     ImageWidget* contrastWidget;
     ImageWidget* brightWidget;
     ImageWidget* morphoWidget;
+    ImageWidget* distanceWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
@@ -92,6 +96,8 @@ private:
     ImageProcessor* imageProcessor;
 
     BinaryMorphology* binaryMorphology;
+    MorphoDistance* morphoDistance;
+    bool useSquareSe;
 
     // if is the first time opening an image
     bool isFirstImage;

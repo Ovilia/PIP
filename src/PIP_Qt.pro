@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     PointFilter.cpp \
     BinaryMorphology.cpp \
     StructElement.cpp \
-    MorphologyDialog.cpp
+    MorphologyDialog.cpp \
+    MorphoDistance.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -77,7 +78,8 @@ HEADERS  += \
     PointFilter.h \
     BinaryMorphology.h \
     StructElement.h \
-    MorphologyDialog.h
+    MorphologyDialog.h \
+    MorphoDistance.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -93,6 +95,8 @@ FORMS    += \
 
 RESOURCES += \
     resource.qrc
+
+
 
 
 

@@ -66,6 +66,7 @@
      <string>Morphology</string>
     </property>
     <addaction name="actionMorpOper"/>
+    <addaction name="actionDistance"/>
     <addaction name="actionSkeleton"/>
    </widget>
    <addaction name="menuFile"/>
@@ -97,6 +98,7 @@
    <addaction name="actionBrightness"/>
    <addaction name="separator"/>
    <addaction name="actionMorpOper"/>
+   <addaction name="actionDistance"/>
    <addaction name="actionSkeleton"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -253,6 +255,14 @@
    </property>
    <property name="text">
     <string>Skeleton</string>
+   </property>
+  </action>
+  <action name="actionDistance">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Distance</string>
    </property>
   </action>
  </widget>

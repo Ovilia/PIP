@@ -5,7 +5,7 @@ class StructElement
 {
 public:
     StructElement(int width, int height, int originX, int originY,
-                  int* arr);
+                  const int* arr);
     ~StructElement();
 
     // get min x according to origin, inclusively

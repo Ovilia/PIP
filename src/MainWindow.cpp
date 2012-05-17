@@ -1,6 +1,7 @@
 #define TEAM_WORK
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QPixmap>
 
 #include "HistogramDialog.h"
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     contrastWidget(0),
     brightWidget(0),
     morphoWidget(0),
+    distanceWidget(0),
 
     histogramDialog(0),
     filterDialog(0),
@@ -35,7 +37,10 @@ MainWindow::MainWindow(QWidget *parent) :
     morphoDialog(0),
 
     imageProcessor(0),
+
     binaryMorphology(0),
+    morphoDistance(0),
+    useSquareSe(true),
 
     isFirstImage(true)
 {
@@ -86,6 +91,9 @@ MainWindow::~MainWindow()
     if (morphoWidget) {
         delete morphoWidget;
     }
+    if (distanceWidget) {
+        delete distanceWidget;
+    }
     if (tabWidget) {
         delete tabWidget;
     }
@@ -107,6 +115,13 @@ MainWindow::~MainWindow()
     }
     if (morphoDialog) {
         delete morphoDialog;
+    }
+
+    if (binaryMorphology) {
+        delete binaryMorphology;
+    }
+    if (morphoDistance) {
+        delete morphoDistance;
     }
 
     if (imageProcessor) {
@@ -258,6 +273,7 @@ void MainWindow::on_actionOpen_triggered()
             ui->actionEqualization->setEnabled(true);
             ui->actionGray_Scale->setEnabled(true);
             ui->actionMorpOper->setEnabled(true);
+            ui->actionDistance->setEnabled(true);
             ui->actionSkeleton->setEnabled(true);
 #ifdef TEAM_WORK
             ui->actionBrightness->setEnabled(true);
@@ -308,6 +324,10 @@ void MainWindow::on_actionOpen_triggered()
                 delete morphoWidget;
                 morphoWidget = 0;
             }
+            if (distanceWidget) {
+                delete distanceWidget;
+                distanceWidget = 0;
+            }
 
             if (histogramDialog) {
                 delete histogramDialog;
@@ -333,6 +353,16 @@ void MainWindow::on_actionOpen_triggered()
                 delete contrastDialog;
                 contrastDialog = 0;
             }
+
+            if (binaryMorphology) {
+                delete binaryMorphology;
+                binaryMorphology = 0;
+            }
+            if (morphoDistance) {
+                delete morphoDistance;
+                morphoDistance = 0;
+            }
+            useSquareSe = true;
         }
 
         // isFirstImage is set to be false after first opening
@@ -444,4 +474,32 @@ void MainWindow::on_actionMorpOper_triggered()
         morphoDialog = new MorphologyDialog(this, this);
     }
     morphoDialog->show();
+}
+
+void MainWindow::on_actionDistance_triggered()
+{
+    if (QMessageBox::question(this, "Distance SE",
+                              "Do you want to use squre SE?\n"\
+                              "Yes for Squre SE. No for Cross SE.",
+                              QMessageBox::Yes | QMessageBox::No,
+                              QMessageBox::Yes) == QMessageBox::Yes) {
+        useSquareSe = true;
+    } else {
+        useSquareSe = false;
+    }
+
+    if (!morphoDistance) {
+        morphoDistance = new MorphoDistance(imageProcessor);
+    }
+    if (!distanceWidget) {
+        distanceWidget = new ImageWidget(
+                    morphoDistance->getDistanceImage(useSquareSe));
+        tabWidget->addTab(distanceWidget, "Distance");
+    } else if (useSquareSe != morphoDistance->isUseSquareSe()) {
+        tabWidget->removeTab(tabWidget->indexOf(distanceWidget));
+        distanceWidget = new ImageWidget(
+                    morphoDistance->getDistanceImage(useSquareSe));
+        tabWidget->addTab(distanceWidget, "Distance");
+    }
+    tabWidget->setCurrentWidget(distanceWidget);
 }

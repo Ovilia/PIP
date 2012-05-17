@@ -1,7 +1,7 @@
 #include "StructElement.h"
 
 StructElement::StructElement(int width, int height, int originX, int originY,
-                             int* arr) :
+                             const int* arr) :
     width(width),
     height(height),
     length(width * height),

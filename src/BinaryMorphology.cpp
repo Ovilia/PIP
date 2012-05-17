@@ -159,7 +159,7 @@ QImage* BinaryMorphology::erosionHelper(const QImage& image,
     return newImage;
 }
 
-QImage* BinaryMorphology::getOperatedImage()
+QImage* BinaryMorphology::getOperatedImage() const
 {
     return bufferImage[bufferCurrentIndex];
 }
@@ -217,4 +217,35 @@ void BinaryMorphology::pushImage(QImage *image)
         bufferUsedIndex = bufferCurrentIndex;
         bufferImage[bufferCurrentIndex] = image;
     }
+}
+
+bool BinaryMorphology::isOneColor(bool& isAllFore, bool& isAllBack) const
+{
+    QImage* image = getOperatedImage();
+    int size = image->width() * image->height();
+    const uchar* bits = image->constBits();
+    isAllFore = true;
+    isAllBack = true;
+    for (int i = 0; i < size; ++i) {
+        if (*bits == backGroundColor) {
+            // back
+            isAllFore = false;
+        } else {
+            // fore
+            isAllBack = false;
+        }
+        // next pixel
+        bits += 4;
+    }
+    return isAllFore || isAllBack;
+}
+
+uchar BinaryMorphology::getForeground() const
+{
+    return foreGroundColor;
+}
+
+uchar BinaryMorphology::getBackground() const
+{
+    return backGroundColor;
 }
