@@ -327,6 +327,9 @@ int ImageProcessor::getOtsuThreshold()
                 otsuThreshold = thresholdValue;
             }
         }
+        if (otsuThreshold == 0) {
+            otsuThreshold = 1;
+        }
         isOtsuCaled = true;
     }
     return otsuThreshold;

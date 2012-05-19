@@ -14,6 +14,8 @@ public:
 
     QImage* getDistanceImage(const bool useSquareSe = true);
 
+    QImage* getSkeletonImage();
+
     bool isUseSquareSe() const;
 
 private:
@@ -24,6 +26,8 @@ private:
     static const int SE_CROSS_ARR[SE_RATIO * SE_RATIO];
 
     QImage* distanceImage;
+
+    QImage* skeletonImage;
 
     bool useSquareSe;
 };

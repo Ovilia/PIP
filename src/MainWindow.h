@@ -66,6 +66,8 @@ private slots:
 
     void on_actionDistance_triggered();
 
+    void on_actionSkeleton_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -81,6 +83,7 @@ private:
     ImageWidget* brightWidget;
     ImageWidget* morphoWidget;
     ImageWidget* distanceWidget;
+    ImageWidget* skeletonWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;

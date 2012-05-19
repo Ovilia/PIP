@@ -1,11 +1,26 @@
 #include "BinaryMorphology.h"
 
+const uchar BinaryMorphology::DEFAULT_BACK_COLOR = 0;
+const uchar BinaryMorphology::DEFAULT_FORE_COLOR = 255;
+
 BinaryMorphology::BinaryMorphology(ImageProcessor* imageProcessor,
                                    bool whiteAsForeground) :
     bufferCurrentIndex(0),
     bufferUsedIndex(0)
 {
     bufferImage[0] = imageProcessor->getBinaryImage();
+    for (int i = 1; i < BUFFER_SIZE; ++i) {
+        bufferImage[i] = 0;
+    }
+    setForeground(whiteAsForeground);
+}
+
+BinaryMorphology::BinaryMorphology(QImage *binaryImage,
+                                   bool whiteAsForeground) :
+    bufferCurrentIndex(0),
+    bufferUsedIndex(0)
+{
+    bufferImage[0] = binaryImage;
     for (int i = 1; i < BUFFER_SIZE; ++i) {
         bufferImage[i] = 0;
     }
@@ -238,6 +253,36 @@ bool BinaryMorphology::isOneColor(bool& isAllFore, bool& isAllBack) const
         bits += 4;
     }
     return isAllFore || isAllBack;
+}
+
+bool BinaryMorphology::isAllBack() const
+{
+    QImage* image = getOperatedImage();
+    int size = image->width() * image->height();
+    const uchar* bits = image->constBits();
+    for (int i = 0; i < size; ++i) {
+        if (*bits != backGroundColor) {
+            return false;
+        }
+        // next pixel
+        bits += 4;
+    }
+    return true;
+}
+
+bool BinaryMorphology::isAllFore() const
+{
+    QImage* image = getOperatedImage();
+    int size = image->width() * image->height();
+    const uchar* bits = image->constBits();
+    for (int i = 0; i < size; ++i) {
+        if (*bits != foreGroundColor) {
+            return false;
+        }
+        // next pixel
+        bits += 4;
+    }
+    return true;
 }
 
 uchar BinaryMorphology::getForeground() const

@@ -11,6 +11,8 @@ class BinaryMorphology
 public:
     BinaryMorphology(ImageProcessor* imageProcessor,
                      bool whiteAsForeground = true);
+    BinaryMorphology(QImage* binaryImage,
+                     bool whiteAsForeground = true);
     ~BinaryMorphology();
 
     // return operated image
@@ -27,6 +29,8 @@ public:
 
     // check if current image is of one color
     bool isOneColor(bool& isAllFore, bool& isAllBack) const;
+    bool isAllFore() const;
+    bool isAllBack() const;
 
     // return if undo successfully
     bool undo();
@@ -36,6 +40,9 @@ public:
     bool canUndo() const;
     // return if can redo
     bool canRedo() const;
+
+    static const uchar DEFAULT_FORE_COLOR;
+    static const uchar DEFAULT_BACK_COLOR;
 
 private:
     uchar foreGroundColor, backGroundColor;

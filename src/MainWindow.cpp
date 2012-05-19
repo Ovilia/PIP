@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     brightWidget(0),
     morphoWidget(0),
     distanceWidget(0),
+    skeletonWidget(0),
 
     histogramDialog(0),
     filterDialog(0),
@@ -93,6 +94,9 @@ MainWindow::~MainWindow()
     }
     if (distanceWidget) {
         delete distanceWidget;
+    }
+    if (skeletonWidget) {
+        delete skeletonWidget;
     }
     if (tabWidget) {
         delete tabWidget;
@@ -328,6 +332,10 @@ void MainWindow::on_actionOpen_triggered()
                 delete distanceWidget;
                 distanceWidget = 0;
             }
+            if (skeletonWidget) {
+                delete skeletonWidget;
+                skeletonWidget = 0;
+            }
 
             if (histogramDialog) {
                 delete histogramDialog;
@@ -502,4 +510,16 @@ void MainWindow::on_actionDistance_triggered()
         tabWidget->addTab(distanceWidget, "Distance");
     }
     tabWidget->setCurrentWidget(distanceWidget);
+}
+
+void MainWindow::on_actionSkeleton_triggered()
+{
+    if (!morphoDistance) {
+        morphoDistance = new MorphoDistance(imageProcessor);
+    }
+    if (!skeletonWidget) {
+        skeletonWidget = new ImageWidget(morphoDistance->getSkeletonImage());
+        tabWidget->addTab(skeletonWidget, "Skeleton");
+    }
+    tabWidget->setCurrentWidget(skeletonWidget);
 }
