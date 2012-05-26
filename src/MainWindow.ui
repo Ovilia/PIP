@@ -35,7 +35,7 @@
      <x>0</x>
      <y>0</y>
      <width>704</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -68,6 +68,7 @@
     <addaction name="actionMorpOper"/>
     <addaction name="actionDistance"/>
     <addaction name="actionSkeleton"/>
+    <addaction name="actionReconstruct"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
@@ -100,6 +101,7 @@
    <addaction name="actionMorpOper"/>
    <addaction name="actionDistance"/>
    <addaction name="actionSkeleton"/>
+   <addaction name="actionReconstruct"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -263,6 +265,14 @@
    </property>
    <property name="text">
     <string>Distance</string>
+   </property>
+  </action>
+  <action name="actionReconstruct">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Skeleton Reconstruction</string>
    </property>
   </action>
  </widget>

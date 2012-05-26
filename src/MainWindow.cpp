@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     morphoWidget(0),
     distanceWidget(0),
     skeletonWidget(0),
+    reconstWidget(0),
 
     histogramDialog(0),
     filterDialog(0),
@@ -42,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
     binaryMorphology(0),
     morphoDistance(0),
     useSquareSe(true),
+
+    reconstructedImage(0),
 
     isFirstImage(true)
 {
@@ -98,6 +101,9 @@ MainWindow::~MainWindow()
     if (skeletonWidget) {
         delete skeletonWidget;
     }
+    if (reconstWidget) {
+        delete reconstWidget;
+    }
     if (tabWidget) {
         delete tabWidget;
     }
@@ -130,6 +136,10 @@ MainWindow::~MainWindow()
 
     if (imageProcessor) {
         delete imageProcessor;
+    }
+
+    if (reconstructedImage) {
+        delete reconstructedImage;
     }
 }
 
@@ -279,6 +289,7 @@ void MainWindow::on_actionOpen_triggered()
             ui->actionMorpOper->setEnabled(true);
             ui->actionDistance->setEnabled(true);
             ui->actionSkeleton->setEnabled(true);
+            ui->actionReconstruct->setEnabled(true);
 #ifdef TEAM_WORK
             ui->actionBrightness->setEnabled(true);
             ui->actionContrast->setEnabled(true);
@@ -336,6 +347,10 @@ void MainWindow::on_actionOpen_triggered()
                 delete skeletonWidget;
                 skeletonWidget = 0;
             }
+            if (reconstWidget) {
+                delete reconstWidget;
+                reconstWidget = 0;
+            }
 
             if (histogramDialog) {
                 delete histogramDialog;
@@ -371,6 +386,11 @@ void MainWindow::on_actionOpen_triggered()
                 morphoDistance = 0;
             }
             useSquareSe = true;
+
+            if (reconstructedImage) {
+                delete reconstructedImage;
+                reconstructedImage = 0;
+            }
         }
 
         // isFirstImage is set to be false after first opening
@@ -522,4 +542,21 @@ void MainWindow::on_actionSkeleton_triggered()
         tabWidget->addTab(skeletonWidget, "Skeleton");
     }
     tabWidget->setCurrentWidget(skeletonWidget);
+}
+
+void MainWindow::on_actionReconstruct_triggered()
+{
+    if (!morphoDistance) {
+        morphoDistance = new MorphoDistance(imageProcessor);
+    }
+    if (!reconstWidget) {
+        if (!reconstructedImage) {
+            QImage* origin = imageProcessor->getOriginImage();
+            reconstructedImage = new QImage(origin->size(), origin->format());
+        }
+        morphoDistance->getSkeletonImage(reconstructedImage);
+        reconstWidget = new ImageWidget(reconstructedImage);
+        tabWidget->addTab(reconstWidget, "Recontruction");
+    }
+    tabWidget->setCurrentWidget(reconstWidget);
 }

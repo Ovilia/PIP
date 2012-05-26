@@ -68,6 +68,8 @@ private slots:
 
     void on_actionSkeleton_triggered();
 
+    void on_actionReconstruct_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -84,6 +86,7 @@ private:
     ImageWidget* morphoWidget;
     ImageWidget* distanceWidget;
     ImageWidget* skeletonWidget;
+    ImageWidget* reconstWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
@@ -101,6 +104,8 @@ private:
     BinaryMorphology* binaryMorphology;
     MorphoDistance* morphoDistance;
     bool useSquareSe;
+
+    QImage* reconstructedImage;
 
     // if is the first time opening an image
     bool isFirstImage;

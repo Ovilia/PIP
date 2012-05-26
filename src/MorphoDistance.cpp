@@ -106,7 +106,7 @@ QImage* MorphoDistance::getDistanceImage(const bool useSquareSe)
     return distanceImage;
 }
 
-QImage* MorphoDistance::getSkeletonImage()
+QImage* MorphoDistance::getSkeletonImage(QImage* getReconstructedImage)
 {
     StructElement se(SE_RATIO, SE_RATIO, SE_RATIO / 2, SE_RATIO / 2,
                      SE_CROSS_ARR);
@@ -122,42 +122,60 @@ QImage* MorphoDistance::getSkeletonImage()
     BinaryMorphology morpho(ero);
     // sigma(Sk(A))
     uchar* sigmaSk = new uchar[size];
+    // Sk(A) = ero - open
+    QImage skA(origin->size(), origin->format());
+    // reconstructed image, sigma(Sk(A) dila kB)
+    uchar* reconst = new uchar[size];
     for (int i = 0; i < size; ++i) {
         sigmaSk[i] = back;
+        reconst[i] = back;
     }
 
+    int k = 0;
     // do while (A ero kB) is not empty
     while (true) {
         // (A ero kB) open B
         QImage* open = morpho.doOpening(se);
         morpho.undo();
 
-        // Sk(A) = ero - open
-        // sigma(Sk(A)) = Sk(A) + sigma(S(k-1)(A))
+        uchar* skBit = skA.bits();
         const uchar* eBits = ero->bits();
         const uchar* oBits = open->bits();
         for (int i = 0; i < size; ++i) {
             // union current foreground
             if (*eBits == fore && *oBits == back) {
+                // Sk(A) = ero - open
+                for (int rgb = 0; rgb < 3; ++rgb) {
+                    *skBit = fore;
+                    ++skBit;
+                }
+                // sigma(Sk(A)) = Sk(A) + sigma(S(k-1)(A))
                 sigmaSk[i] = fore;
+            } else {
+                for (int rgb = 0; rgb < 3; ++rgb) {
+                    *skBit = back;
+                    ++skBit;
+                }
             }
+            ++skBit;
             eBits += 4;
             oBits += 4;
         }
 
-        QImage tmp(origin->size(), origin->format());
-        uchar* sBits = tmp.bits();
-        const uchar* Bits = origin->constBits();
-        for (int i = 0; i < size; ++i) {
-            uchar value = back;
-            if (*Bits && !sigmaSk[i]) {
-                value = fore;
+        // Sk(A) dila kB
+        if (getReconstructedImage) {
+            BinaryMorphology skAMorpho(&skA);
+            for (int i = 0; i < k; ++i) {
+                skAMorpho.doDilation(se);
             }
-            for (int rgb = 0; rgb < 3; ++ rgb) {
-                *(sBits + rgb) = value;
+            // sigma(Sk(A) dila kB)
+            skBit = skAMorpho.getOperatedImage()->bits();
+            for (int i = 0; i < size; ++i) {
+                if (*skBit == fore) {
+                    reconst[i] = fore;
+                }
+                skBit += 4;
             }
-            sBits += 4;
-            Bits += 4;
         }
 
         // to next k
@@ -165,7 +183,7 @@ QImage* MorphoDistance::getSkeletonImage()
         if (morpho.isAllBack()) {
             break;
         }
-
+        ++k;
     }
 
     if (skeletonImage) {
@@ -173,16 +191,27 @@ QImage* MorphoDistance::getSkeletonImage()
     }
     skeletonImage = new QImage(origin->size(), origin->format());
     uchar* sBits = skeletonImage->bits();
-    const uchar* oBits = origin->constBits();
-    // skeleton is sigmaSk
     for (int i = 0; i < size; ++i) {
         for (int rgb = 0; rgb < 3; ++ rgb) {
+            // skeleton is sigmaSk
             *(sBits + rgb) = sigmaSk[i];
         }
         sBits += 4;
-        oBits += 4;
+    }
+
+    if (getReconstructedImage) {
+        uchar* rBits = getReconstructedImage->bits();
+        for (int i = 0; i < size; ++i) {
+            for (int rgb = 0; rgb < 3; ++ rgb) {
+                // reconstruct is sigma(Sk(A) dila kB)
+                *(rBits + rgb) = reconst[i];
+            }
+            rBits += 4;
+        }
     }
 
     delete []sigmaSk;
+    delete []reconst;
+
     return skeletonImage;
 }

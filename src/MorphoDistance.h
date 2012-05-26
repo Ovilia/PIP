@@ -14,7 +14,8 @@ public:
 
     QImage* getDistanceImage(const bool useSquareSe = true);
 
-    QImage* getSkeletonImage();
+    // get reconstructed image from parameter
+    QImage* getSkeletonImage(QImage* getReconstructedImage = 0);
 
     bool isUseSquareSe() const;
 
