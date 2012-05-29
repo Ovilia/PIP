@@ -5,36 +5,20 @@ const uchar BinaryMorphology::DEFAULT_FORE_COLOR = 255;
 
 BinaryMorphology::BinaryMorphology(ImageProcessor* imageProcessor,
                                    bool whiteAsForeground) :
-    bufferCurrentIndex(0),
-    bufferUsedIndex(0)
+    Morphology(imageProcessor->getBinaryImage())
 {
-    bufferImage[0] = imageProcessor->getBinaryImage();
-    for (int i = 1; i < BUFFER_SIZE; ++i) {
-        bufferImage[i] = 0;
-    }
     setForeground(whiteAsForeground);
 }
 
 BinaryMorphology::BinaryMorphology(QImage *binaryImage,
                                    bool whiteAsForeground) :
-    bufferCurrentIndex(0),
-    bufferUsedIndex(0)
+    Morphology(binaryImage)
 {
-    bufferImage[0] = binaryImage;
-    for (int i = 1; i < BUFFER_SIZE; ++i) {
-        bufferImage[i] = 0;
-    }
     setForeground(whiteAsForeground);
 }
 
 BinaryMorphology::~BinaryMorphology()
 {
-    // i start from 1 so that won't delete original binary image
-    for (int i = 1; i < BUFFER_SIZE; ++i) {
-        if (bufferImage[i]) {
-            delete bufferImage[i];
-        }
-    }
 }
 
 void BinaryMorphology::setForeground(bool whiteAsForeground)
@@ -46,38 +30,6 @@ void BinaryMorphology::setForeground(bool whiteAsForeground)
         foreGroundColor = 0;
         backGroundColor = 255;
     }
-}
-
-QImage* BinaryMorphology::doDilation(const StructElement& se)
-{
-    QImage* image = dilationHelper(*bufferImage[bufferCurrentIndex], se);
-    pushImage(image);
-    return image;
-}
-
-QImage* BinaryMorphology::doErosion(const StructElement& se)
-{
-    QImage* image = erosionHelper(*bufferImage[bufferCurrentIndex], se);
-    pushImage(image);
-    return image;
-}
-
-QImage* BinaryMorphology::doOpening(const StructElement& se)
-{
-    QImage* imageEro = erosionHelper(*bufferImage[bufferCurrentIndex], se);
-    QImage* imageOpen = dilationHelper(*imageEro, se);
-    delete imageEro;
-    pushImage(imageOpen);
-    return imageOpen;
-}
-
-QImage* BinaryMorphology::doClosing(const StructElement& se)
-{
-    QImage* imageDil = dilationHelper(*bufferImage[bufferCurrentIndex], se);
-    QImage* imageClose = erosionHelper(*imageDil, se);
-    delete imageDil;
-    pushImage(imageClose);
-    return imageClose;
 }
 
 QImage* BinaryMorphology::dilationHelper(const QImage& image,
@@ -172,66 +124,6 @@ QImage* BinaryMorphology::erosionHelper(const QImage& image,
         }
     }
     return newImage;
-}
-
-QImage* BinaryMorphology::getOperatedImage() const
-{
-    return bufferImage[bufferCurrentIndex];
-}
-
-bool BinaryMorphology::undo()
-{
-    if (bufferCurrentIndex > 0) {
-        --bufferCurrentIndex;
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool BinaryMorphology::redo()
-{
-    if (bufferUsedIndex > bufferCurrentIndex) {
-        ++bufferCurrentIndex;
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool BinaryMorphology::canUndo() const
-{
-    if (bufferCurrentIndex > 0) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool BinaryMorphology::canRedo() const
-{
-    if (bufferUsedIndex > bufferCurrentIndex) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-void BinaryMorphology::pushImage(QImage *image)
-{
-    if (bufferCurrentIndex < BUFFER_SIZE - 1) {
-        // buffer is not full, push to the end
-        ++bufferCurrentIndex;
-        bufferUsedIndex = bufferCurrentIndex;
-        bufferImage[bufferCurrentIndex] = image;
-    } else {
-        // buffer is full, delete the oldest one
-        for (int i = 1; i < BUFFER_SIZE; ++i) {
-            bufferImage[i - 1] = bufferImage[i];
-        }
-        bufferUsedIndex = bufferCurrentIndex;
-        bufferImage[bufferCurrentIndex] = image;
-    }
 }
 
 bool BinaryMorphology::isOneColor(bool& isAllFore, bool& isAllBack) const
