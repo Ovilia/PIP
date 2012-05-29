@@ -17,5 +17,7 @@
         <file>images/rotate.png</file>
         <file>images/morphology.png</file>
         <file>images/skeleton.png</file>
+        <file>images/reconstruction.png</file>
+        <file>images/distance.png</file>
     </qresource>
 </RCC>

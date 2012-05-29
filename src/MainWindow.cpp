@@ -44,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
     morphoDistance(0),
     useSquareSe(true),
 
+    grayMorphology(0),
+
     reconstructedImage(0),
 
     isFirstImage(true)
@@ -134,6 +136,10 @@ MainWindow::~MainWindow()
         delete morphoDistance;
     }
 
+    if (grayMorphology) {
+        delete grayMorphology;
+    }
+
     if (imageProcessor) {
         delete imageProcessor;
     }
@@ -150,7 +156,18 @@ ImageProcessor* MainWindow::getImageProcessor()
 
 BinaryMorphology* MainWindow::getBinaryMorpo()
 {
+    if (!binaryMorphology) {
+        binaryMorphology = new BinaryMorphology(imageProcessor);
+    }
     return binaryMorphology;
+}
+
+GrayMorphology* MainWindow::getGrayMorpo()
+{
+    if (!grayMorphology) {
+        grayMorphology = new GrayMorphology(imageProcessor);
+    }
+    return grayMorphology;
 }
 
 void MainWindow::repaintBinary()
@@ -387,6 +404,11 @@ void MainWindow::on_actionOpen_triggered()
             }
             useSquareSe = true;
 
+            if (grayMorphology) {
+                delete grayMorphology;
+                grayMorphology = 0;
+            }
+
             if (reconstructedImage) {
                 delete reconstructedImage;
                 reconstructedImage = 0;
@@ -493,11 +515,6 @@ void MainWindow::on_actionGray_Scale_triggered()
 
 void MainWindow::on_actionMorpOper_triggered()
 {
-    if (binaryMorphology) {
-        delete binaryMorphology;
-    }
-    binaryMorphology = new BinaryMorphology(imageProcessor);
-
     if (!morphoDialog) {
         morphoDialog = new MorphologyDialog(this, this);
     }

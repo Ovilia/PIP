@@ -9,6 +9,7 @@
 #include "BrightDialog.h"
 #include "ContrastDialog.h"
 #include "FilterDialog.h"
+#include "GrayMorphology.h"
 #include "HistogramDialog.h"
 #include "ImageProcessor.h"
 #include "ImageWidget.h"
@@ -31,6 +32,7 @@ public:
 
     ImageProcessor* getImageProcessor();
     BinaryMorphology* getBinaryMorpo();
+    GrayMorphology* getGrayMorpo();
 
     void repaintBinary();
     void setFilteredImage(QImage* image);
@@ -104,6 +106,8 @@ private:
     BinaryMorphology* binaryMorphology;
     MorphoDistance* morphoDistance;
     bool useSquareSe;
+
+    GrayMorphology* grayMorphology;
 
     QImage* reconstructedImage;
 

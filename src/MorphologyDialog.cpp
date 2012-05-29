@@ -9,6 +9,8 @@ MorphologyDialog::MorphologyDialog(MainWindow* mainWindow, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MorphologyDialog),
     mainWindow(mainWindow),
+    binaryMorpho(0),
+    grayMorpho(0),
     seArr(0),
     seSize(0),
     seType(ST_SQUARE)
@@ -178,20 +180,31 @@ void MorphologyDialog::on_applyButton_clicked()
     } else {
         resetSeArr(radius, seType);
     }
-
-    BinaryMorphology* morpho = mainWindow->getBinaryMorpo();
-    morpho->setForeground(ui->whiteCheck->isChecked());
     StructElement se(radius, radius, radius / 2, radius / 2, seArr);
-    if (ui->dilationButton->isChecked()) {
-        morpho->doDilation(se);
-    } else if (ui->erosionButton->isChecked()) {
-        morpho->doErosion(se);
-    } else if (ui->openButton->isChecked()) {
-        morpho->doOpening(se);
-    } else if (ui->closingButton->isChecked()) {
-        morpho->doClosing(se);
+
+    Morphology* morpho;
+    if (ui->binaryButton->isChecked()) {
+        if (!binaryMorpho) {
+            binaryMorpho = mainWindow->getBinaryMorpo();
+        }
+        binaryMorpho->setForeground(ui->whiteCheck->isChecked());
+        morpho = binaryMorpho;
+    } else {
+        if (!grayMorpho) {
+            grayMorpho = mainWindow->getGrayMorpo();
+        }
+        morpho = grayMorpho;
     }
-    mainWindow->setMorphologyImage(morpho->getOperatedImage());
+
+    if (ui->dilationButton->isChecked()) {
+        mainWindow->setMorphologyImage(morpho->doDilation(se));
+    } else if (ui->erosionButton->isChecked()) {
+        mainWindow->setMorphologyImage(morpho->doErosion(se));
+    } else if (ui->openButton->isChecked()) {
+        mainWindow->setMorphologyImage(morpho->doOpening(se));
+    } else if (ui->closingButton->isChecked()) {
+        mainWindow->setMorphologyImage(morpho->doClosing(se));
+    }
 
     ui->redoButton->setEnabled(morpho->canRedo());
     ui->undoButton->setEnabled(morpho->canUndo());
@@ -199,7 +212,12 @@ void MorphologyDialog::on_applyButton_clicked()
 
 void MorphologyDialog::on_undoButton_clicked()
 {
-    BinaryMorphology* morpho = mainWindow->getBinaryMorpo();
+    Morphology* morpho;
+    if (ui->binaryButton->isChecked()) {
+        morpho = binaryMorpho;
+    } else {
+        morpho = grayMorpho;
+    }
     if (morpho->undo()) {
         // undo successfully
         mainWindow->setMorphologyImage(morpho->getOperatedImage());
@@ -210,7 +228,12 @@ void MorphologyDialog::on_undoButton_clicked()
 
 void MorphologyDialog::on_redoButton_clicked()
 {
-    BinaryMorphology* morpho = mainWindow->getBinaryMorpo();
+    Morphology* morpho;
+    if (ui->binaryButton->isChecked()) {
+        morpho = binaryMorpho;
+    } else {
+        morpho = grayMorpho;
+    }
     if (morpho->redo()) {
         // redo successfully
         mainWindow->setMorphologyImage(morpho->getOperatedImage());
@@ -242,4 +265,28 @@ void MorphologyDialog::on_sizeSpin_valueChanged(int arg1)
         }
         resetCustSpin(value);
     }
+}
+
+void MorphologyDialog::on_grayButton_clicked()
+{
+    if (grayMorpho) {
+        ui->undoButton->setEnabled(grayMorpho->canUndo());
+        ui->redoButton->setEnabled(grayMorpho->canRedo());
+    } else {
+        ui->undoButton->setEnabled(false);
+        ui->redoButton->setEnabled(false);
+    }
+    ui->whiteCheck->setEnabled(false);
+}
+
+void MorphologyDialog::on_binaryButton_clicked()
+{
+    if (binaryMorpho) {
+        ui->undoButton->setEnabled(binaryMorpho->canUndo());
+        ui->redoButton->setEnabled(binaryMorpho->canRedo());
+    } else {
+        ui->undoButton->setEnabled(false);
+        ui->redoButton->setEnabled(false);
+    }
+    ui->whiteCheck->setEnabled(true);
 }

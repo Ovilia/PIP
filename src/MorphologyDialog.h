@@ -47,9 +47,16 @@ private slots:
 
     void on_sizeSpin_valueChanged(int arg1);
 
+    void on_grayButton_clicked();
+
+    void on_binaryButton_clicked();
+
 private:
     Ui::MorphologyDialog *ui;
     MainWindow* mainWindow;
+
+    BinaryMorphology* binaryMorpho;
+    GrayMorphology* grayMorpho;
 
     static const int MIN_SE_RADIO = 3;
     static const int MAX_SE_RADIO = 255;

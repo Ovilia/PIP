@@ -263,6 +263,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/distance.png</normaloff>:/images/images/distance.png</iconset>
+   </property>
    <property name="text">
     <string>Distance</string>
    </property>
@@ -270,6 +274,10 @@
   <action name="actionReconstruct">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/reconstruction.png</normaloff>:/images/images/reconstruction.png</iconset>
    </property>
    <property name="text">
     <string>Skeleton Reconstruction</string>
