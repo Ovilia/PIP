@@ -4,8 +4,18 @@
 class StructElement
 {
 public:
+    enum SE_Type {
+        ST_SQUARE,
+        ST_CIRCLE,
+        ST_CROSS,
+        ST_DIAMOND,
+        ST_CUSTOMED
+    };
+
     StructElement(int width, int height, int originX, int originY,
                   const int* arr);
+    StructElement(int radius, SE_Type seType,
+                  const int* arr = 0);
     ~StructElement();
 
     // get min x according to origin, inclusively

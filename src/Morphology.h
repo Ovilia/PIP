@@ -27,7 +27,6 @@ public:
     bool canUndo() const;
     // return if can redo
     bool canRedo() const;
-    static const int SE_MATCH = 1;
 
 private:
     static const int BUFFER_SIZE = 32;

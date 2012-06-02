@@ -19,5 +19,8 @@
         <file>images/skeleton.png</file>
         <file>images/reconstruction.png</file>
         <file>images/distance.png</file>
+        <file>images/external.png</file>
+        <file>images/internal.png</file>
+        <file>images/standard.png</file>
     </qresource>
 </RCC>

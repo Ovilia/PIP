@@ -27,6 +27,38 @@ ImageProcessor::ImageProcessor(QString fileName) :
     setImage(fileName);
 }
 
+ImageProcessor::ImageProcessor(QImage* originImage) :
+    fileName(""),
+    originImage(0),
+    grayScaleImage(0),
+    binaryImage(0),
+    equalImage(0),
+    contrastImage(0),
+    brightImage(0),
+    isHisCaled(false),
+    isRgbHisCaled(false),
+    weightedHisSum(0),
+    otsuThreshold(0),
+    entropyThreshold(0),
+    lowerThreshold(0),
+    higherThreshold(0),
+    isOtsuCaled(false),
+    isEntropyCaled(false),
+    grayScalePolicy(ImagePolicy::MATCH_LUMINANCE),
+    thresholdPolicy(ImagePolicy::OTSU)
+{
+    // copy image
+    this->originImage = new QImage(originImage->size(), originImage->format());
+    uchar* bits = this->originImage->bits();
+    const uchar* cBits = originImage->constBits();
+    int size = originImage->width() * originImage->height() * 4;
+    for (int i = 0; i < size; ++i) {
+        *bits = *cBits;
+        ++bits;
+        ++cBits;
+    }
+}
+
 ImageProcessor::~ImageProcessor()
 {
     if (originImage) {

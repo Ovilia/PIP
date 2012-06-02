@@ -11,6 +11,7 @@
 class ImageProcessor
 {
 public:
+    ImageProcessor(QImage* originImage);
     ImageProcessor(QString fileName);
     ~ImageProcessor();
 

@@ -65,10 +65,19 @@
     <property name="title">
      <string>Morphology</string>
     </property>
+    <widget class="QMenu" name="menuEdge_Detection">
+     <property name="title">
+      <string>Edge Detection</string>
+     </property>
+     <addaction name="actionStandard"/>
+     <addaction name="actionInternal"/>
+     <addaction name="actionExternal"/>
+    </widget>
     <addaction name="actionMorpOper"/>
     <addaction name="actionDistance"/>
     <addaction name="actionSkeleton"/>
     <addaction name="actionReconstruct"/>
+    <addaction name="menuEdge_Detection"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
@@ -102,6 +111,9 @@
    <addaction name="actionDistance"/>
    <addaction name="actionSkeleton"/>
    <addaction name="actionReconstruct"/>
+   <addaction name="actionStandard"/>
+   <addaction name="actionInternal"/>
+   <addaction name="actionExternal"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -281,6 +293,42 @@
    </property>
    <property name="text">
     <string>Skeleton Reconstruction</string>
+   </property>
+  </action>
+  <action name="actionStandard">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/standard.png</normaloff>:/images/images/standard.png</iconset>
+   </property>
+   <property name="text">
+    <string>Standard</string>
+   </property>
+  </action>
+  <action name="actionInternal">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/internal.png</normaloff>:/images/images/internal.png</iconset>
+   </property>
+   <property name="text">
+    <string>Internal</string>
+   </property>
+  </action>
+  <action name="actionExternal">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/external.png</normaloff>:/images/images/external.png</iconset>
+   </property>
+   <property name="text">
+    <string>External</string>
    </property>
   </action>
  </widget>

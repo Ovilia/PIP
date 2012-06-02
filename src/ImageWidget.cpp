@@ -3,10 +3,12 @@
 #include "ImageWidget.h"
 #include "ui_ImageWidget.h"
 
-ImageWidget::ImageWidget(QImage* image, QWidget *parent) :
+ImageWidget::ImageWidget(MainWindow* mainWindow,
+                         QImage* image, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ImageWidget),
-    image(0)
+    image(0),
+    mainWindow(mainWindow)
 {
     ui->setupUi(this);
     imageLabel = new ImageLabel(image, this, this);
@@ -79,4 +81,9 @@ void ImageWidget::on_saveButton_clicked()
     if (!filePath.isNull()) {
         image->save(filePath);
     }
+}
+
+void ImageWidget::on_applyButton_clicked()
+{
+    mainWindow->resetImage(image);
 }

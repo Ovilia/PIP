@@ -22,6 +22,8 @@ namespace Ui {
     class MainWindow;
 }
 
+class ImageWidget;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -42,6 +44,10 @@ public:
     void setContrastImage(QImage* image);
     void setBrightnessImage(QImage* image);
     void setMorphologyImage(QImage* image);
+
+    // change target image
+    void resetImage(QImage* image);
+    void resetImage(const QString& fileName);
 
 private slots:
     void on_actionOpen_triggered();
@@ -72,6 +78,12 @@ private slots:
 
     void on_actionReconstruct_triggered();
 
+    void on_actionStandard_triggered();
+
+    void on_actionInternal_triggered();
+
+    void on_actionExternal_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -89,6 +101,7 @@ private:
     ImageWidget* distanceWidget;
     ImageWidget* skeletonWidget;
     ImageWidget* reconstWidget;
+    ImageWidget* edgeWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
@@ -107,12 +120,16 @@ private:
     MorphoDistance* morphoDistance;
     bool useSquareSe;
 
+    BinaryMorphology* edgeMorpho;
+
     GrayMorphology* grayMorphology;
 
     QImage* reconstructedImage;
 
     // if is the first time opening an image
     bool isFirstImage;
+
+    void resetImage();
 };
 
 #endif // MAINWINDOW_H

@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     distanceWidget(0),
     skeletonWidget(0),
     reconstWidget(0),
+    edgeWidget(0),
 
     histogramDialog(0),
     filterDialog(0),
@@ -43,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
     binaryMorphology(0),
     morphoDistance(0),
     useSquareSe(true),
+
+    edgeMorpho(0),
 
     grayMorphology(0),
 
@@ -109,6 +112,9 @@ MainWindow::~MainWindow()
     if (tabWidget) {
         delete tabWidget;
     }
+    if (edgeWidget) {
+        delete edgeWidget;
+    }
 
     if (histogramDialog) {
         delete histogramDialog;
@@ -134,6 +140,9 @@ MainWindow::~MainWindow()
     }
     if (morphoDistance) {
         delete morphoDistance;
+    }
+    if (edgeMorpho) {
+        delete edgeMorpho;
     }
 
     if (grayMorphology) {
@@ -179,7 +188,7 @@ void MainWindow::repaintBinary()
 void MainWindow::setFilteredImage(QImage *image)
 {
     if (!filteredWidget) {
-        filteredWidget = new ImageWidget(image);
+        filteredWidget = new ImageWidget(this, image);
         tabWidget->addTab(filteredWidget, "Filtered Image");
     } else {
         filteredWidget->setImage(image);
@@ -190,7 +199,7 @@ void MainWindow::setFilteredImage(QImage *image)
 void MainWindow::setScaledImage(QImage *image)
 {
     if (!scaledWidget) {
-        scaledWidget = new ImageWidget(image);
+        scaledWidget = new ImageWidget(this, image);
         tabWidget->addTab(scaledWidget, "Scaled Image");
     } else {
         delete scaledWidget->getImage();
@@ -202,7 +211,7 @@ void MainWindow::setScaledImage(QImage *image)
 void MainWindow::setRotatedImage(QImage *image)
 {
     if (!rotatedWidget) {
-        rotatedWidget = new ImageWidget(image);
+        rotatedWidget = new ImageWidget(this, image);
         tabWidget->addTab(rotatedWidget, "Rotated Image");
     } else {
         delete rotatedWidget->getImage();
@@ -214,7 +223,7 @@ void MainWindow::setRotatedImage(QImage *image)
 void MainWindow::setAlgebraImage(QImage* image)
 {
     if (!algebraWidget) {
-        algebraWidget = new ImageWidget(image);
+        algebraWidget = new ImageWidget(this, image);
         tabWidget->addTab(algebraWidget, "Algebra");
     } else {
         delete algebraWidget->getImage();
@@ -226,7 +235,7 @@ void MainWindow::setAlgebraImage(QImage* image)
 void MainWindow::setContrastImage(QImage* image)
 {
     if (!contrastWidget) {
-        contrastWidget = new ImageWidget(image);
+        contrastWidget = new ImageWidget(this, image);
         tabWidget->addTab(contrastWidget, "Contrast");
     } else {
         contrastWidget->setImage(image);
@@ -237,7 +246,7 @@ void MainWindow::setContrastImage(QImage* image)
 void MainWindow::setBrightnessImage(QImage* image)
 {
     if (!brightWidget) {
-        brightWidget = new ImageWidget(image);
+        brightWidget = new ImageWidget(this, image);
         tabWidget->addTab(brightWidget, "Brightness");
     } else {
         brightWidget->setImage(image);
@@ -248,7 +257,7 @@ void MainWindow::setBrightnessImage(QImage* image)
 void MainWindow::setMorphologyImage(QImage *image)
 {
     if (!morphoWidget) {
-        morphoWidget = new ImageWidget(image);
+        morphoWidget = new ImageWidget(this, image);
         tabWidget->addTab(morphoWidget, "Morphology");
     } else {
         morphoWidget->setImage(image);
@@ -260,164 +269,196 @@ void MainWindow::on_actionOpen_triggered()
 {
     imagePath = QFileDialog::getOpenFileName(
                 this, tr("Open an Image"), QDir::currentPath(),
-                tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif);;All files (*.*)"));
+                tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif *.tif);;All files (*.*)"));
 
     // load the image and update UI
     if (!imagePath.isNull()) {
-        // set imageProcessor
-        if (imageProcessor) {
-            imageProcessor->setImage(imagePath);
-        } else {
-            imageProcessor = new ImageProcessor(imagePath);
-        }
-
-        if (isFirstImage) {
-            if (tabWidget) {
-                delete tabWidget;
-            }
-            tabWidget = new QTabWidget(this);
-        } else {
-            // remove previous tabs
-            int amt = tabWidget->count();
-            for (int i = 0; i < amt; ++i) {
-                tabWidget->removeTab(0);
-            }
-        }
-
-        // add a tab containing the image
-        if (originWidget) {
-            delete originWidget;
-        }
-        originWidget = new ImageWidget(
-                    imageProcessor->getOriginImage(), tabWidget);
-        tabWidget->addTab(originWidget, "Origin Image");
-
-        if (isFirstImage) {
-            // add tabWidget only if it is the first image opened
-            ui->gridLayout->addWidget(tabWidget);
-            // enable UI components
-            ui->actionHistogram->setEnabled(true);
-            ui->actionFilter->setEnabled(true);
-            ui->actionScale->setEnabled(true);
-            ui->actionRotate->setEnabled(true);
-            ui->actionAlgebra->setEnabled(true);
-            ui->actionEqualization->setEnabled(true);
-            ui->actionGray_Scale->setEnabled(true);
-            ui->actionMorpOper->setEnabled(true);
-            ui->actionDistance->setEnabled(true);
-            ui->actionSkeleton->setEnabled(true);
-            ui->actionReconstruct->setEnabled(true);
-#ifdef TEAM_WORK
-            ui->actionBrightness->setEnabled(true);
-            ui->actionContrast->setEnabled(true);
-#endif
-        } else {
-            // reset UI components
-            if (grayWidget) {
-                delete grayWidget;
-                grayWidget = 0;
-            }
-            if (binaryWidget) {
-                delete binaryWidget;
-                binaryWidget = 0;
-            }
-            if (filteredWidget) {
-                delete filteredWidget;
-                filteredWidget = 0;
-            }
-            if (scaledWidget) {
-                delete scaledWidget->getImage();
-                delete scaledWidget;
-                scaledWidget = 0;
-            }
-            if (rotatedWidget) {
-                delete rotatedWidget->getImage();
-                delete rotatedWidget;
-                rotatedWidget = 0;
-            }
-            if (algebraWidget) {
-                delete algebraWidget->getImage();
-                delete algebraWidget;
-                algebraWidget = 0;
-            }
-            if (equalWidget) {
-                delete equalWidget;
-                equalWidget = 0;
-            }
-            if (contrastWidget) {
-                delete contrastWidget;
-                contrastWidget = 0;
-            }
-            if (brightWidget) {
-                delete brightWidget;
-                brightWidget = 0;
-            }
-            if (morphoWidget) {
-                delete morphoWidget;
-                morphoWidget = 0;
-            }
-            if (distanceWidget) {
-                delete distanceWidget;
-                distanceWidget = 0;
-            }
-            if (skeletonWidget) {
-                delete skeletonWidget;
-                skeletonWidget = 0;
-            }
-            if (reconstWidget) {
-                delete reconstWidget;
-                reconstWidget = 0;
-            }
-
-            if (histogramDialog) {
-                delete histogramDialog;
-                histogramDialog = 0;
-            }
-            if (filterDialog) {
-                delete filterDialog;
-                filterDialog = 0;
-            }
-            if (scaledDialog) {
-                delete scaledDialog;
-                scaledDialog = 0;
-            }
-            if (rotatedDialog) {
-                delete rotatedDialog;
-                rotatedDialog = 0;
-            }
-            if (algebraDialog) {
-                delete algebraDialog;
-                algebraDialog = 0;
-            }
-            if (contrastDialog) {
-                delete contrastDialog;
-                contrastDialog = 0;
-            }
-
-            if (binaryMorphology) {
-                delete binaryMorphology;
-                binaryMorphology = 0;
-            }
-            if (morphoDistance) {
-                delete morphoDistance;
-                morphoDistance = 0;
-            }
-            useSquareSe = true;
-
-            if (grayMorphology) {
-                delete grayMorphology;
-                grayMorphology = 0;
-            }
-
-            if (reconstructedImage) {
-                delete reconstructedImage;
-                reconstructedImage = 0;
-            }
-        }
-
-        // isFirstImage is set to be false after first opening
-        isFirstImage = false;
+        resetImage(imagePath);
     }
+}
+
+void MainWindow::resetImage(const QString &fileName)
+{
+    // set imageProcessor
+    if (imageProcessor) {
+        delete imageProcessor;
+    }
+    imageProcessor = new ImageProcessor(fileName);
+    resetImage();
+}
+
+void MainWindow::resetImage(QImage* image)
+{
+    // set imageProcessor
+    // image may possible be part of old imageProcessor,
+    // copy before delete old imageProcessor
+    ImageProcessor* newProcessor = new ImageProcessor(image);
+    if (imageProcessor) {
+        delete imageProcessor;
+    }
+    imageProcessor = newProcessor;
+    resetImage();
+}
+
+void MainWindow::resetImage()
+{
+    if (isFirstImage) {
+        if (tabWidget) {
+            delete tabWidget;
+        }
+        tabWidget = new QTabWidget(this);
+    } else {
+        // remove previous tabs
+        int amt = tabWidget->count();
+        for (int i = 0; i < amt; ++i) {
+            tabWidget->removeTab(0);
+        }
+    }
+
+    // add a tab containing the image
+    if (originWidget) {
+        delete originWidget;
+    }
+    originWidget = new ImageWidget(
+                this, imageProcessor->getOriginImage(), tabWidget);
+    tabWidget->addTab(originWidget, "Origin Image");
+
+    if (isFirstImage) {
+        // add tabWidget only if it is the first image opened
+        ui->gridLayout->addWidget(tabWidget);
+        // enable UI components
+        ui->actionHistogram->setEnabled(true);
+        ui->actionFilter->setEnabled(true);
+        ui->actionScale->setEnabled(true);
+        ui->actionRotate->setEnabled(true);
+        ui->actionAlgebra->setEnabled(true);
+        ui->actionEqualization->setEnabled(true);
+        ui->actionGray_Scale->setEnabled(true);
+        ui->actionMorpOper->setEnabled(true);
+        ui->actionDistance->setEnabled(true);
+        ui->actionSkeleton->setEnabled(true);
+        ui->actionReconstruct->setEnabled(true);
+        ui->actionExternal->setEnabled(true);
+        ui->actionInternal->setEnabled(true);
+        ui->actionStandard->setEnabled(true);
+#ifdef TEAM_WORK
+        ui->actionBrightness->setEnabled(true);
+        ui->actionContrast->setEnabled(true);
+#endif
+    } else {
+        // reset UI components
+        if (grayWidget) {
+            delete grayWidget;
+            grayWidget = 0;
+        }
+        if (binaryWidget) {
+            delete binaryWidget;
+            binaryWidget = 0;
+        }
+        if (filteredWidget) {
+            delete filteredWidget;
+            filteredWidget = 0;
+        }
+        if (scaledWidget) {
+            delete scaledWidget->getImage();
+            delete scaledWidget;
+            scaledWidget = 0;
+        }
+        if (rotatedWidget) {
+            delete rotatedWidget->getImage();
+            delete rotatedWidget;
+            rotatedWidget = 0;
+        }
+        if (algebraWidget) {
+            delete algebraWidget->getImage();
+            delete algebraWidget;
+            algebraWidget = 0;
+        }
+        if (equalWidget) {
+            delete equalWidget;
+            equalWidget = 0;
+        }
+        if (contrastWidget) {
+            delete contrastWidget;
+            contrastWidget = 0;
+        }
+        if (brightWidget) {
+            delete brightWidget;
+            brightWidget = 0;
+        }
+        if (morphoWidget) {
+            delete morphoWidget;
+            morphoWidget = 0;
+        }
+        if (distanceWidget) {
+            delete distanceWidget;
+            distanceWidget = 0;
+        }
+        if (skeletonWidget) {
+            delete skeletonWidget;
+            skeletonWidget = 0;
+        }
+        if (reconstWidget) {
+            delete reconstWidget;
+            reconstWidget = 0;
+        }
+        if (edgeWidget) {
+            delete edgeWidget;
+            edgeWidget = 0;
+        }
+
+        if (histogramDialog) {
+            delete histogramDialog;
+            histogramDialog = 0;
+        }
+        if (filterDialog) {
+            delete filterDialog;
+            filterDialog = 0;
+        }
+        if (scaledDialog) {
+            delete scaledDialog;
+            scaledDialog = 0;
+        }
+        if (rotatedDialog) {
+            delete rotatedDialog;
+            rotatedDialog = 0;
+        }
+        if (algebraDialog) {
+            delete algebraDialog;
+            algebraDialog = 0;
+        }
+        if (contrastDialog) {
+            delete contrastDialog;
+            contrastDialog = 0;
+        }
+
+        if (binaryMorphology) {
+            delete binaryMorphology;
+            binaryMorphology = 0;
+        }
+        if (morphoDistance) {
+            delete morphoDistance;
+            morphoDistance = 0;
+        }
+        useSquareSe = true;
+        if (edgeMorpho) {
+            delete edgeMorpho;
+            edgeMorpho = 0;
+        }
+
+        if (grayMorphology) {
+            delete grayMorphology;
+            grayMorphology = 0;
+        }
+
+        if (reconstructedImage) {
+            delete reconstructedImage;
+            reconstructedImage = 0;
+        }
+    }
+
+    // isFirstImage is set to be false after first opening
+    isFirstImage = false;
 }
 
 void MainWindow::on_actionHistogram_triggered()
@@ -426,7 +467,7 @@ void MainWindow::on_actionHistogram_triggered()
     if (binaryWidget) {
         delete binaryWidget;
     }
-    binaryWidget = new ImageWidget(binaryImage, tabWidget);
+    binaryWidget = new ImageWidget(this, binaryImage, tabWidget);
     tabWidget->addTab(binaryWidget, "Binary Image");
     tabWidget->setCurrentWidget(binaryWidget);
 
@@ -498,7 +539,7 @@ void MainWindow::on_actionAlgebra_triggered()
 void MainWindow::on_actionEqualization_triggered()
 {
     if (!equalWidget) {
-        equalWidget = new ImageWidget(imageProcessor->getEqualImage());
+        equalWidget = new ImageWidget(this, imageProcessor->getEqualImage());
         tabWidget->addTab(equalWidget, "Histogram Equalization");
     }
     tabWidget->setCurrentWidget(equalWidget);
@@ -507,7 +548,7 @@ void MainWindow::on_actionEqualization_triggered()
 void MainWindow::on_actionGray_Scale_triggered()
 {
     if (!grayWidget) {
-        grayWidget = new ImageWidget(imageProcessor->getGrayScaleImage());
+        grayWidget = new ImageWidget(this, imageProcessor->getGrayScaleImage());
         tabWidget->addTab(grayWidget, "Gray Scale");
     }
     tabWidget->setCurrentWidget(grayWidget);
@@ -537,12 +578,12 @@ void MainWindow::on_actionDistance_triggered()
         morphoDistance = new MorphoDistance(imageProcessor);
     }
     if (!distanceWidget) {
-        distanceWidget = new ImageWidget(
+        distanceWidget = new ImageWidget(this,
                     morphoDistance->getDistanceImage(useSquareSe));
         tabWidget->addTab(distanceWidget, "Distance");
     } else if (useSquareSe != morphoDistance->isUseSquareSe()) {
         tabWidget->removeTab(tabWidget->indexOf(distanceWidget));
-        distanceWidget = new ImageWidget(
+        distanceWidget = new ImageWidget(this,
                     morphoDistance->getDistanceImage(useSquareSe));
         tabWidget->addTab(distanceWidget, "Distance");
     }
@@ -555,7 +596,7 @@ void MainWindow::on_actionSkeleton_triggered()
         morphoDistance = new MorphoDistance(imageProcessor);
     }
     if (!skeletonWidget) {
-        skeletonWidget = new ImageWidget(morphoDistance->getSkeletonImage());
+        skeletonWidget = new ImageWidget(this, morphoDistance->getSkeletonImage());
         tabWidget->addTab(skeletonWidget, "Skeleton");
     }
     tabWidget->setCurrentWidget(skeletonWidget);
@@ -572,8 +613,59 @@ void MainWindow::on_actionReconstruct_triggered()
             reconstructedImage = new QImage(origin->size(), origin->format());
         }
         morphoDistance->getSkeletonImage(reconstructedImage);
-        reconstWidget = new ImageWidget(reconstructedImage);
+        reconstWidget = new ImageWidget(this, reconstructedImage);
         tabWidget->addTab(reconstWidget, "Recontruction");
     }
     tabWidget->setCurrentWidget(reconstWidget);
+}
+
+void MainWindow::on_actionStandard_triggered()
+{
+    if (!edgeMorpho) {
+        delete edgeMorpho;
+    }
+    edgeMorpho = new BinaryMorphology(imageProcessor);
+    if (edgeWidget) {
+        tabWidget->removeTab(tabWidget->indexOf(edgeWidget));
+        delete edgeWidget;
+    }
+    StructElement se(3, StructElement::ST_CROSS);
+    edgeWidget = new ImageWidget(this, edgeMorpho->getEdgeImage(
+                                     se, BinaryMorphology::ET_STANDARD));
+    tabWidget->addTab(edgeWidget, "Standard Edge");
+    tabWidget->setCurrentWidget(edgeWidget);
+}
+
+void MainWindow::on_actionInternal_triggered()
+{
+    if (!edgeMorpho) {
+        delete edgeMorpho;
+    }
+    edgeMorpho = new BinaryMorphology(imageProcessor);
+    if (edgeWidget) {
+        tabWidget->removeTab(tabWidget->indexOf(edgeWidget));
+        delete edgeWidget;
+    }
+    StructElement se(3, StructElement::ST_CROSS);
+    edgeWidget = new ImageWidget(this, edgeMorpho->getEdgeImage(
+                                     se, BinaryMorphology::ET_INTERNAL));
+    tabWidget->addTab(edgeWidget, "Internal Edge");
+    tabWidget->setCurrentWidget(edgeWidget);
+}
+
+void MainWindow::on_actionExternal_triggered()
+{
+    if (!edgeMorpho) {
+        delete edgeMorpho;
+    }
+    edgeMorpho = new BinaryMorphology(imageProcessor);
+    if (edgeWidget) {
+        tabWidget->removeTab(tabWidget->indexOf(edgeWidget));
+        delete edgeWidget;
+    }
+    StructElement se(3, StructElement::ST_CROSS);
+    edgeWidget = new ImageWidget(this, edgeMorpho->getEdgeImage(
+                                     se, BinaryMorphology::ET_EXTERNAL));
+    tabWidget->addTab(edgeWidget, "External Edge");
+    tabWidget->setCurrentWidget(edgeWidget);
 }

@@ -9,7 +9,6 @@ QT       += core gui
 TARGET = PIP_Qt
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
     ImageWidget.cpp \
     ImageProcessor.cpp \
@@ -42,10 +41,10 @@ SOURCES += main.cpp\
     PointFilter.cpp \
     BinaryMorphology.cpp \
     StructElement.cpp \
-    MorphologyDialog.cpp \
     MorphoDistance.cpp \
     Morphology.cpp \
-    GrayMorphology.cpp
+    GrayMorphology.cpp \
+    MorphologyDialog.cpp
 
 HEADERS  += \
     ImageWidget.h \
@@ -80,10 +79,10 @@ HEADERS  += \
     PointFilter.h \
     BinaryMorphology.h \
     StructElement.h \
-    MorphologyDialog.h \
     MorphoDistance.h \
     Morphology.h \
-    GrayMorphology.h
+    GrayMorphology.h \
+    MorphologyDialog.h
 
 FORMS    += \
     ImageWidget.ui \
@@ -99,46 +98,6 @@ FORMS    += \
 
 RESOURCES += \
     resource.qrc
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

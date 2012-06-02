@@ -5,6 +5,7 @@
 #include <QSpinBox>
 
 #include "MainWindow.h"
+#include "StructElement.h"
 
 namespace Ui {
     class MorphologyDialog;
@@ -17,14 +18,6 @@ class MorphologyDialog : public QDialog
 public:
     explicit MorphologyDialog(MainWindow* mainWindow, QWidget *parent = 0);
     ~MorphologyDialog();
-
-    enum SeType {
-        ST_CUSTOMED = 0,
-        ST_SQUARE,
-        ST_CIRCLE,
-        ST_CROSS,
-        ST_DIAMOND
-    };
 
 private slots:
     void on_custButton_clicked();
@@ -65,9 +58,8 @@ private:
     void resetCustSpin(int radius);
 
     int* seArr;
-    int seSize;
-    SeType seType;
-    void resetSeArr(int radius, SeType seType);
+    int seRadius;
+    StructElement::SE_Type seType;
 };
 
 #endif // MORPHOLOGYDIALOG_H

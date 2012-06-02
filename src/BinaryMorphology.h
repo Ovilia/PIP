@@ -27,6 +27,16 @@ public:
     static const uchar DEFAULT_FORE_COLOR;
     static const uchar DEFAULT_BACK_COLOR;
 
+    static const int SE_NOT_MATCH = 0;
+
+    enum EdgeType {
+        ET_STANDARD,
+        ET_INTERNAL,
+        ET_EXTERNAL
+    };
+
+    QImage* getEdgeImage(const StructElement& se, EdgeType edgeType);
+
 private:
     uchar foreGroundColor, backGroundColor;
 
@@ -34,6 +44,10 @@ private:
                                    const StructElement& se);
     virtual QImage* erosionHelper(const QImage& image,
                                   const StructElement& se);
+
+    QImage* minusHelper(const QImage& left, const QImage& right);
+
+    QImage* edgeImage;
 };
 
 #endif // BinaryMorphology_H

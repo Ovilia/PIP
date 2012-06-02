@@ -5,20 +5,25 @@ const uchar BinaryMorphology::DEFAULT_FORE_COLOR = 255;
 
 BinaryMorphology::BinaryMorphology(ImageProcessor* imageProcessor,
                                    bool whiteAsForeground) :
-    Morphology(imageProcessor->getBinaryImage())
+    Morphology(imageProcessor->getBinaryImage()),
+    edgeImage(0)
 {
     setForeground(whiteAsForeground);
 }
 
 BinaryMorphology::BinaryMorphology(QImage *binaryImage,
                                    bool whiteAsForeground) :
-    Morphology(binaryImage)
+    Morphology(binaryImage),
+    edgeImage(0)
 {
     setForeground(whiteAsForeground);
 }
 
 BinaryMorphology::~BinaryMorphology()
 {
+    if (!edgeImage) {
+        delete edgeImage;
+    }
 }
 
 void BinaryMorphology::setForeground(bool whiteAsForeground)
@@ -64,7 +69,7 @@ QImage* BinaryMorphology::dilationHelper(const QImage& image,
             if (*oBits == foreGroundColor) {
                 for (int x = minX; x < maxX; ++x) {
                     for (int y = minY; y < maxY; ++y) {
-                        if (se.getValue(x, y) == SE_MATCH) {
+                        if (se.getValue(x, y) != SE_NOT_MATCH) {
                             // set rgb to be foregound
                             int index = ((h + y) * width + (w + x)) * 4;
                             if (index >= 0 && index < totalBits) {
@@ -107,7 +112,7 @@ QImage* BinaryMorphology::erosionHelper(const QImage& image,
                     int index = ((h + y) * width + (w + x)) * 4;
                     // when se match but not foreground in image, not hit
                     if (index < 0 || index > totalBits ||
-                            (se.getValue(x, y) == SE_MATCH &&
+                            (se.getValue(x, y) != SE_NOT_MATCH &&
                                       *(oBits + index) != foreGroundColor)) {
                         isFore = false;
                     }
@@ -185,4 +190,67 @@ uchar BinaryMorphology::getForeground() const
 uchar BinaryMorphology::getBackground() const
 {
     return backGroundColor;
+}
+
+QImage* BinaryMorphology::getEdgeImage(const StructElement &se,
+                                      EdgeType edgeType)
+{
+    if (edgeImage) {
+        delete edgeImage;
+    }
+
+    QImage* origin = getOperatedImage();
+
+    switch (edgeType) {
+    case ET_STANDARD:
+    {
+        QImage* dilation = dilationHelper(*origin, se);
+        QImage* erotion = erosionHelper(*origin, se);
+        edgeImage = minusHelper(*dilation, *erotion);
+        delete dilation;
+        delete erotion;
+    }
+        break;
+
+    case ET_INTERNAL:
+    {
+        QImage* erotion = erosionHelper(*origin, se);
+        edgeImage = minusHelper(*origin, *erotion);
+        delete erotion;
+    }
+        break;
+
+    case ET_EXTERNAL:
+    {
+        QImage* dilation = dilationHelper(*origin, se);
+        edgeImage = minusHelper(*dilation, *origin);
+        delete dilation;
+    }
+        break;
+    }
+
+    return edgeImage;
+}
+
+QImage* BinaryMorphology::minusHelper(const QImage& left, const QImage& right)
+{
+    if (left.width() != right.width() || left.height() != right.height()) {
+        return 0;
+    }
+    int size = left.width() * left.height();
+    const uchar* lBits = left.constBits();
+    const uchar* rBits = right.constBits();
+    QImage* result = new QImage(left.size(), left.format());
+    uchar* bits = result->bits();
+    for (int i = 0; i < size; ++i) {
+        if (*lBits == foreGroundColor && *rBits == backGroundColor) {
+            *bits = *(bits + 1) = *(bits + 2) = foreGroundColor;
+        } else {
+            *bits = *(bits + 1) = *(bits + 2) = backGroundColor;
+        }
+        lBits += 4;
+        rBits +=4;
+        bits += 4;
+    }
+    return result;
 }
