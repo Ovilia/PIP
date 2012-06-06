@@ -15,9 +15,9 @@ private:
     static const int MIN_VALUE = 0;
 
     virtual QImage* dilationHelper(const QImage& image,
-                                   const StructElement& se);
+                                   const StructElement& se) const;
     virtual QImage* erosionHelper(const QImage& image,
-                                  const StructElement& se);
+                                  const StructElement& se) const;
 };
 
 #endif // GRAYMORPHOLOGY_H

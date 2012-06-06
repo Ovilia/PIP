@@ -36,18 +36,20 @@ public:
     };
 
     QImage* getEdgeImage(const StructElement& se, EdgeType edgeType);
+    QImage* getReconstructImage(const StructElement& se);
 
 private:
     uchar foreGroundColor, backGroundColor;
 
     virtual QImage* dilationHelper(const QImage& image,
-                                   const StructElement& se);
+                                   const StructElement& se) const;
     virtual QImage* erosionHelper(const QImage& image,
-                                  const StructElement& se);
+                                  const StructElement& se) const;
 
-    QImage* minusHelper(const QImage& left, const QImage& right);
+    QImage* minusHelper(const QImage& left, const QImage& right) const;
 
     QImage* edgeImage;
+    QImage* reconstructImage;
 };
 
 #endif // BinaryMorphology_H

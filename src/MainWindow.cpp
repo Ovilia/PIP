@@ -29,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
     skeletonWidget(0),
     reconstWidget(0),
     edgeWidget(0),
+    retinaWidget(0),
+    binReconsWidget(0),
 
     histogramDialog(0),
     filterDialog(0),
@@ -40,12 +42,13 @@ MainWindow::MainWindow(QWidget *parent) :
     morphoDialog(0),
 
     imageProcessor(0),
+    retinaProcessor(0),
 
     binaryMorphology(0),
     morphoDistance(0),
     useSquareSe(true),
 
-    edgeMorpho(0),
+    binMorpho(0),
 
     grayMorphology(0),
 
@@ -115,6 +118,12 @@ MainWindow::~MainWindow()
     if (edgeWidget) {
         delete edgeWidget;
     }
+    if (retinaWidget) {
+        delete retinaWidget;
+    }
+//    if (binReconsWidget) {
+//        delete binReconsWidget;
+//    }
 
     if (histogramDialog) {
         delete histogramDialog;
@@ -141,8 +150,8 @@ MainWindow::~MainWindow()
     if (morphoDistance) {
         delete morphoDistance;
     }
-    if (edgeMorpho) {
-        delete edgeMorpho;
+    if (binMorpho) {
+        delete binMorpho;
     }
 
     if (grayMorphology) {
@@ -151,6 +160,9 @@ MainWindow::~MainWindow()
 
     if (imageProcessor) {
         delete imageProcessor;
+    }
+    if (retinaProcessor) {
+        delete retinaProcessor;
     }
 
     if (reconstructedImage) {
@@ -269,7 +281,8 @@ void MainWindow::on_actionOpen_triggered()
 {
     imagePath = QFileDialog::getOpenFileName(
                 this, tr("Open an Image"), QDir::currentPath(),
-                tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif *.tif);;All files (*.*)"));
+                tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif *.tif);;"\
+                   "All files (*.*)"));
 
     // load the image and update UI
     if (!imagePath.isNull()) {
@@ -341,6 +354,8 @@ void MainWindow::resetImage()
         ui->actionExternal->setEnabled(true);
         ui->actionInternal->setEnabled(true);
         ui->actionStandard->setEnabled(true);
+        ui->actionProcess->setEnabled(true);
+        ui->actionBinRecons->setEnabled(true);
 #ifdef TEAM_WORK
         ui->actionBrightness->setEnabled(true);
         ui->actionContrast->setEnabled(true);
@@ -406,6 +421,14 @@ void MainWindow::resetImage()
             delete edgeWidget;
             edgeWidget = 0;
         }
+        if (retinaWidget) {
+            delete retinaWidget;
+            retinaWidget = 0;
+        }
+        if (binReconsWidget) {
+            delete binReconsWidget;
+            binReconsWidget = 0;
+        }
 
         if (histogramDialog) {
             delete histogramDialog;
@@ -431,6 +454,10 @@ void MainWindow::resetImage()
             delete contrastDialog;
             contrastDialog = 0;
         }
+        if (morphoDialog) {
+            delete morphoDialog;
+            morphoDialog = 0;
+        }
 
         if (binaryMorphology) {
             delete binaryMorphology;
@@ -441,9 +468,9 @@ void MainWindow::resetImage()
             morphoDistance = 0;
         }
         useSquareSe = true;
-        if (edgeMorpho) {
-            delete edgeMorpho;
-            edgeMorpho = 0;
+        if (binMorpho) {
+            delete binMorpho;
+            binMorpho = 0;
         }
 
         if (grayMorphology) {
@@ -454,6 +481,11 @@ void MainWindow::resetImage()
         if (reconstructedImage) {
             delete reconstructedImage;
             reconstructedImage = 0;
+        }
+
+        if (retinaProcessor) {
+            delete retinaProcessor;
+            retinaProcessor = 0;
         }
     }
 
@@ -621,16 +653,16 @@ void MainWindow::on_actionReconstruct_triggered()
 
 void MainWindow::on_actionStandard_triggered()
 {
-    if (!edgeMorpho) {
-        delete edgeMorpho;
+    if (!binMorpho) {
+        delete binMorpho;
     }
-    edgeMorpho = new BinaryMorphology(imageProcessor);
+    binMorpho = new BinaryMorphology(imageProcessor);
     if (edgeWidget) {
         tabWidget->removeTab(tabWidget->indexOf(edgeWidget));
         delete edgeWidget;
     }
     StructElement se(3, StructElement::ST_CROSS);
-    edgeWidget = new ImageWidget(this, edgeMorpho->getEdgeImage(
+    edgeWidget = new ImageWidget(this, binMorpho->getEdgeImage(
                                      se, BinaryMorphology::ET_STANDARD));
     tabWidget->addTab(edgeWidget, "Standard Edge");
     tabWidget->setCurrentWidget(edgeWidget);
@@ -638,16 +670,16 @@ void MainWindow::on_actionStandard_triggered()
 
 void MainWindow::on_actionInternal_triggered()
 {
-    if (!edgeMorpho) {
-        delete edgeMorpho;
+    if (!binMorpho) {
+        delete binMorpho;
     }
-    edgeMorpho = new BinaryMorphology(imageProcessor);
+    binMorpho = new BinaryMorphology(imageProcessor);
     if (edgeWidget) {
         tabWidget->removeTab(tabWidget->indexOf(edgeWidget));
         delete edgeWidget;
     }
     StructElement se(3, StructElement::ST_CROSS);
-    edgeWidget = new ImageWidget(this, edgeMorpho->getEdgeImage(
+    edgeWidget = new ImageWidget(this, binMorpho->getEdgeImage(
                                      se, BinaryMorphology::ET_INTERNAL));
     tabWidget->addTab(edgeWidget, "Internal Edge");
     tabWidget->setCurrentWidget(edgeWidget);
@@ -655,17 +687,57 @@ void MainWindow::on_actionInternal_triggered()
 
 void MainWindow::on_actionExternal_triggered()
 {
-    if (!edgeMorpho) {
-        delete edgeMorpho;
+    if (!binMorpho) {
+        delete binMorpho;
     }
-    edgeMorpho = new BinaryMorphology(imageProcessor);
+    binMorpho = new BinaryMorphology(imageProcessor);
+
     if (edgeWidget) {
         tabWidget->removeTab(tabWidget->indexOf(edgeWidget));
         delete edgeWidget;
     }
     StructElement se(3, StructElement::ST_CROSS);
-    edgeWidget = new ImageWidget(this, edgeMorpho->getEdgeImage(
+    edgeWidget = new ImageWidget(this, binMorpho->getEdgeImage(
                                      se, BinaryMorphology::ET_EXTERNAL));
     tabWidget->addTab(edgeWidget, "External Edge");
     tabWidget->setCurrentWidget(edgeWidget);
+}
+
+void MainWindow::on_actionProcess_triggered()
+{
+    if (!retinaProcessor) {
+        QString maskFile = QFileDialog::getOpenFileName(
+                    this, tr("Open an Image"), QDir::currentPath(),
+                    tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif *.tif);;"\
+                       "All files (*.*)"));
+        if (maskFile.isNull()) {
+            return;
+        }
+        ImageProcessor maskProcessor(maskFile);
+        retinaProcessor = new RetinaProcessor(imageProcessor->getOriginImage(),
+                                              maskProcessor.getBinaryImage());
+    }
+    if (!retinaWidget) {
+        retinaWidget = new ImageWidget(this, retinaProcessor->getEqualImage(),
+                                       this);
+        tabWidget->addTab(retinaWidget, "Retina");
+    }
+    tabWidget->setCurrentWidget(retinaWidget);
+}
+
+void MainWindow::on_actionBinRecons_triggered()
+{
+    if (binMorpho) {
+        delete binMorpho;
+    }
+    binMorpho = new BinaryMorphology(imageProcessor);
+
+    if (!binReconsWidget) {
+        StructElement se(5, StructElement::ST_SQUARE);
+        binReconsWidget = new ImageWidget(this,
+                                          binMorpho->getReconstructImage(se),
+                                          this);
+        tabWidget->addTab(binReconsWidget, "Binary Reconstruction");
+    }
+    tabWidget->setCurrentWidget(binReconsWidget);
 }

@@ -73,15 +73,29 @@
      <addaction name="actionInternal"/>
      <addaction name="actionExternal"/>
     </widget>
+    <widget class="QMenu" name="menuReconstruct">
+     <property name="title">
+      <string>Reconstruct</string>
+     </property>
+     <addaction name="actionBinRecons"/>
+    </widget>
     <addaction name="actionMorpOper"/>
     <addaction name="actionDistance"/>
+    <addaction name="menuEdge_Detection"/>
+    <addaction name="menuReconstruct"/>
     <addaction name="actionSkeleton"/>
     <addaction name="actionReconstruct"/>
-    <addaction name="menuEdge_Detection"/>
+   </widget>
+   <widget class="QMenu" name="menuRetina">
+    <property name="title">
+     <string>Retina</string>
+    </property>
+    <addaction name="actionProcess"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
    <addaction name="menuMorphology"/>
+   <addaction name="menuRetina"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="enabled">
@@ -114,6 +128,9 @@
    <addaction name="actionStandard"/>
    <addaction name="actionInternal"/>
    <addaction name="actionExternal"/>
+   <addaction name="actionBinRecons"/>
+   <addaction name="separator"/>
+   <addaction name="actionProcess"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -329,6 +346,25 @@
    </property>
    <property name="text">
     <string>External</string>
+   </property>
+  </action>
+  <action name="actionProcess">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Process</string>
+   </property>
+  </action>
+  <action name="actionBinRecons">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Binary</string>
+   </property>
+   <property name="toolTip">
+    <string>Binary Reconstruct</string>
    </property>
   </action>
  </widget>

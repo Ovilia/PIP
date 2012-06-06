@@ -11,7 +11,7 @@ GrayMorphology::~GrayMorphology()
 }
 
 QImage* GrayMorphology::dilationHelper(const QImage &image,
-                                       const StructElement &se)
+                                       const StructElement &se) const
 {
     int width = image.width();
     int height = image.height();
@@ -53,7 +53,7 @@ QImage* GrayMorphology::dilationHelper(const QImage &image,
 }
 
 QImage* GrayMorphology::erosionHelper(const QImage& image,
-                                      const StructElement& se)
+                                      const StructElement& se) const
 {
     int width = image.width();
     int height = image.height();

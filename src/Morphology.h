@@ -28,16 +28,21 @@ public:
     // return if can redo
     bool canRedo() const;
 
-private:
+protected:
     static const int BUFFER_SIZE = 32;
     QImage* bufferImage[BUFFER_SIZE];
     int bufferCurrentIndex;
     int bufferUsedIndex;
 
     virtual QImage* dilationHelper(const QImage& image,
-                                   const StructElement& se) = 0;
+                                   const StructElement& se) const = 0;
     virtual QImage* erosionHelper(const QImage& image,
-                                  const StructElement& se) = 0;
+                                  const StructElement& se) const = 0;
+    QImage* openingHelper(const QImage& image,
+                          const StructElement& se) const;
+    QImage* closingHelper(const QImage& image,
+                          const StructElement& se) const;
+
     // push image to buffer
     void pushImage(QImage* image);
 };

@@ -15,6 +15,7 @@
 #include "ImageWidget.h"
 #include "MorphoDistance.h"
 #include "MorphologyDialog.h"
+#include "RetinaProcessor.h"
 #include "RotateDialog.h"
 #include "ScaleDialog.h"
 
@@ -84,6 +85,10 @@ private slots:
 
     void on_actionExternal_triggered();
 
+    void on_actionProcess_triggered();
+
+    void on_actionBinRecons_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -102,6 +107,8 @@ private:
     ImageWidget* skeletonWidget;
     ImageWidget* reconstWidget;
     ImageWidget* edgeWidget;
+    ImageWidget* retinaWidget;
+    ImageWidget* binReconsWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
@@ -116,11 +123,13 @@ private:
     QString imagePath;
     ImageProcessor* imageProcessor;
 
+    RetinaProcessor* retinaProcessor;
+
     BinaryMorphology* binaryMorphology;
     MorphoDistance* morphoDistance;
     bool useSquareSe;
 
-    BinaryMorphology* edgeMorpho;
+    BinaryMorphology* binMorpho;
 
     GrayMorphology* grayMorphology;
 

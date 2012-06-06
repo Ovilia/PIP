@@ -27,7 +27,8 @@ void AlgebraDialog::on_openButton_clicked()
 {
     QString imagePath = QFileDialog::getOpenFileName(
                 this, tr("Open an Image"), QDir::currentPath(),
-                tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif);;All files (*.*)"));
+                tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif *.tif);;"\
+                   "All files (*.*)"));
     if (!imagePath.isNull()) {
         ui->applyButton->setEnabled(true);
         ui->pathLabel->setText(imagePath);

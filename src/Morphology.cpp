@@ -36,19 +36,33 @@ QImage* Morphology::doErosion(const StructElement& se)
 
 QImage* Morphology::doOpening(const StructElement& se)
 {
-    QImage* imageEro = erosionHelper(*bufferImage[bufferCurrentIndex], se);
-    QImage* imageOpen = dilationHelper(*imageEro, se);
-    delete imageEro;
-    pushImage(imageOpen);
-    return imageOpen;
+    QImage* image = openingHelper(*bufferImage[bufferCurrentIndex], se);
+    pushImage(image);
+    return image;
 }
 
 QImage* Morphology::doClosing(const StructElement& se)
 {
-    QImage* imageDil = dilationHelper(*bufferImage[bufferCurrentIndex], se);
+    QImage* image = closingHelper(*bufferImage[bufferCurrentIndex], se);
+    pushImage(image);
+    return image;
+}
+
+QImage* Morphology::openingHelper(const QImage& image,
+                                  const StructElement& se) const
+{
+    QImage* imageEro = erosionHelper(image, se);
+    QImage* imageOpen = dilationHelper(*imageEro, se);
+    delete imageEro;
+    return imageOpen;
+}
+
+QImage* Morphology::closingHelper(const QImage& image,
+                                  const StructElement& se) const
+{
+    QImage* imageDil = dilationHelper(image, se);
     QImage* imageClose = erosionHelper(*imageDil, se);
     delete imageDil;
-    pushImage(imageClose);
     return imageClose;
 }
 

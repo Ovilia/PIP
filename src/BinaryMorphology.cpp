@@ -6,7 +6,8 @@ const uchar BinaryMorphology::DEFAULT_FORE_COLOR = 255;
 BinaryMorphology::BinaryMorphology(ImageProcessor* imageProcessor,
                                    bool whiteAsForeground) :
     Morphology(imageProcessor->getBinaryImage()),
-    edgeImage(0)
+    edgeImage(0),
+    reconstructImage(0)
 {
     setForeground(whiteAsForeground);
 }
@@ -14,15 +15,19 @@ BinaryMorphology::BinaryMorphology(ImageProcessor* imageProcessor,
 BinaryMorphology::BinaryMorphology(QImage *binaryImage,
                                    bool whiteAsForeground) :
     Morphology(binaryImage),
-    edgeImage(0)
+    edgeImage(0),
+    reconstructImage(0)
 {
     setForeground(whiteAsForeground);
 }
 
 BinaryMorphology::~BinaryMorphology()
 {
-    if (!edgeImage) {
+    if (edgeImage) {
         delete edgeImage;
+    }
+    if (reconstructImage) {
+        delete reconstructImage;
     }
 }
 
@@ -38,7 +43,7 @@ void BinaryMorphology::setForeground(bool whiteAsForeground)
 }
 
 QImage* BinaryMorphology::dilationHelper(const QImage& image,
-                                         const StructElement& se)
+                                         const StructElement& se) const
 {
     int width = image.width();
     int height = image.height();
@@ -89,7 +94,7 @@ QImage* BinaryMorphology::dilationHelper(const QImage& image,
 }
 
 QImage* BinaryMorphology::erosionHelper(const QImage& image,
-                                        const StructElement& se)
+                                        const StructElement& se) const
 {
     int width = image.width();
     int height = image.height();
@@ -232,7 +237,7 @@ QImage* BinaryMorphology::getEdgeImage(const StructElement &se,
     return edgeImage;
 }
 
-QImage* BinaryMorphology::minusHelper(const QImage& left, const QImage& right)
+QImage* BinaryMorphology::minusHelper(const QImage& left, const QImage& right) const
 {
     if (left.width() != right.width() || left.height() != right.height()) {
         return 0;
@@ -253,4 +258,59 @@ QImage* BinaryMorphology::minusHelper(const QImage& left, const QImage& right)
         bits += 4;
     }
     return result;
+}
+
+QImage* BinaryMorphology::getReconstructImage(const StructElement &se)
+{
+    QImage* origin = getOperatedImage();
+    int size = origin->width() * origin->height();
+
+    if (reconstructImage) {
+        delete reconstructImage;
+    }
+    reconstructImage = openingHelper(*origin, se);
+
+    int k = 0;
+    while (true) {
+        ++k;
+        QImage* newImage = dilationHelper(*reconstructImage, se);
+        newImage->save("d:\\a"+QString::number(k) + ".png");
+
+        const uchar* oBits = origin->constBits();
+        uchar* nBits = newImage->bits();
+        for (int i = 0; i < size; ++i) {
+            // intersection
+            if (*oBits) {
+                for (int rgb = 0; rgb < 4; ++rgb) {
+                    *(nBits + rgb) = 0;
+                }
+            }
+            oBits += 4;
+            nBits += 4;
+        }
+        newImage->save("d:\\b"+QString::number(k) + ".png");
+
+        // check if changed from last loop
+        bool changed = false;
+        nBits = newImage->bits();
+        const uchar* lBits = reconstructImage->constBits();
+        for (int i = 0; i < size; ++i) {
+            if (*nBits != *lBits) {
+                changed = true;
+                break;
+            }
+            nBits += 4;
+            lBits += 4;
+        }
+        if (!changed) {
+            break;
+        }
+        newImage->save("d:\\" + QString::number(k) + ".png");
+
+        // delete last image
+        QImage* tmp = reconstructImage;
+        reconstructImage = newImage;
+        delete tmp;
+    }
+    return reconstructImage;
 }

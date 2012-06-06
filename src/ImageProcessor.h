@@ -53,7 +53,7 @@ public:
     static const int RANGE_OF_8BITS = 256;
     static const int MAX_OF_8BITS = RANGE_OF_8BITS - 1;
 
-private:
+protected:
     QString fileName;
     QImage* originImage;
     QImage* grayScaleImage;
