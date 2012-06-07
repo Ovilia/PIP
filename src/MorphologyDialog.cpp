@@ -25,7 +25,7 @@ MorphologyDialog::MorphologyDialog(MainWindow* mainWindow, QWidget *parent) :
             seSpin[index] = new QSpinBox();
             seSpin[index]->setMaximum(255);
             seSpin[index]->setMinimum(-255);
-            seSpin[index]->setValue(1);
+            seSpin[index]->setValue(0);
             ui->seLayout->addWidget(seSpin[index], i, j, 1, 1);
         }
     }

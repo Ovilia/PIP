@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     edgeWidget(0),
     retinaWidget(0),
     binReconsWidget(0),
+    discWidget(0),
 
     histogramDialog(0),
     filterDialog(0),
@@ -112,18 +113,22 @@ MainWindow::~MainWindow()
     if (reconstWidget) {
         delete reconstWidget;
     }
-    if (tabWidget) {
-        delete tabWidget;
-    }
     if (edgeWidget) {
         delete edgeWidget;
     }
     if (retinaWidget) {
         delete retinaWidget;
     }
-//    if (binReconsWidget) {
-//        delete binReconsWidget;
-//    }
+    if (binReconsWidget) {
+        delete binReconsWidget;
+    }
+    if (discWidget) {
+        delete discWidget;
+    }
+    if (tabWidget) {
+        delete tabWidget;
+    }
+
 
     if (histogramDialog) {
         delete histogramDialog;
@@ -355,7 +360,9 @@ void MainWindow::resetImage()
         ui->actionInternal->setEnabled(true);
         ui->actionStandard->setEnabled(true);
         ui->actionProcess->setEnabled(true);
+        ui->actionManual_Process->setEnabled(true);
         ui->actionBinRecons->setEnabled(true);
+        ui->actionOptic_Disc->setEnabled(true);
 #ifdef TEAM_WORK
         ui->actionBrightness->setEnabled(true);
         ui->actionContrast->setEnabled(true);
@@ -428,6 +435,10 @@ void MainWindow::resetImage()
         if (binReconsWidget) {
             delete binReconsWidget;
             binReconsWidget = 0;
+        }
+        if (discWidget) {
+            delete discWidget;
+            discWidget = 0;
         }
 
         if (histogramDialog) {
@@ -707,7 +718,7 @@ void MainWindow::on_actionProcess_triggered()
 {
     if (!retinaProcessor) {
         QString maskFile = QFileDialog::getOpenFileName(
-                    this, tr("Open an Image"), QDir::currentPath(),
+                    this, tr("Open a Mask"), QDir::currentPath(),
                     tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif *.tif);;"\
                        "All files (*.*)"));
         if (maskFile.isNull()) {
@@ -718,10 +729,34 @@ void MainWindow::on_actionProcess_triggered()
                                               maskProcessor.getBinaryImage());
     }
     if (!retinaWidget) {
-        retinaWidget = new ImageWidget(this, retinaProcessor->getEqualImage(),
+        retinaWidget = new ImageWidget(this, retinaProcessor->getRetinaImage(),
                                        this);
         tabWidget->addTab(retinaWidget, "Retina");
     }
+    tabWidget->setCurrentWidget(retinaWidget);
+}
+
+void MainWindow::on_actionManual_Process_triggered()
+{
+    if (retinaProcessor) {
+        delete retinaProcessor;
+    }
+    QString maskFile = QFileDialog::getOpenFileName(
+                this, tr("Open a Mask"), QDir::currentPath(),
+                tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif *.tif);;"\
+                   "All files (*.*)"));
+    if (maskFile.isNull()) {
+        return;
+    }
+    ImageProcessor maskProcessor(maskFile);
+    retinaProcessor = new RetinaProcessor(imageProcessor->getOriginImage(),
+                                          maskProcessor.getBinaryImage());
+    if (retinaWidget) {
+        delete retinaWidget;
+    }
+    retinaWidget = new ImageWidget(this, retinaProcessor->getEqualImage(),
+                                   this);
+    tabWidget->addTab(retinaWidget, "Retina");
     tabWidget->setCurrentWidget(retinaWidget);
 }
 
@@ -733,11 +768,26 @@ void MainWindow::on_actionBinRecons_triggered()
     binMorpho = new BinaryMorphology(imageProcessor);
 
     if (!binReconsWidget) {
-        StructElement se(5, StructElement::ST_SQUARE);
+        StructElement se(3, StructElement::ST_SQUARE);
         binReconsWidget = new ImageWidget(this,
                                           binMorpho->getReconstructImage(se),
                                           this);
         tabWidget->addTab(binReconsWidget, "Binary Reconstruction");
     }
     tabWidget->setCurrentWidget(binReconsWidget);
+}
+
+void MainWindow::on_actionOptic_Disc_triggered()
+{
+    if (!discWidget) {
+        if (retinaProcessor) {
+            delete retinaProcessor;
+        }
+        retinaProcessor = new RetinaProcessor(
+                    imageProcessor->getOriginImage(), 0);
+        discWidget = new ImageWidget(this, retinaProcessor->getCenterImage(),
+                                     tabWidget);
+        tabWidget->addTab(discWidget, "Optic Disc");
+    }
+    tabWidget->setCurrentWidget(discWidget);
 }

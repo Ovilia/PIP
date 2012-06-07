@@ -22,5 +22,6 @@
         <file>images/external.png</file>
         <file>images/internal.png</file>
         <file>images/standard.png</file>
+        <file>images/binaryReconst.png</file>
     </qresource>
 </RCC>

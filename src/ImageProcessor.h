@@ -90,7 +90,7 @@ protected:
     // threshold policy
     ImagePolicy::ThresholdPolicy thresholdPolicy;
 
-    inline uchar getGrayValue(
+    uchar getGrayValue(
             const uchar* rgb, ImagePolicy::GrayScalePolicy policy);
 };
 

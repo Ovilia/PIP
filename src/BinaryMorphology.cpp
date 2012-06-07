@@ -270,17 +270,15 @@ QImage* BinaryMorphology::getReconstructImage(const StructElement &se)
     }
     reconstructImage = openingHelper(*origin, se);
 
-    int k = 0;
     while (true) {
-        ++k;
         QImage* newImage = dilationHelper(*reconstructImage, se);
-        newImage->save("d:\\a"+QString::number(k) + ".png");
 
         const uchar* oBits = origin->constBits();
         uchar* nBits = newImage->bits();
         for (int i = 0; i < size; ++i) {
             // intersection
-            if (*oBits) {
+            if (!*oBits) {
+                // black in origin
                 for (int rgb = 0; rgb < 4; ++rgb) {
                     *(nBits + rgb) = 0;
                 }
@@ -288,7 +286,6 @@ QImage* BinaryMorphology::getReconstructImage(const StructElement &se)
             oBits += 4;
             nBits += 4;
         }
-        newImage->save("d:\\b"+QString::number(k) + ".png");
 
         // check if changed from last loop
         bool changed = false;
@@ -305,7 +302,6 @@ QImage* BinaryMorphology::getReconstructImage(const StructElement &se)
         if (!changed) {
             break;
         }
-        newImage->save("d:\\" + QString::number(k) + ".png");
 
         // delete last image
         QImage* tmp = reconstructImage;

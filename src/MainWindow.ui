@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>704</width>
+    <width>787</width>
     <height>432</height>
    </rect>
   </property>
@@ -34,7 +34,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>704</width>
+     <width>787</width>
      <height>23</height>
     </rect>
    </property>
@@ -91,12 +91,15 @@
      <string>Retina</string>
     </property>
     <addaction name="actionProcess"/>
+    <addaction name="actionManual_Process"/>
+    <addaction name="actionOptic_Disc"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuImage"/>
    <addaction name="menuMorphology"/>
    <addaction name="menuRetina"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="mainToolBar">
    <property name="enabled">
     <bool>true</bool>
@@ -129,10 +132,7 @@
    <addaction name="actionInternal"/>
    <addaction name="actionExternal"/>
    <addaction name="actionBinRecons"/>
-   <addaction name="separator"/>
-   <addaction name="actionProcess"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="resource.qrc">
@@ -353,18 +353,38 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Process</string>
+    <string>Auto Process</string>
    </property>
   </action>
   <action name="actionBinRecons">
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/binaryReconst.png</normaloff>:/images/images/binaryReconst.png</iconset>
+   </property>
    <property name="text">
     <string>Binary</string>
    </property>
    <property name="toolTip">
     <string>Binary Reconstruct</string>
+   </property>
+  </action>
+  <action name="actionManual_Process">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Manual Process</string>
+   </property>
+  </action>
+  <action name="actionOptic_Disc">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Optic Disc</string>
    </property>
   </action>
  </widget>

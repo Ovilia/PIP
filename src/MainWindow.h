@@ -89,6 +89,10 @@ private slots:
 
     void on_actionBinRecons_triggered();
 
+    void on_actionManual_Process_triggered();
+
+    void on_actionOptic_Disc_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -109,6 +113,7 @@ private:
     ImageWidget* edgeWidget;
     ImageWidget* retinaWidget;
     ImageWidget* binReconsWidget;
+    ImageWidget* discWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;
