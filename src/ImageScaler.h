@@ -9,16 +9,16 @@ class ImageScaler
 {
 public:
     // the outside is responsible for destruct
-    static QImage* getScaledImage(QImage* originImage,
+    static QImage* getScaledImage(const QImage* originImage,
                                   int newWidth, int newHeight,
                                   ImagePolicy::ScalePolicy policy);
 
 private:
     ImageScaler();
 
-    static QImage* getNearestImage(QImage* originImage,
+    static QImage* getNearestImage(const QImage* originImage,
                                    int newWidth, int newHeight);
-    static QImage* getBilinearImage(QImage* originImage,
+    static QImage* getBilinearImage(const QImage* originImage,
                                     int newWidth, int newHeight);
 };
 

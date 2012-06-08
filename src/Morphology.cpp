@@ -125,3 +125,22 @@ void Morphology::pushImage(QImage *image)
         bufferImage[bufferCurrentIndex] = image;
     }
 }
+
+bool Morphology::sameImage(const QImage& left,
+                           const QImage& right) const
+{
+    if (left.width() != right.width() || left.height() != right.height()) {
+        return false;
+    }
+    int size = left.width() * left.height();
+    const uchar* lBits = left.constBits();
+    const uchar* rBits = right.constBits();
+    for (int i = 0; i < size; ++i) {
+        if (*lBits != *rBits) {
+            return false;
+        }
+        lBits += 4;
+        rBits +=4;
+    }
+    return true;
+}

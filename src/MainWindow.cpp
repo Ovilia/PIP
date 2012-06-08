@@ -31,7 +31,11 @@ MainWindow::MainWindow(QWidget *parent) :
     edgeWidget(0),
     retinaWidget(0),
     binReconsWidget(0),
+    grayReconsWidget(0),
     discWidget(0),
+    conDilaWidget(0),
+    maskWidget(0),
+    gradientWidget(0),
 
     histogramDialog(0),
     filterDialog(0),
@@ -68,6 +72,11 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+
+    if (imageProcessor) {
+        delete imageProcessor;
+    }
+
     if (originWidget) {
         delete originWidget;
     }
@@ -122,13 +131,25 @@ MainWindow::~MainWindow()
     if (binReconsWidget) {
         delete binReconsWidget;
     }
+    if (grayReconsWidget) {
+        delete grayReconsWidget;
+    }
     if (discWidget) {
         delete discWidget;
+    }
+    if (conDilaWidget) {
+        delete conDilaWidget;
+    }
+    if (maskWidget) {
+        delete maskWidget->getImage();
+        delete maskWidget;
+    }
+    if (gradientWidget) {
+        delete gradientWidget;
     }
     if (tabWidget) {
         delete tabWidget;
     }
-
 
     if (histogramDialog) {
         delete histogramDialog;
@@ -163,9 +184,6 @@ MainWindow::~MainWindow()
         delete grayMorphology;
     }
 
-    if (imageProcessor) {
-        delete imageProcessor;
-    }
     if (retinaProcessor) {
         delete retinaProcessor;
     }
@@ -345,6 +363,8 @@ void MainWindow::resetImage()
         // add tabWidget only if it is the first image opened
         ui->gridLayout->addWidget(tabWidget);
         // enable UI components
+        ui->menuEdge_Detection->setEnabled(true);
+        ui->menuMophology_Gradient->setEnabled(true);
         ui->actionHistogram->setEnabled(true);
         ui->actionFilter->setEnabled(true);
         ui->actionScale->setEnabled(true);
@@ -363,6 +383,11 @@ void MainWindow::resetImage()
         ui->actionManual_Process->setEnabled(true);
         ui->actionBinRecons->setEnabled(true);
         ui->actionOptic_Disc->setEnabled(true);
+        ui->actionConditional_Dilation->setEnabled(true);
+        ui->actionGrayReconstruct->setEnabled(true);
+        ui->actionStandardGradient->setEnabled(true);
+        ui->actionInternalGradient->setEnabled(true);
+        ui->actionExternalGradient->setEnabled(true);
 #ifdef TEAM_WORK
         ui->actionBrightness->setEnabled(true);
         ui->actionContrast->setEnabled(true);
@@ -439,6 +464,22 @@ void MainWindow::resetImage()
         if (discWidget) {
             delete discWidget;
             discWidget = 0;
+        }
+        if (conDilaWidget) {
+            delete conDilaWidget;
+            conDilaWidget = 0;
+        }
+        if (maskWidget) {
+            delete maskWidget;
+            maskWidget = 0;
+        }
+        if (grayReconsWidget) {
+            delete grayReconsWidget;
+            grayReconsWidget = 0;
+        }
+        if (gradientWidget) {
+            delete gradientWidget;
+            gradientWidget = 0;
         }
 
         if (histogramDialog) {
@@ -664,7 +705,7 @@ void MainWindow::on_actionReconstruct_triggered()
 
 void MainWindow::on_actionStandard_triggered()
 {
-    if (!binMorpho) {
+    if (binMorpho) {
         delete binMorpho;
     }
     binMorpho = new BinaryMorphology(imageProcessor);
@@ -674,14 +715,14 @@ void MainWindow::on_actionStandard_triggered()
     }
     StructElement se(3, StructElement::ST_CROSS);
     edgeWidget = new ImageWidget(this, binMorpho->getEdgeImage(
-                                     se, BinaryMorphology::ET_STANDARD));
+                                     se, Morphology::ET_STANDARD));
     tabWidget->addTab(edgeWidget, "Standard Edge");
     tabWidget->setCurrentWidget(edgeWidget);
 }
 
 void MainWindow::on_actionInternal_triggered()
 {
-    if (!binMorpho) {
+    if (binMorpho) {
         delete binMorpho;
     }
     binMorpho = new BinaryMorphology(imageProcessor);
@@ -691,14 +732,14 @@ void MainWindow::on_actionInternal_triggered()
     }
     StructElement se(3, StructElement::ST_CROSS);
     edgeWidget = new ImageWidget(this, binMorpho->getEdgeImage(
-                                     se, BinaryMorphology::ET_INTERNAL));
+                                     se, Morphology::ET_INTERNAL));
     tabWidget->addTab(edgeWidget, "Internal Edge");
     tabWidget->setCurrentWidget(edgeWidget);
 }
 
 void MainWindow::on_actionExternal_triggered()
 {
-    if (!binMorpho) {
+    if (binMorpho) {
         delete binMorpho;
     }
     binMorpho = new BinaryMorphology(imageProcessor);
@@ -709,7 +750,7 @@ void MainWindow::on_actionExternal_triggered()
     }
     StructElement se(3, StructElement::ST_CROSS);
     edgeWidget = new ImageWidget(this, binMorpho->getEdgeImage(
-                                     se, BinaryMorphology::ET_EXTERNAL));
+                                     se, Morphology::ET_EXTERNAL));
     tabWidget->addTab(edgeWidget, "External Edge");
     tabWidget->setCurrentWidget(edgeWidget);
 }
@@ -790,4 +831,113 @@ void MainWindow::on_actionOptic_Disc_triggered()
         tabWidget->addTab(discWidget, "Optic Disc");
     }
     tabWidget->setCurrentWidget(discWidget);
+}
+
+void MainWindow::on_actionConditional_Dilation_triggered()
+{
+    QString maskFile = QFileDialog::getOpenFileName(
+                this, tr("Open a Mask"), QDir::currentPath(),
+                tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif *.tif);;"\
+                   "All files (*.*)"));
+    if (maskFile.isNull()) {
+        return;
+    }
+    ImageProcessor maskProcessor(maskFile);
+    // add mask image to tab
+    QImage* maskImage = maskProcessor.getBinaryImage();
+    if (maskWidget) {
+        delete maskWidget;
+    }
+    maskWidget = new ImageWidget(this, maskImage, tabWidget);
+    tabWidget->addTab(maskWidget, "Mask");
+    tabWidget->setCurrentWidget(maskWidget);
+
+    if (binMorpho) {
+        delete binMorpho;
+    }
+    binMorpho = new BinaryMorphology(imageProcessor);
+    StructElement se(3, StructElement::ST_SQUARE);
+    QImage* image = binMorpho->getConditionDilation(se, *maskImage);
+    if (conDilaWidget) {
+        tabWidget->removeTab(tabWidget->indexOf(conDilaWidget));
+        delete conDilaWidget;
+    }
+    conDilaWidget = new ImageWidget(this, image, tabWidget);
+    tabWidget->addTab(conDilaWidget, "Conditional Dilation");
+    tabWidget->setCurrentWidget(conDilaWidget);
+}
+
+void MainWindow::on_actionGrayReconstruct_triggered()
+{
+    if (!grayReconsWidget) {
+        QString maskFile = QFileDialog::getOpenFileName(
+                    this, tr("Open a Mask"), QDir::currentPath(),
+                    tr("Image files(*.bmp *.jpeg *.jpg *.png *.gif *.tif);;"\
+                       "All files (*.*)"));
+        if (maskFile.isNull()) {
+            return;
+        }
+        ImageProcessor maskProcessor(maskFile);
+        // add mask image to tab
+        QImage* maskImage = maskProcessor.getGrayScaleImage();
+
+        if (grayMorphology) {
+            delete grayMorphology;
+        }
+        grayMorphology = new GrayMorphology(imageProcessor);
+
+        StructElement se(3, StructElement::ST_SQUARE);
+        grayReconsWidget = new ImageWidget(
+                    this, grayMorphology->getReconstructImage(se, *maskImage));
+        tabWidget->addTab(grayReconsWidget, "Gray Scale Reconstruction");
+    }
+    tabWidget->setCurrentWidget(grayReconsWidget);
+}
+
+void MainWindow::on_actionStandardGradient_triggered()
+{
+    if (!grayMorphology) {
+        grayMorphology = new GrayMorphology(imageProcessor);
+    }
+    StructElement se(3, StructElement::ST_SQUARE);
+    QImage* image = grayMorphology->getGradientImage(
+                se, Morphology::ET_STANDARD);
+    if (gradientWidget) {
+        delete gradientWidget;
+    }
+    gradientWidget = new ImageWidget(this, image, tabWidget);
+    tabWidget->addTab(gradientWidget, "Morphology Gradient");
+    tabWidget->setCurrentWidget(gradientWidget);
+}
+
+void MainWindow::on_actionInternalGradient_triggered()
+{
+    if (!grayMorphology) {
+        grayMorphology = new GrayMorphology(imageProcessor);
+    }
+    StructElement se(3, StructElement::ST_SQUARE);
+    QImage* image = grayMorphology->getGradientImage(
+                se, Morphology::ET_INTERNAL);
+    if (gradientWidget) {
+        delete gradientWidget;
+    }
+    gradientWidget = new ImageWidget(this, image, tabWidget);
+    tabWidget->addTab(gradientWidget, "Morphology Gradient");
+    tabWidget->setCurrentWidget(gradientWidget);
+}
+
+void MainWindow::on_actionExternalGradient_triggered()
+{
+    if (!grayMorphology) {
+        grayMorphology = new GrayMorphology(imageProcessor);
+    }
+    StructElement se(3, StructElement::ST_SQUARE);
+    QImage* image = grayMorphology->getGradientImage(
+                se, Morphology::ET_EXTERNAL);
+    if (gradientWidget) {
+        delete gradientWidget;
+    }
+    gradientWidget = new ImageWidget(this, image, tabWidget);
+    tabWidget->addTab(gradientWidget, "Morphology Gradient");
+    tabWidget->setCurrentWidget(gradientWidget);
 }

@@ -23,5 +23,7 @@
         <file>images/internal.png</file>
         <file>images/standard.png</file>
         <file>images/binaryReconst.png</file>
+        <file>images/conditional dilation.png</file>
+        <file>images/grayReconst.png</file>
     </qresource>
 </RCC>

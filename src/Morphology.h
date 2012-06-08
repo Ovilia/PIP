@@ -28,6 +28,12 @@ public:
     // return if can redo
     bool canRedo() const;
 
+    enum EdgeType {
+        ET_STANDARD,
+        ET_INTERNAL,
+        ET_EXTERNAL
+    };
+
 protected:
     static const int BUFFER_SIZE = 32;
     QImage* bufferImage[BUFFER_SIZE];
@@ -45,6 +51,8 @@ protected:
 
     // push image to buffer
     void pushImage(QImage* image);
+
+    bool sameImage(const QImage& left, const QImage& right) const;
 };
 
 #endif // MORPHOLOGY_H

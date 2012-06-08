@@ -29,14 +29,9 @@ public:
 
     static const int SE_NOT_MATCH = 0;
 
-    enum EdgeType {
-        ET_STANDARD,
-        ET_INTERNAL,
-        ET_EXTERNAL
-    };
-
     QImage* getEdgeImage(const StructElement& se, EdgeType edgeType);
     QImage* getReconstructImage(const StructElement& se);
+    QImage* getConditionDilation(const StructElement& se, const QImage& mask);
 
 private:
     uchar foreGroundColor, backGroundColor;
@@ -47,9 +42,11 @@ private:
                                   const StructElement& se) const;
 
     QImage* minusHelper(const QImage& left, const QImage& right) const;
+    QImage* intersectHelper(const QImage& left, const QImage& right) const;
 
     QImage* edgeImage;
     QImage* reconstructImage;
+    QImage* conditionImage;
 };
 
 #endif // BinaryMorphology_H

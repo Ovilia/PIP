@@ -93,6 +93,16 @@ private slots:
 
     void on_actionOptic_Disc_triggered();
 
+    void on_actionConditional_Dilation_triggered();
+
+    void on_actionGrayReconstruct_triggered();
+
+    void on_actionStandardGradient_triggered();
+
+    void on_actionInternalGradient_triggered();
+
+    void on_actionExternalGradient_triggered();
+
 private:
     Ui::MainWindow *ui;
     QTabWidget* tabWidget;
@@ -113,7 +123,11 @@ private:
     ImageWidget* edgeWidget;
     ImageWidget* retinaWidget;
     ImageWidget* binReconsWidget;
+    ImageWidget* grayReconsWidget;
     ImageWidget* discWidget;
+    ImageWidget* conDilaWidget;
+    ImageWidget* maskWidget;
+    ImageWidget* gradientWidget;
 
     class HistogramDialog* histogramDialog;
     class FilterDialog* filterDialog;

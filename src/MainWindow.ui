@@ -66,6 +66,9 @@
      <string>Morphology</string>
     </property>
     <widget class="QMenu" name="menuEdge_Detection">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Edge Detection</string>
      </property>
@@ -73,18 +76,28 @@
      <addaction name="actionInternal"/>
      <addaction name="actionExternal"/>
     </widget>
-    <widget class="QMenu" name="menuReconstruct">
-     <property name="title">
-      <string>Reconstruct</string>
+    <widget class="QMenu" name="menuMophology_Gradient">
+     <property name="enabled">
+      <bool>false</bool>
      </property>
-     <addaction name="actionBinRecons"/>
+     <property name="title">
+      <string>Mophology Gradient</string>
+     </property>
+     <addaction name="actionStandardGradient"/>
+     <addaction name="actionInternalGradient"/>
+     <addaction name="actionExternalGradient"/>
     </widget>
     <addaction name="actionMorpOper"/>
+    <addaction name="separator"/>
+    <addaction name="actionBinRecons"/>
+    <addaction name="actionConditional_Dilation"/>
     <addaction name="actionDistance"/>
     <addaction name="menuEdge_Detection"/>
-    <addaction name="menuReconstruct"/>
     <addaction name="actionSkeleton"/>
     <addaction name="actionReconstruct"/>
+    <addaction name="separator"/>
+    <addaction name="actionGrayReconstruct"/>
+    <addaction name="menuMophology_Gradient"/>
    </widget>
    <widget class="QMenu" name="menuRetina">
     <property name="title">
@@ -132,6 +145,12 @@
    <addaction name="actionInternal"/>
    <addaction name="actionExternal"/>
    <addaction name="actionBinRecons"/>
+   <addaction name="actionConditional_Dilation"/>
+   <addaction name="separator"/>
+   <addaction name="actionGrayReconstruct"/>
+   <addaction name="actionStandardGradient"/>
+   <addaction name="actionInternalGradient"/>
+   <addaction name="actionExternalGradient"/>
   </widget>
   <action name="actionOpen">
    <property name="icon">
@@ -365,7 +384,7 @@
      <normaloff>:/images/images/binaryReconst.png</normaloff>:/images/images/binaryReconst.png</iconset>
    </property>
    <property name="text">
-    <string>Binary</string>
+    <string>Binary Reconstruction</string>
    </property>
    <property name="toolTip">
     <string>Binary Reconstruct</string>
@@ -385,6 +404,75 @@
    </property>
    <property name="text">
     <string>Optic Disc</string>
+   </property>
+  </action>
+  <action name="actionConditional_Dilation">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/conditional dilation.png</normaloff>:/images/images/conditional dilation.png</iconset>
+   </property>
+   <property name="text">
+    <string>Conditional Dilation</string>
+   </property>
+  </action>
+  <action name="actionGrayReconstruct">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/grayReconst.png</normaloff>:/images/images/grayReconst.png</iconset>
+   </property>
+   <property name="text">
+    <string>Gray Scale Reconstruction</string>
+   </property>
+  </action>
+  <action name="actionStandardGradient">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/standard.png</normaloff>:/images/images/standard.png</iconset>
+   </property>
+   <property name="text">
+    <string>Standard</string>
+   </property>
+   <property name="toolTip">
+    <string>Standard Gradient</string>
+   </property>
+  </action>
+  <action name="actionInternalGradient">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/internal.png</normaloff>:/images/images/internal.png</iconset>
+   </property>
+   <property name="text">
+    <string>Internal</string>
+   </property>
+   <property name="toolTip">
+    <string>Internal Gradient</string>
+   </property>
+  </action>
+  <action name="actionExternalGradient">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/images/external.png</normaloff>:/images/images/external.png</iconset>
+   </property>
+   <property name="text">
+    <string>External</string>
+   </property>
+   <property name="toolTip">
+    <string>External Gradient</string>
    </property>
   </action>
  </widget>

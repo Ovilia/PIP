@@ -1,5 +1,7 @@
 #include "BinaryMorphology.h"
 
+#include "ImageScaler.h"
+
 const uchar BinaryMorphology::DEFAULT_BACK_COLOR = 0;
 const uchar BinaryMorphology::DEFAULT_FORE_COLOR = 255;
 
@@ -7,7 +9,8 @@ BinaryMorphology::BinaryMorphology(ImageProcessor* imageProcessor,
                                    bool whiteAsForeground) :
     Morphology(imageProcessor->getBinaryImage()),
     edgeImage(0),
-    reconstructImage(0)
+    reconstructImage(0),
+    conditionImage(0)
 {
     setForeground(whiteAsForeground);
 }
@@ -16,7 +19,8 @@ BinaryMorphology::BinaryMorphology(QImage *binaryImage,
                                    bool whiteAsForeground) :
     Morphology(binaryImage),
     edgeImage(0),
-    reconstructImage(0)
+    reconstructImage(0),
+    conditionImage(0)
 {
     setForeground(whiteAsForeground);
 }
@@ -28,6 +32,9 @@ BinaryMorphology::~BinaryMorphology()
     }
     if (reconstructImage) {
         delete reconstructImage;
+    }
+    if (conditionImage) {
+        delete conditionImage;
     }
 }
 
@@ -237,7 +244,8 @@ QImage* BinaryMorphology::getEdgeImage(const StructElement &se,
     return edgeImage;
 }
 
-QImage* BinaryMorphology::minusHelper(const QImage& left, const QImage& right) const
+QImage* BinaryMorphology::minusHelper(const QImage& left,
+                                      const QImage& right) const
 {
     if (left.width() != right.width() || left.height() != right.height()) {
         return 0;
@@ -249,6 +257,30 @@ QImage* BinaryMorphology::minusHelper(const QImage& left, const QImage& right) c
     uchar* bits = result->bits();
     for (int i = 0; i < size; ++i) {
         if (*lBits == foreGroundColor && *rBits == backGroundColor) {
+            *bits = *(bits + 1) = *(bits + 2) = foreGroundColor;
+        } else {
+            *bits = *(bits + 1) = *(bits + 2) = backGroundColor;
+        }
+        lBits += 4;
+        rBits +=4;
+        bits += 4;
+    }
+    return result;
+}
+
+QImage* BinaryMorphology::intersectHelper(const QImage& left,
+                                          const QImage& right) const
+{
+    if (left.width() != right.width() || left.height() != right.height()) {
+        return 0;
+    }
+    int size = left.width() * left.height();
+    const uchar* lBits = left.constBits();
+    const uchar* rBits = right.constBits();
+    QImage* result = new QImage(left.size(), left.format());
+    uchar* bits = result->bits();
+    for (int i = 0; i < size; ++i) {
+        if (*lBits == foreGroundColor && *rBits == foreGroundColor) {
             *bits = *(bits + 1) = *(bits + 2) = foreGroundColor;
         } else {
             *bits = *(bits + 1) = *(bits + 2) = backGroundColor;
@@ -309,4 +341,45 @@ QImage* BinaryMorphology::getReconstructImage(const StructElement &se)
         delete tmp;
     }
     return reconstructImage;
+}
+
+QImage* BinaryMorphology::getConditionDilation(const StructElement& se,
+                                               const QImage& mask)
+{
+    if (conditionImage) {
+        delete conditionImage;
+    }
+
+    QImage* last = getOperatedImage();
+    QImage* scaledMask;
+    if (mask.width() == last->width() && mask.height() == last->height()) {
+        scaledMask = new QImage(mask);
+    } else {
+        scaledMask = ImageScaler::getScaledImage(
+                    &mask, last->width(),last->height(),
+                    ImagePolicy::SP_NEAREST);
+    }
+    bool isFirst = true;
+    while (true) {
+        // dilation
+        QImage* dilation = dilationHelper(*last, se);
+
+        // intersection
+        QImage* intersect = intersectHelper(*dilation, *scaledMask);
+        delete dilation;
+
+        if (sameImage(*last, *intersect)) {
+            delete intersect;
+            break;
+        }
+        if (!isFirst) {
+            // not to delete origin image
+            delete last;
+        }
+        isFirst = false;
+        last = intersect;
+    }
+    delete scaledMask;
+    conditionImage = last;
+    return conditionImage;
 }

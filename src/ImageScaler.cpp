@@ -6,24 +6,25 @@ ImageScaler::ImageScaler()
 {
 }
 
-QImage* ImageScaler::getScaledImage(QImage* originImage,
+QImage* ImageScaler::getScaledImage(const QImage* originImage,
                                     int newWidth, int newHeight,
                                     ImagePolicy::ScalePolicy policy)
 {
     // change into RGB32
-    ImageProcessor::doFormatProcess(originImage);
+    QImage* image = new QImage(*originImage);
+    ImageProcessor::doFormatProcess(image);
 
     switch (policy) {
     case ImagePolicy::SP_NEAREST:
-        return getNearestImage(originImage, newWidth, newHeight);
+        return getNearestImage(image, newWidth, newHeight);
 
     case ImagePolicy::SP_BILINEAR:
-        return getBilinearImage(originImage, newWidth, newHeight);
+        return getBilinearImage(image, newWidth, newHeight);
     }
     return 0;
 }
 
-QImage* ImageScaler::getNearestImage(QImage* originImage,
+QImage* ImageScaler::getNearestImage(const QImage* originImage,
                                      int newWidth, int newHeight)
 {
     QImage* newImage = new QImage(newWidth, newHeight, originImage->format());
@@ -48,7 +49,7 @@ QImage* ImageScaler::getNearestImage(QImage* originImage,
     return newImage;
 }
 
-QImage* ImageScaler::getBilinearImage(QImage* originImage,
+QImage* ImageScaler::getBilinearImage(const QImage* originImage,
                                       int newWidth, int newHeight)
 {
     QImage* newImage = new QImage(newWidth, newHeight, originImage->format());
