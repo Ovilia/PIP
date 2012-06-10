@@ -11,3 +11,59 @@ It is a Digital Image Processing course project written in C++. (Previous versio
 Code review is a good way to improve my code and your skills. 
 
 It is highly appreciated if you read my code and gave suggestions.
+
+=== What can PIP do ===
+
+==== Basic Image Processing ====
+
+* Algebra Operation
+* Brightness
+* Contrast
+* Histogram Equalization
+* Filters
+** Roberts Operator
+** Prewitt Operator
+** Sobel Operator
+** Gaussian Filter
+** Mean Filter
+** Median Filter
+** Sharpen Filter
+** Emboss Filter
+** Motion Filter
+** Comic Filter
+** Sepia Filter
+** Customed Filter
+* Gray Scale Image
+* Histogram
+** Otsu Threshold
+** Entropy Threshold
+** Customed Threshold
+* Rotation
+* Scaling
+
+==== Morphology ====
+
+* Dilation
+* Erosion
+* Opening
+* Closing
+
+===== Binary Morphology =====
+
+* Binary Reconstruction
+* Conditional Dilation
+* Distance
+* Edge Detection
+** Standard
+** Internal
+** External
+* Skeleton
+* Skeleton Restoration
+
+===== Gray Scale Morphology =====
+
+* Gray Scale Reconstruction
+* Morphology Gradient
+** Standard
+** Internal
+** External

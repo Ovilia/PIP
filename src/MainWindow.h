@@ -153,6 +153,7 @@ private:
     GrayMorphology* grayMorphology;
 
     QImage* reconstructedImage;
+    QImage* maskImage;
 
     // if is the first time opening an image
     bool isFirstImage;

@@ -138,13 +138,13 @@
    <addaction name="actionBrightness"/>
    <addaction name="separator"/>
    <addaction name="actionMorpOper"/>
+   <addaction name="actionBinRecons"/>
    <addaction name="actionDistance"/>
    <addaction name="actionSkeleton"/>
    <addaction name="actionReconstruct"/>
    <addaction name="actionStandard"/>
    <addaction name="actionInternal"/>
    <addaction name="actionExternal"/>
-   <addaction name="actionBinRecons"/>
    <addaction name="actionConditional_Dilation"/>
    <addaction name="separator"/>
    <addaction name="actionGrayReconstruct"/>
@@ -328,7 +328,10 @@
      <normaloff>:/images/images/reconstruction.png</normaloff>:/images/images/reconstruction.png</iconset>
    </property>
    <property name="text">
-    <string>Skeleton Reconstruction</string>
+    <string>Skeleton Restoration</string>
+   </property>
+   <property name="toolTip">
+    <string>Skeleton Restoration</string>
    </property>
   </action>
   <action name="actionStandard">

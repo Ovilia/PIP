@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     grayMorphology(0),
 
     reconstructedImage(0),
+    maskImage(0),
 
     isFirstImage(true)
 {
@@ -190,6 +191,9 @@ MainWindow::~MainWindow()
 
     if (reconstructedImage) {
         delete reconstructedImage;
+    }
+    if (maskImage) {
+        delete maskImage;
     }
 }
 
@@ -534,6 +538,10 @@ void MainWindow::resetImage()
             delete reconstructedImage;
             reconstructedImage = 0;
         }
+        if (maskImage) {
+            delete maskImage;
+            maskImage = 0;
+        }
 
         if (retinaProcessor) {
             delete retinaProcessor;
@@ -698,7 +706,7 @@ void MainWindow::on_actionReconstruct_triggered()
         }
         morphoDistance->getSkeletonImage(reconstructedImage);
         reconstWidget = new ImageWidget(this, reconstructedImage);
-        tabWidget->addTab(reconstWidget, "Recontruction");
+        tabWidget->addTab(reconstWidget, "Skeleton Restoration");
     }
     tabWidget->setCurrentWidget(reconstWidget);
 }
@@ -844,7 +852,10 @@ void MainWindow::on_actionConditional_Dilation_triggered()
     }
     ImageProcessor maskProcessor(maskFile);
     // add mask image to tab
-    QImage* maskImage = maskProcessor.getBinaryImage();
+    if (maskImage) {
+        delete maskImage;
+    }
+    maskImage = new QImage(*maskProcessor.getBinaryImage());
     if (maskWidget) {
         delete maskWidget;
     }
